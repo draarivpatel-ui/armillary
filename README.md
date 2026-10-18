@@ -1,5 +1,10 @@
 # Armillary
 
+[![Armillary demo](docs/demo.gif)](https://github.com/draarivpatel-ui/armillary/releases/tag/v0.1.0)
+
+**[Watch the full demo video](https://github.com/draarivpatel-ui/armillary/releases/tag/v0.1.0)**
+
+
 Every AI agent you use, in one observatory.
 
 Armillary is a Mac app that finds the AI coding agents on your computer, gathers the session history each one already keeps into one private archive on that Mac, and shows it back to you: what is running now, what happened on any day, any past session read as a document, and one search across all of them.
