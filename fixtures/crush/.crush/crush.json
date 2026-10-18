@@ -1,0 +1,7 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "options": {
+    "data_directory": ".crush",
+    "initialize_as": "AGENTS.md"
+  }
+}

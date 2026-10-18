@@ -1,0 +1,4182 @@
+{
+  "events": [
+    {
+      "at": 14,
+      "name": "firstrun:catalogue",
+      "payload": {
+        "entries": [
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.config/agent-code",
+              "~/.local/share/agent-code"
+            ],
+            "history": false,
+            "id": "agent-code",
+            "kind": "cli",
+            "name": "Agent Code",
+            "vendor": "Avala AI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.aider"
+            ],
+            "history": true,
+            "id": "aider",
+            "kind": "cli",
+            "name": "Aider",
+            "vendor": "Paul Gauthier (Aider-AI)"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.aws/amazonq/history",
+              "~/Library/Application Support/amazon-q"
+            ],
+            "history": false,
+            "id": "amazon-q",
+            "kind": "cli",
+            "name": "Amazon Q Developer",
+            "vendor": "Amazon Web Services"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.local/share/amp/threads"
+            ],
+            "history": true,
+            "id": "amp",
+            "kind": "cli",
+            "name": "Amp",
+            "vendor": "Amp Inc."
+          },
+          {
+            "family": "google",
+            "folders": [
+              "~/.gemini/antigravity-cli",
+              "~/.gemini/antigravity-cli/brain",
+              "~/.gemini/antigravity-cli/conversations"
+            ],
+            "history": true,
+            "id": "antigravity-cli",
+            "kind": "cli",
+            "name": "Antigravity CLI",
+            "vendor": "Google DeepMind"
+          },
+          {
+            "family": "google",
+            "folders": [
+              "~/.gemini/antigravity-ide",
+              "~/.gemini/antigravity/brain"
+            ],
+            "history": false,
+            "id": "antigravity-ide",
+            "kind": "ide",
+            "name": "Google Antigravity",
+            "vendor": "Google LLC"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.augment/sessions",
+              "~/.augment/task-storage"
+            ],
+            "history": false,
+            "id": "augment-auggie-cli",
+            "kind": "cli",
+            "name": "Auggie CLI",
+            "vendor": "Augment Code"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.augment/rules",
+              "~/Library/Application Support/Code/User/globalStorage/augmentcode.augment"
+            ],
+            "history": false,
+            "id": "augment-ide",
+            "kind": "ide_extension",
+            "name": "Augment Code",
+            "vendor": "Augment Inc."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [],
+            "history": false,
+            "id": "autogpt",
+            "kind": "cli",
+            "name": "AutoGPT",
+            "vendor": "Significant Gravitas"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/Library/Application Support/bolt-diy"
+            ],
+            "history": false,
+            "id": "bolt-diy",
+            "kind": "desktop",
+            "name": "Bolt.diy",
+            "vendor": "StackBlitz and community (stackblitz-labs)"
+          },
+          {
+            "family": "openai",
+            "folders": [
+              "~/Library/Application Support/Codex",
+              "~/Library/Application Support/com.openai.chat"
+            ],
+            "history": false,
+            "id": "chatgpt-desktop",
+            "kind": "desktop",
+            "name": "ChatGPT Desktop",
+            "vendor": "OpenAI"
+          },
+          {
+            "family": "anthropic",
+            "folders": [
+              "~/.claude/projects",
+              "~/Library/Application Support/Claude/local-agent-mode-sessions"
+            ],
+            "history": true,
+            "id": "claude-code",
+            "kind": "cli",
+            "name": "Claude Code",
+            "vendor": "Anthropic"
+          },
+          {
+            "family": "anthropic",
+            "folders": [
+              "~/Library/Application Support/Claude",
+              "~/Library/Application Support/Claude/local-agent-mode-sessions"
+            ],
+            "history": false,
+            "id": "claude-desktop",
+            "kind": "desktop",
+            "name": "Claude Desktop",
+            "vendor": "Anthropic PBC"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.claude-squad"
+            ],
+            "history": false,
+            "id": "claude-squad",
+            "kind": "tui",
+            "name": "Claude Squad",
+            "vendor": "smtg-ai"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.cline/data",
+              "~/.cline/data/sessions",
+              "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev",
+              "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/tasks",
+              "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev",
+              "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/tasks",
+              "~/Library/Application Support/VSCodium/User/globalStorage/saoudrizwan.claude-dev",
+              "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev",
+              "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev/tasks"
+            ],
+            "history": true,
+            "id": "cline",
+            "kind": "extension",
+            "name": "Cline",
+            "vendor": "Cline Bot Inc."
+          },
+          {
+            "family": "openai",
+            "folders": [
+              "$CODEX_HOME/sessions",
+              "~/.codex/sessions"
+            ],
+            "history": true,
+            "id": "codex-cli",
+            "kind": "cli",
+            "name": "OpenAI Codex CLI",
+            "vendor": "OpenAI"
+          },
+          {
+            "family": "openai",
+            "folders": [
+              "~/.codex/sessions",
+              "~/Library/Application Support/com.openai.codex"
+            ],
+            "history": false,
+            "id": "codex-desktop",
+            "kind": "desktop",
+            "name": "Codex Desktop App",
+            "vendor": "OpenAI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.continue/sessions",
+              "~/Library/Application Support/Code/User/globalStorage/continue.continue",
+              "~/Library/Application Support/Code/User/globalStorage/continue.continue/sessions",
+              "~/Library/Application Support/Cursor/User/globalStorage/continue.continue",
+              "~/Library/Application Support/VSCodium/User/globalStorage/continue.continue",
+              "~/Library/Application Support/Windsurf/User/globalStorage/continue.continue"
+            ],
+            "history": true,
+            "id": "continue",
+            "kind": "extension",
+            "name": "Continue",
+            "vendor": "Continue Dev Inc."
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.cosine"
+            ],
+            "history": false,
+            "id": "cosine-genie",
+            "kind": "cloud",
+            "name": "Cosine Genie",
+            "vendor": "Cosine"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.local/share/crush"
+            ],
+            "history": true,
+            "id": "crush",
+            "kind": "cli",
+            "name": "Crush",
+            "vendor": "Charm"
+          },
+          {
+            "family": "cursor",
+            "folders": [
+              "~/.cursor",
+              "~/.cursor/chats",
+              "~/.cursor/projects",
+              "~/Library/Application Support/Cursor"
+            ],
+            "history": true,
+            "id": "cursor-cli",
+            "kind": "cli",
+            "name": "Cursor CLI",
+            "vendor": "Anysphere"
+          },
+          {
+            "family": "cursor",
+            "folders": [
+              "~/.cursor/chats",
+              "~/.cursor/projects",
+              "~/Library/Application Support/Cursor/User/globalStorage",
+              "~/Library/Application Support/Cursor/User/workspaceStorage"
+            ],
+            "history": false,
+            "id": "cursor-ide",
+            "kind": "ide",
+            "name": "Cursor",
+            "vendor": "Anysphere Inc."
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "~/.deepseek/history",
+              "~/.dsh/sessions"
+            ],
+            "history": false,
+            "id": "deepseek-cli",
+            "kind": "cli",
+            "name": "DeepSeek Harness",
+            "vendor": "DeepSeek AI"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.devin",
+              "~/.local/share/devin"
+            ],
+            "history": false,
+            "id": "devin",
+            "kind": "cloud",
+            "name": "Devin",
+            "vendor": "Cognition AI Inc."
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.factory/projects",
+              "~/.factory/sessions"
+            ],
+            "history": true,
+            "id": "factory-droid",
+            "kind": "cli",
+            "name": "Factory Droid",
+            "vendor": "Factory AI"
+          },
+          {
+            "family": "google",
+            "folders": [
+              "~/.cache/.gemini/tmp",
+              "~/.gemini/tmp"
+            ],
+            "history": true,
+            "id": "gemini-cli",
+            "kind": "cli",
+            "name": "Gemini CLI",
+            "vendor": "Google"
+          },
+          {
+            "family": "github-microsoft",
+            "folders": [
+              "~/.copilot",
+              "~/.copilot/session-state"
+            ],
+            "history": true,
+            "id": "github-copilot-cli",
+            "kind": "cli",
+            "name": "GitHub Copilot CLI",
+            "vendor": "GitHub"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.config/gocode"
+            ],
+            "history": false,
+            "id": "gocode",
+            "kind": "cli",
+            "name": "Gocode",
+            "vendor": "firebitsbr"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "$GOOSE_PATH_ROOT/data/sessions",
+              "~/.local/share/goose/sessions",
+              "~/Library/Application Support/Block/goose/sessions"
+            ],
+            "history": true,
+            "id": "goose",
+            "kind": "cli",
+            "name": "Goose",
+            "vendor": "Block (Agentic AI Foundation)"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/Library/Application Support/gptme/logs"
+            ],
+            "history": false,
+            "id": "gptme",
+            "kind": "cli",
+            "name": "gptme",
+            "vendor": "Erik Bjareholt"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.grok/sessions"
+            ],
+            "history": false,
+            "id": "grok-build-cli",
+            "kind": "cli",
+            "name": "Grok Build",
+            "vendor": "xAI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.config/happy",
+              "~/.happy"
+            ],
+            "history": false,
+            "id": "happy",
+            "kind": "cli",
+            "name": "Happy",
+            "vendor": "slopus"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.hermes",
+              "~/.hermes/sessions"
+            ],
+            "history": true,
+            "id": "hermes-agent-cli",
+            "kind": "cli",
+            "name": "Hermes Agent CLI",
+            "vendor": "Nous Research"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.hermes",
+              "~/.hermes/profiles",
+              "~/.hermes/skills"
+            ],
+            "history": false,
+            "id": "hermes-desktop",
+            "kind": "desktop",
+            "name": "Hermes Desktop",
+            "vendor": "Nous Research"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.iflow/history",
+              "~/.iflow/projects"
+            ],
+            "history": true,
+            "id": "iflow-cli",
+            "kind": "cli",
+            "name": "iFlow CLI",
+            "vendor": "iFlow (Alibaba)"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/Library/Application Support/Jan/data",
+              "~/Library/Application Support/Jan/data/threads"
+            ],
+            "history": false,
+            "id": "jan",
+            "kind": "desktop",
+            "name": "Jan",
+            "vendor": "Jan.ai (Menlo One Ltd.)"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/Library/Application Support/JetBrains"
+            ],
+            "history": false,
+            "id": "jetbrains-ai-assistant",
+            "kind": "ide_extension",
+            "name": "JetBrains AI Assistant",
+            "vendor": "JetBrains s.r.o."
+          },
+          {
+            "family": "google",
+            "folders": [
+              "~/.config/jules"
+            ],
+            "history": false,
+            "id": "jules",
+            "kind": "cloud",
+            "name": "Jules",
+            "vendor": "Google"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.junie/sessions",
+              "~/Library/Application Support/JetBrains"
+            ],
+            "history": false,
+            "id": "junie",
+            "kind": "cli",
+            "name": "JetBrains Junie",
+            "vendor": "JetBrains s.r.o."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.kilo",
+              "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code",
+              "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/tasks",
+              "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code",
+              "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code/tasks",
+              "~/Library/Application Support/VSCodium/User/globalStorage/kilocode.kilo-code",
+              "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code",
+              "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code/tasks"
+            ],
+            "history": true,
+            "id": "kilo-code",
+            "kind": "extension",
+            "name": "Kilo Code",
+            "vendor": "Kilo AI"
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "$KIMI_CODE_HOME/sessions",
+              "~/.kimi-code/sessions"
+            ],
+            "history": true,
+            "id": "kimi-code-cli",
+            "kind": "cli",
+            "name": "Kimi Code CLI",
+            "vendor": "Moonshot AI"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.kiro/agents",
+              "~/.kiro/settings"
+            ],
+            "history": false,
+            "id": "kiro-cli",
+            "kind": "cli",
+            "name": "Kiro CLI",
+            "vendor": "Amazon Web Services"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.kiro",
+              "~/Library/Application Support/Kiro/User/globalStorage"
+            ],
+            "history": false,
+            "id": "kiro-ide",
+            "kind": "ide",
+            "name": "Kiro",
+            "vendor": "Amazon Web Services"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.config/koda"
+            ],
+            "history": false,
+            "id": "koda",
+            "kind": "cli",
+            "name": "Koda",
+            "vendor": "lijunzh"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.letta",
+              "~/.letta/transcripts"
+            ],
+            "history": false,
+            "id": "letta-code",
+            "kind": "cli",
+            "name": "Letta Code",
+            "vendor": "Letta"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.cache/lm-studio/conversations",
+              "~/.lmstudio/conversations"
+            ],
+            "history": false,
+            "id": "lm-studio",
+            "kind": "desktop",
+            "name": "LM Studio",
+            "vendor": "Element Labs Inc."
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/Library/Application Support/Lovable"
+            ],
+            "history": false,
+            "id": "lovable-desktop",
+            "kind": "desktop",
+            "name": "Lovable Desktop",
+            "vendor": "Lovable Labs Inc."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.mentat",
+              "~/.mentat/logs"
+            ],
+            "history": false,
+            "id": "mentat",
+            "kind": "cli",
+            "name": "Mentat",
+            "vendor": "Abante AI"
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "~/.metagpt"
+            ],
+            "history": false,
+            "id": "metagpt",
+            "kind": "cli",
+            "name": "MetaGPT",
+            "vendor": "DeepWisdom"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.vibe/logs/session"
+            ],
+            "history": false,
+            "id": "mistral-vibe-cli",
+            "kind": "cli",
+            "name": "Mistral Vibe CLI",
+            "vendor": "Mistral AI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.nca"
+            ],
+            "history": false,
+            "id": "nca",
+            "kind": "cli",
+            "name": "NCA",
+            "vendor": "madebyaris"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.omnara"
+            ],
+            "history": false,
+            "id": "omnara",
+            "kind": "cli",
+            "name": "Omnara",
+            "vendor": "Omnara AI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "$INTERPRETER_HOME/sessions",
+              "~/.openinterpreter/sessions"
+            ],
+            "history": true,
+            "id": "open-interpreter",
+            "kind": "cli",
+            "name": "Open Interpreter",
+            "vendor": "Open Interpreter"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.local/share/opencode",
+              "~/Library/Application Support/ai.opencode.desktop/dev"
+            ],
+            "history": true,
+            "id": "opencode",
+            "kind": "cli",
+            "name": "OpenCode",
+            "vendor": "Anomaly"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.openhands/conversations"
+            ],
+            "history": false,
+            "id": "openhands-cli",
+            "kind": "cli",
+            "name": "OpenHands CLI",
+            "vendor": "OpenHands (All-Hands AI)"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.pearai",
+              "~/Library/Application Support/PearAI/User/globalStorage"
+            ],
+            "history": false,
+            "id": "pearai",
+            "kind": "ide",
+            "name": "PearAI",
+            "vendor": "PearAI open source community"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.config/pi-go"
+            ],
+            "history": false,
+            "id": "pi-go",
+            "kind": "tui",
+            "name": "Pi-Go",
+            "vendor": "dimetron"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.plandex-home-v2"
+            ],
+            "history": false,
+            "id": "plandex",
+            "kind": "cli",
+            "name": "Plandex",
+            "vendor": "Plandex AI"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.pool",
+              "~/.poolside"
+            ],
+            "history": false,
+            "id": "poolside",
+            "kind": "cli",
+            "name": "Poolside",
+            "vendor": "Poolside AI"
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "$QODER_CONFIG_DIR/projects",
+              "~/.qoder/logs/sessions",
+              "~/.qoder/projects"
+            ],
+            "history": true,
+            "id": "qoder-cli",
+            "kind": "cli",
+            "name": "Qoder CLI",
+            "vendor": "Bright Zenith Private Limited (Qoder)"
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "~/.qwen/projects",
+              "~/.qwen/tmp"
+            ],
+            "history": true,
+            "id": "qwen-code",
+            "kind": "cli",
+            "name": "Qwen Code",
+            "vendor": "Alibaba"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/Library/Application Support/com.raycast.macos"
+            ],
+            "history": false,
+            "id": "raycast",
+            "kind": "desktop",
+            "name": "Raycast AI",
+            "vendor": "Raycast Technologies Solutions Ltd."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.cache/refact",
+              "~/.config/refact"
+            ],
+            "history": false,
+            "id": "refact",
+            "kind": "server",
+            "name": "Refact",
+            "vendor": "Small Huge Software"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/Library/Application Support/Replit"
+            ],
+            "history": false,
+            "id": "replit-desktop",
+            "kind": "desktop",
+            "name": "Replit Agent Desktop",
+            "vendor": "Replit Inc."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.roo",
+              "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+              "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+              "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+              "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+              "~/Library/Application Support/VSCodium/User/globalStorage/rooveterinaryinc.roo-cline",
+              "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline",
+              "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline/tasks"
+            ],
+            "history": true,
+            "id": "roo-code",
+            "kind": "extension",
+            "name": "Roo Code",
+            "vendor": "Roo Code Inc."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/Library/Application Support/sculptor"
+            ],
+            "history": false,
+            "id": "sculptor",
+            "kind": "desktop",
+            "name": "Sculptor",
+            "vendor": "Imbue"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [],
+            "history": false,
+            "id": "swe-agent",
+            "kind": "cli",
+            "name": "SWE-agent",
+            "vendor": "Princeton University"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.sweep"
+            ],
+            "history": false,
+            "id": "sweep",
+            "kind": "cloud",
+            "name": "Sweep",
+            "vendor": "Sweep AI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.tabby",
+              "~/.tabby/ee",
+              "~/.tabby/events"
+            ],
+            "history": false,
+            "id": "tabby",
+            "kind": "server",
+            "name": "Tabby",
+            "vendor": "TabbyML"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.tabnine",
+              "~/Library/Application Support/TabNine"
+            ],
+            "history": false,
+            "id": "tabnine",
+            "kind": "ide_extension",
+            "name": "Tabnine Agent",
+            "vendor": "Tabnine Ltd."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.terry"
+            ],
+            "history": false,
+            "id": "terragon",
+            "kind": "cloud",
+            "name": "Terragon",
+            "vendor": "Terragon Labs"
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [],
+            "history": false,
+            "id": "trae-agent",
+            "kind": "cli",
+            "name": "Trae Agent",
+            "vendor": "ByteDance Ltd."
+          },
+          {
+            "family": "chinese-labs",
+            "folders": [
+              "~/.trae/memory",
+              "~/Library/Application Support/Trae"
+            ],
+            "history": false,
+            "id": "trae-ide",
+            "kind": "ide",
+            "name": "Trae",
+            "vendor": "ByteDance Ltd."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [],
+            "history": false,
+            "id": "vibe-kanban",
+            "kind": "cli",
+            "name": "Vibe Kanban",
+            "vendor": "Bloop AI"
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.void-editor",
+              "~/Library/Application Support/Void/User/globalStorage"
+            ],
+            "history": false,
+            "id": "void-editor",
+            "kind": "ide",
+            "name": "Void Editor",
+            "vendor": "Glass Devtools Inc."
+          },
+          {
+            "family": "github-microsoft",
+            "folders": [
+              "~/Library/Application Support/Code/User/globalStorage/github.copilot-chat",
+              "~/Library/Application Support/Code/User/workspaceStorage"
+            ],
+            "history": false,
+            "id": "vscode-copilot",
+            "kind": "ide_extension",
+            "name": "VS Code GitHub Copilot Agent Mode",
+            "vendor": "Microsoft / GitHub"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.warp/workflows",
+              "~/Library/Group Containers/2BBY89MBSN.dev.warp/Library/Application Support/dev.warp.Warp-Stable"
+            ],
+            "history": false,
+            "id": "warp",
+            "kind": "terminal",
+            "name": "Warp Agent Mode",
+            "vendor": "Warp Technologies"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/.codeium/windsurf/cascade",
+              "~/.windsurf/transcripts",
+              "~/Library/Application Support/Windsurf/User/globalStorage",
+              "~/Library/Application Support/Windsurf/User/workspaceStorage"
+            ],
+            "history": false,
+            "id": "windsurf",
+            "kind": "ide",
+            "name": "Windsurf",
+            "vendor": "Cognition (formerly Codeium)"
+          },
+          {
+            "family": "other",
+            "folders": [
+              "~/Library/Application Support/Zed",
+              "~/Library/Application Support/Zed/threads"
+            ],
+            "history": false,
+            "id": "zed",
+            "kind": "ide",
+            "name": "Zed Assistant",
+            "vendor": "Zed Industries Inc."
+          },
+          {
+            "family": "open-source-clis",
+            "folders": [
+              "~/.zero"
+            ],
+            "history": false,
+            "id": "zero",
+            "kind": "cli",
+            "name": "Zero",
+            "vendor": "gitlawb"
+          }
+        ],
+        "platform": "macos"
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "agent-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.aider"
+        ],
+        "found": true,
+        "history": true,
+        "id": "aider",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "amazon-q",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.local/share/amp/threads"
+        ],
+        "found": true,
+        "history": true,
+        "id": "amp",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "antigravity-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "antigravity-ide",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "augment-auggie-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "augment-ide",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "autogpt",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "bolt-diy",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "chatgpt-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.claude/projects"
+        ],
+        "found": true,
+        "history": true,
+        "id": "claude-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "claude-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "claude-squad",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.cline/data"
+        ],
+        "found": true,
+        "history": true,
+        "id": "cline",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.codex/sessions"
+        ],
+        "found": true,
+        "history": true,
+        "id": "codex-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.codex/sessions"
+        ],
+        "found": true,
+        "history": false,
+        "id": "codex-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "continue",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "cosine-genie",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "crush",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.cursor"
+        ],
+        "found": true,
+        "history": true,
+        "id": "cursor-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.cursor/chats"
+        ],
+        "found": true,
+        "history": false,
+        "id": "cursor-ide",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "deepseek-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "devin",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "factory-droid",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.gemini/tmp"
+        ],
+        "found": true,
+        "history": true,
+        "id": "gemini-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.copilot"
+        ],
+        "found": true,
+        "history": true,
+        "id": "github-copilot-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "gocode",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.local/share/goose/sessions"
+        ],
+        "found": true,
+        "history": true,
+        "id": "goose",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "gptme",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "grok-build-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "happy",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "hermes-agent-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "hermes-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "iflow-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "jan",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "jetbrains-ai-assistant",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "jules",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "junie",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "kilo-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "kimi-code-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "kiro-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "kiro-ide",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "koda",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "letta-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "lm-studio",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "lovable-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "mentat",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "metagpt",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "mistral-vibe-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "nca",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "omnara",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "open-interpreter",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.local/share/opencode"
+        ],
+        "found": true,
+        "history": true,
+        "id": "opencode",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "openhands-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "pearai",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "pi-go",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "plandex",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "poolside",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "qoder-cli",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [
+          "~/.qwen/projects"
+        ],
+        "found": true,
+        "history": true,
+        "id": "qwen-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "raycast",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "refact",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "replit-desktop",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": true,
+        "id": "roo-code",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "sculptor",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "swe-agent",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "sweep",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "tabby",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "tabnine",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "terragon",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "trae-agent",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "trae-ide",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "vibe-kanban",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "void-editor",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "vscode-copilot",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "warp",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": true,
+        "history": false,
+        "id": "windsurf",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "zed",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:agent",
+      "payload": {
+        "folders": [],
+        "found": false,
+        "history": false,
+        "id": "zero",
+        "version": null
+      }
+    },
+    {
+      "at": 30,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "aider",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 34,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "aider",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 40,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "aider",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 41,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "aider",
+        "error": null,
+        "phase": "finished",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 41,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "amp",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 43,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "amp",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 2
+      }
+    },
+    {
+      "at": 45,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "amp",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 2
+      }
+    },
+    {
+      "at": 45,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "amp",
+        "error": null,
+        "phase": "finished",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 2
+      }
+    },
+    {
+      "at": 45,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 72,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 74,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 75,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 77,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 79,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 81,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 5,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 84,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 6,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 87,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 7,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 90,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 8,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 91,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 9,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 95,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 10,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 97,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 11,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 99,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 12,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 100,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "claude-code",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "aurora-docs",
+          "nexus-gateway",
+          "skyline-weather",
+          "zenith-cli"
+        ],
+        "sessionsImported": 12,
+        "sessionsKnown": 12
+      }
+    },
+    {
+      "at": 100,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 108,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 109,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 111,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 113,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 115,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 116,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 5,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 117,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cline",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "aurora-docs",
+          "vortex-pipeline",
+          "zenith-cli"
+        ],
+        "sessionsImported": 5,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 117,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 143,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 145,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 147,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 150,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 152,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 154,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 5,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 157,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 6,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 159,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 7,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 163,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 8,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 167,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 9,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 167,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 10,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 168,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 11,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 169,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "codex-cli",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "nexus-gateway",
+          "vortex-pipeline",
+          "zenith-cli"
+        ],
+        "sessionsImported": 11,
+        "sessionsKnown": 11
+      }
+    },
+    {
+      "at": 169,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 178,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 179,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 180,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 181,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 182,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 182,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "cursor-cli",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "aurora-docs",
+          "skyline-weather"
+        ],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 182,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 192,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 193,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 194,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 195,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 196,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 197,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 5,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 199,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 6,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 200,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "gemini-cli",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "nexus-gateway",
+          "vortex-pipeline",
+          "zenith-cli"
+        ],
+        "sessionsImported": 6,
+        "sessionsKnown": 6
+      }
+    },
+    {
+      "at": 200,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 205,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 206,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 207,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 209,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 211,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 211,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "github-copilot-cli",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "aurora-docs",
+          "nexus-gateway",
+          "zenith-cli"
+        ],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 211,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "goose",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 216,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "goose",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 220,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "goose",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 221,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "goose",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "vortex-pipeline"
+        ],
+        "sessionsImported": 4,
+        "sessionsKnown": 4
+      }
+    },
+    {
+      "at": 221,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "opencode",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 235,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "opencode",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 247,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "opencode",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 5,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 247,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "opencode",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "aurora-docs",
+          "zenith-cli"
+        ],
+        "sessionsImported": 5,
+        "sessionsKnown": 5
+      }
+    },
+    {
+      "at": 247,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "started",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 0
+      }
+    },
+    {
+      "at": 252,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 0,
+        "sessionsKnown": 3
+      }
+    },
+    {
+      "at": 253,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 1,
+        "sessionsKnown": 3
+      }
+    },
+    {
+      "at": 255,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 2,
+        "sessionsKnown": 3
+      }
+    },
+    {
+      "at": 257,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "progress",
+        "projects": [],
+        "sessionsImported": 3,
+        "sessionsKnown": 3
+      }
+    },
+    {
+      "at": 258,
+      "name": "firstrun:import",
+      "payload": {
+        "agentId": "qwen-code",
+        "error": null,
+        "phase": "finished",
+        "projects": [
+          "skyline-weather",
+          "vortex-pipeline"
+        ],
+        "sessionsImported": 3,
+        "sessionsKnown": 3
+      }
+    },
+    {
+      "at": 259,
+      "name": "firstrun:done",
+      "payload": {
+        "agentsFound": 14,
+        "catalogueSize": 80,
+        "constellations": [
+          {
+            "agents": [
+              "cline",
+              "codex-cli",
+              "gemini-cli",
+              "goose",
+              "qwen-code"
+            ],
+            "members": [
+              {
+                "agentId": "goose",
+                "sessions": 4
+              },
+              {
+                "agentId": "codex-cli",
+                "sessions": 3
+              },
+              {
+                "agentId": "gemini-cli",
+                "sessions": 3
+              },
+              {
+                "agentId": "cline",
+                "sessions": 1
+              },
+              {
+                "agentId": "qwen-code",
+                "sessions": 1
+              }
+            ],
+            "name": "vortex-pipeline",
+            "root": "/Users/fictional-dev/projects/vortex-pipeline",
+            "sessions": 12
+          },
+          {
+            "agents": [
+              "claude-code",
+              "cline",
+              "codex-cli",
+              "gemini-cli",
+              "github-copilot-cli",
+              "opencode"
+            ],
+            "members": [
+              {
+                "agentId": "claude-code",
+                "sessions": 3
+              },
+              {
+                "agentId": "codex-cli",
+                "sessions": 3
+              },
+              {
+                "agentId": "opencode",
+                "sessions": 3
+              },
+              {
+                "agentId": "cline",
+                "sessions": 1
+              },
+              {
+                "agentId": "gemini-cli",
+                "sessions": 1
+              },
+              {
+                "agentId": "github-copilot-cli",
+                "sessions": 1
+              }
+            ],
+            "name": "zenith-cli",
+            "root": "/Users/fictional-dev/projects/zenith-cli",
+            "sessions": 12
+          },
+          {
+            "agents": [
+              "claude-code",
+              "codex-cli",
+              "gemini-cli",
+              "github-copilot-cli"
+            ],
+            "members": [
+              {
+                "agentId": "codex-cli",
+                "sessions": 5
+              },
+              {
+                "agentId": "claude-code",
+                "sessions": 2
+              },
+              {
+                "agentId": "gemini-cli",
+                "sessions": 2
+              },
+              {
+                "agentId": "github-copilot-cli",
+                "sessions": 2
+              }
+            ],
+            "name": "nexus-gateway",
+            "root": "/Users/fictional-dev/projects/nexus-gateway",
+            "sessions": 11
+          },
+          {
+            "agents": [
+              "claude-code",
+              "cline",
+              "cursor-cli",
+              "github-copilot-cli",
+              "opencode"
+            ],
+            "members": [
+              {
+                "agentId": "claude-code",
+                "sessions": 3
+              },
+              {
+                "agentId": "cline",
+                "sessions": 3
+              },
+              {
+                "agentId": "opencode",
+                "sessions": 2
+              },
+              {
+                "agentId": "cursor-cli",
+                "sessions": 1
+              },
+              {
+                "agentId": "github-copilot-cli",
+                "sessions": 1
+              }
+            ],
+            "name": "aurora-docs",
+            "root": "/Users/fictional-dev/projects/aurora-docs",
+            "sessions": 10
+          },
+          {
+            "agents": [
+              "claude-code",
+              "cursor-cli",
+              "qwen-code"
+            ],
+            "members": [
+              {
+                "agentId": "claude-code",
+                "sessions": 4
+              },
+              {
+                "agentId": "cursor-cli",
+                "sessions": 3
+              },
+              {
+                "agentId": "qwen-code",
+                "sessions": 2
+              }
+            ],
+            "name": "skyline-weather",
+            "root": "/Users/fictional-dev/projects/skyline-weather",
+            "sessions": 9
+          }
+        ],
+        "errors": 0,
+        "liveSessions": 0,
+        "sessionsImported": 60
+      }
+    }
+  ],
+  "plan": {
+    "entries": [
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.config/agent-code",
+          "~/.local/share/agent-code"
+        ],
+        "history": false,
+        "id": "agent-code",
+        "kind": "cli",
+        "name": "Agent Code",
+        "vendor": "Avala AI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.aider"
+        ],
+        "history": true,
+        "id": "aider",
+        "kind": "cli",
+        "name": "Aider",
+        "vendor": "Paul Gauthier (Aider-AI)"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.aws/amazonq/history",
+          "~/Library/Application Support/amazon-q"
+        ],
+        "history": false,
+        "id": "amazon-q",
+        "kind": "cli",
+        "name": "Amazon Q Developer",
+        "vendor": "Amazon Web Services"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.local/share/amp/threads"
+        ],
+        "history": true,
+        "id": "amp",
+        "kind": "cli",
+        "name": "Amp",
+        "vendor": "Amp Inc."
+      },
+      {
+        "family": "google",
+        "folders": [
+          "~/.gemini/antigravity-cli",
+          "~/.gemini/antigravity-cli/brain",
+          "~/.gemini/antigravity-cli/conversations"
+        ],
+        "history": true,
+        "id": "antigravity-cli",
+        "kind": "cli",
+        "name": "Antigravity CLI",
+        "vendor": "Google DeepMind"
+      },
+      {
+        "family": "google",
+        "folders": [
+          "~/.gemini/antigravity-ide",
+          "~/.gemini/antigravity/brain"
+        ],
+        "history": false,
+        "id": "antigravity-ide",
+        "kind": "ide",
+        "name": "Google Antigravity",
+        "vendor": "Google LLC"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.augment/sessions",
+          "~/.augment/task-storage"
+        ],
+        "history": false,
+        "id": "augment-auggie-cli",
+        "kind": "cli",
+        "name": "Auggie CLI",
+        "vendor": "Augment Code"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.augment/rules",
+          "~/Library/Application Support/Code/User/globalStorage/augmentcode.augment"
+        ],
+        "history": false,
+        "id": "augment-ide",
+        "kind": "ide_extension",
+        "name": "Augment Code",
+        "vendor": "Augment Inc."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [],
+        "history": false,
+        "id": "autogpt",
+        "kind": "cli",
+        "name": "AutoGPT",
+        "vendor": "Significant Gravitas"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/Library/Application Support/bolt-diy"
+        ],
+        "history": false,
+        "id": "bolt-diy",
+        "kind": "desktop",
+        "name": "Bolt.diy",
+        "vendor": "StackBlitz and community (stackblitz-labs)"
+      },
+      {
+        "family": "openai",
+        "folders": [
+          "~/Library/Application Support/Codex",
+          "~/Library/Application Support/com.openai.chat"
+        ],
+        "history": false,
+        "id": "chatgpt-desktop",
+        "kind": "desktop",
+        "name": "ChatGPT Desktop",
+        "vendor": "OpenAI"
+      },
+      {
+        "family": "anthropic",
+        "folders": [
+          "~/.claude/projects",
+          "~/Library/Application Support/Claude/local-agent-mode-sessions"
+        ],
+        "history": true,
+        "id": "claude-code",
+        "kind": "cli",
+        "name": "Claude Code",
+        "vendor": "Anthropic"
+      },
+      {
+        "family": "anthropic",
+        "folders": [
+          "~/Library/Application Support/Claude",
+          "~/Library/Application Support/Claude/local-agent-mode-sessions"
+        ],
+        "history": false,
+        "id": "claude-desktop",
+        "kind": "desktop",
+        "name": "Claude Desktop",
+        "vendor": "Anthropic PBC"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.claude-squad"
+        ],
+        "history": false,
+        "id": "claude-squad",
+        "kind": "tui",
+        "name": "Claude Squad",
+        "vendor": "smtg-ai"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.cline/data",
+          "~/.cline/data/sessions",
+          "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev",
+          "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/tasks",
+          "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev",
+          "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/tasks",
+          "~/Library/Application Support/VSCodium/User/globalStorage/saoudrizwan.claude-dev",
+          "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev",
+          "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev/tasks"
+        ],
+        "history": true,
+        "id": "cline",
+        "kind": "extension",
+        "name": "Cline",
+        "vendor": "Cline Bot Inc."
+      },
+      {
+        "family": "openai",
+        "folders": [
+          "$CODEX_HOME/sessions",
+          "~/.codex/sessions"
+        ],
+        "history": true,
+        "id": "codex-cli",
+        "kind": "cli",
+        "name": "OpenAI Codex CLI",
+        "vendor": "OpenAI"
+      },
+      {
+        "family": "openai",
+        "folders": [
+          "~/.codex/sessions",
+          "~/Library/Application Support/com.openai.codex"
+        ],
+        "history": false,
+        "id": "codex-desktop",
+        "kind": "desktop",
+        "name": "Codex Desktop App",
+        "vendor": "OpenAI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.continue/sessions",
+          "~/Library/Application Support/Code/User/globalStorage/continue.continue",
+          "~/Library/Application Support/Code/User/globalStorage/continue.continue/sessions",
+          "~/Library/Application Support/Cursor/User/globalStorage/continue.continue",
+          "~/Library/Application Support/VSCodium/User/globalStorage/continue.continue",
+          "~/Library/Application Support/Windsurf/User/globalStorage/continue.continue"
+        ],
+        "history": true,
+        "id": "continue",
+        "kind": "extension",
+        "name": "Continue",
+        "vendor": "Continue Dev Inc."
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.cosine"
+        ],
+        "history": false,
+        "id": "cosine-genie",
+        "kind": "cloud",
+        "name": "Cosine Genie",
+        "vendor": "Cosine"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.local/share/crush"
+        ],
+        "history": true,
+        "id": "crush",
+        "kind": "cli",
+        "name": "Crush",
+        "vendor": "Charm"
+      },
+      {
+        "family": "cursor",
+        "folders": [
+          "~/.cursor",
+          "~/.cursor/chats",
+          "~/.cursor/projects",
+          "~/Library/Application Support/Cursor"
+        ],
+        "history": true,
+        "id": "cursor-cli",
+        "kind": "cli",
+        "name": "Cursor CLI",
+        "vendor": "Anysphere"
+      },
+      {
+        "family": "cursor",
+        "folders": [
+          "~/.cursor/chats",
+          "~/.cursor/projects",
+          "~/Library/Application Support/Cursor/User/globalStorage",
+          "~/Library/Application Support/Cursor/User/workspaceStorage"
+        ],
+        "history": false,
+        "id": "cursor-ide",
+        "kind": "ide",
+        "name": "Cursor",
+        "vendor": "Anysphere Inc."
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "~/.deepseek/history",
+          "~/.dsh/sessions"
+        ],
+        "history": false,
+        "id": "deepseek-cli",
+        "kind": "cli",
+        "name": "DeepSeek Harness",
+        "vendor": "DeepSeek AI"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.devin",
+          "~/.local/share/devin"
+        ],
+        "history": false,
+        "id": "devin",
+        "kind": "cloud",
+        "name": "Devin",
+        "vendor": "Cognition AI Inc."
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.factory/projects",
+          "~/.factory/sessions"
+        ],
+        "history": true,
+        "id": "factory-droid",
+        "kind": "cli",
+        "name": "Factory Droid",
+        "vendor": "Factory AI"
+      },
+      {
+        "family": "google",
+        "folders": [
+          "~/.cache/.gemini/tmp",
+          "~/.gemini/tmp"
+        ],
+        "history": true,
+        "id": "gemini-cli",
+        "kind": "cli",
+        "name": "Gemini CLI",
+        "vendor": "Google"
+      },
+      {
+        "family": "github-microsoft",
+        "folders": [
+          "~/.copilot",
+          "~/.copilot/session-state"
+        ],
+        "history": true,
+        "id": "github-copilot-cli",
+        "kind": "cli",
+        "name": "GitHub Copilot CLI",
+        "vendor": "GitHub"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.config/gocode"
+        ],
+        "history": false,
+        "id": "gocode",
+        "kind": "cli",
+        "name": "Gocode",
+        "vendor": "firebitsbr"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "$GOOSE_PATH_ROOT/data/sessions",
+          "~/.local/share/goose/sessions",
+          "~/Library/Application Support/Block/goose/sessions"
+        ],
+        "history": true,
+        "id": "goose",
+        "kind": "cli",
+        "name": "Goose",
+        "vendor": "Block (Agentic AI Foundation)"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/Library/Application Support/gptme/logs"
+        ],
+        "history": false,
+        "id": "gptme",
+        "kind": "cli",
+        "name": "gptme",
+        "vendor": "Erik Bjareholt"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.grok/sessions"
+        ],
+        "history": false,
+        "id": "grok-build-cli",
+        "kind": "cli",
+        "name": "Grok Build",
+        "vendor": "xAI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.config/happy",
+          "~/.happy"
+        ],
+        "history": false,
+        "id": "happy",
+        "kind": "cli",
+        "name": "Happy",
+        "vendor": "slopus"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.hermes",
+          "~/.hermes/sessions"
+        ],
+        "history": true,
+        "id": "hermes-agent-cli",
+        "kind": "cli",
+        "name": "Hermes Agent CLI",
+        "vendor": "Nous Research"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.hermes",
+          "~/.hermes/profiles",
+          "~/.hermes/skills"
+        ],
+        "history": false,
+        "id": "hermes-desktop",
+        "kind": "desktop",
+        "name": "Hermes Desktop",
+        "vendor": "Nous Research"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.iflow/history",
+          "~/.iflow/projects"
+        ],
+        "history": true,
+        "id": "iflow-cli",
+        "kind": "cli",
+        "name": "iFlow CLI",
+        "vendor": "iFlow (Alibaba)"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/Library/Application Support/Jan/data",
+          "~/Library/Application Support/Jan/data/threads"
+        ],
+        "history": false,
+        "id": "jan",
+        "kind": "desktop",
+        "name": "Jan",
+        "vendor": "Jan.ai (Menlo One Ltd.)"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/Library/Application Support/JetBrains"
+        ],
+        "history": false,
+        "id": "jetbrains-ai-assistant",
+        "kind": "ide_extension",
+        "name": "JetBrains AI Assistant",
+        "vendor": "JetBrains s.r.o."
+      },
+      {
+        "family": "google",
+        "folders": [
+          "~/.config/jules"
+        ],
+        "history": false,
+        "id": "jules",
+        "kind": "cloud",
+        "name": "Jules",
+        "vendor": "Google"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.junie/sessions",
+          "~/Library/Application Support/JetBrains"
+        ],
+        "history": false,
+        "id": "junie",
+        "kind": "cli",
+        "name": "JetBrains Junie",
+        "vendor": "JetBrains s.r.o."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.kilo",
+          "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code",
+          "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/tasks",
+          "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code",
+          "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code/tasks",
+          "~/Library/Application Support/VSCodium/User/globalStorage/kilocode.kilo-code",
+          "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code",
+          "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code/tasks"
+        ],
+        "history": true,
+        "id": "kilo-code",
+        "kind": "extension",
+        "name": "Kilo Code",
+        "vendor": "Kilo AI"
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "$KIMI_CODE_HOME/sessions",
+          "~/.kimi-code/sessions"
+        ],
+        "history": true,
+        "id": "kimi-code-cli",
+        "kind": "cli",
+        "name": "Kimi Code CLI",
+        "vendor": "Moonshot AI"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.kiro/agents",
+          "~/.kiro/settings"
+        ],
+        "history": false,
+        "id": "kiro-cli",
+        "kind": "cli",
+        "name": "Kiro CLI",
+        "vendor": "Amazon Web Services"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.kiro",
+          "~/Library/Application Support/Kiro/User/globalStorage"
+        ],
+        "history": false,
+        "id": "kiro-ide",
+        "kind": "ide",
+        "name": "Kiro",
+        "vendor": "Amazon Web Services"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.config/koda"
+        ],
+        "history": false,
+        "id": "koda",
+        "kind": "cli",
+        "name": "Koda",
+        "vendor": "lijunzh"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.letta",
+          "~/.letta/transcripts"
+        ],
+        "history": false,
+        "id": "letta-code",
+        "kind": "cli",
+        "name": "Letta Code",
+        "vendor": "Letta"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.cache/lm-studio/conversations",
+          "~/.lmstudio/conversations"
+        ],
+        "history": false,
+        "id": "lm-studio",
+        "kind": "desktop",
+        "name": "LM Studio",
+        "vendor": "Element Labs Inc."
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/Library/Application Support/Lovable"
+        ],
+        "history": false,
+        "id": "lovable-desktop",
+        "kind": "desktop",
+        "name": "Lovable Desktop",
+        "vendor": "Lovable Labs Inc."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.mentat",
+          "~/.mentat/logs"
+        ],
+        "history": false,
+        "id": "mentat",
+        "kind": "cli",
+        "name": "Mentat",
+        "vendor": "Abante AI"
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "~/.metagpt"
+        ],
+        "history": false,
+        "id": "metagpt",
+        "kind": "cli",
+        "name": "MetaGPT",
+        "vendor": "DeepWisdom"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.vibe/logs/session"
+        ],
+        "history": false,
+        "id": "mistral-vibe-cli",
+        "kind": "cli",
+        "name": "Mistral Vibe CLI",
+        "vendor": "Mistral AI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.nca"
+        ],
+        "history": false,
+        "id": "nca",
+        "kind": "cli",
+        "name": "NCA",
+        "vendor": "madebyaris"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.omnara"
+        ],
+        "history": false,
+        "id": "omnara",
+        "kind": "cli",
+        "name": "Omnara",
+        "vendor": "Omnara AI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "$INTERPRETER_HOME/sessions",
+          "~/.openinterpreter/sessions"
+        ],
+        "history": true,
+        "id": "open-interpreter",
+        "kind": "cli",
+        "name": "Open Interpreter",
+        "vendor": "Open Interpreter"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.local/share/opencode",
+          "~/Library/Application Support/ai.opencode.desktop/dev"
+        ],
+        "history": true,
+        "id": "opencode",
+        "kind": "cli",
+        "name": "OpenCode",
+        "vendor": "Anomaly"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.openhands/conversations"
+        ],
+        "history": false,
+        "id": "openhands-cli",
+        "kind": "cli",
+        "name": "OpenHands CLI",
+        "vendor": "OpenHands (All-Hands AI)"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.pearai",
+          "~/Library/Application Support/PearAI/User/globalStorage"
+        ],
+        "history": false,
+        "id": "pearai",
+        "kind": "ide",
+        "name": "PearAI",
+        "vendor": "PearAI open source community"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.config/pi-go"
+        ],
+        "history": false,
+        "id": "pi-go",
+        "kind": "tui",
+        "name": "Pi-Go",
+        "vendor": "dimetron"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.plandex-home-v2"
+        ],
+        "history": false,
+        "id": "plandex",
+        "kind": "cli",
+        "name": "Plandex",
+        "vendor": "Plandex AI"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.pool",
+          "~/.poolside"
+        ],
+        "history": false,
+        "id": "poolside",
+        "kind": "cli",
+        "name": "Poolside",
+        "vendor": "Poolside AI"
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "$QODER_CONFIG_DIR/projects",
+          "~/.qoder/logs/sessions",
+          "~/.qoder/projects"
+        ],
+        "history": true,
+        "id": "qoder-cli",
+        "kind": "cli",
+        "name": "Qoder CLI",
+        "vendor": "Bright Zenith Private Limited (Qoder)"
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "~/.qwen/projects",
+          "~/.qwen/tmp"
+        ],
+        "history": true,
+        "id": "qwen-code",
+        "kind": "cli",
+        "name": "Qwen Code",
+        "vendor": "Alibaba"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/Library/Application Support/com.raycast.macos"
+        ],
+        "history": false,
+        "id": "raycast",
+        "kind": "desktop",
+        "name": "Raycast AI",
+        "vendor": "Raycast Technologies Solutions Ltd."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.cache/refact",
+          "~/.config/refact"
+        ],
+        "history": false,
+        "id": "refact",
+        "kind": "server",
+        "name": "Refact",
+        "vendor": "Small Huge Software"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/Library/Application Support/Replit"
+        ],
+        "history": false,
+        "id": "replit-desktop",
+        "kind": "desktop",
+        "name": "Replit Agent Desktop",
+        "vendor": "Replit Inc."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.roo",
+          "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+          "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+          "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+          "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+          "~/Library/Application Support/VSCodium/User/globalStorage/rooveterinaryinc.roo-cline",
+          "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline",
+          "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline/tasks"
+        ],
+        "history": true,
+        "id": "roo-code",
+        "kind": "extension",
+        "name": "Roo Code",
+        "vendor": "Roo Code Inc."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/Library/Application Support/sculptor"
+        ],
+        "history": false,
+        "id": "sculptor",
+        "kind": "desktop",
+        "name": "Sculptor",
+        "vendor": "Imbue"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [],
+        "history": false,
+        "id": "swe-agent",
+        "kind": "cli",
+        "name": "SWE-agent",
+        "vendor": "Princeton University"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.sweep"
+        ],
+        "history": false,
+        "id": "sweep",
+        "kind": "cloud",
+        "name": "Sweep",
+        "vendor": "Sweep AI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.tabby",
+          "~/.tabby/ee",
+          "~/.tabby/events"
+        ],
+        "history": false,
+        "id": "tabby",
+        "kind": "server",
+        "name": "Tabby",
+        "vendor": "TabbyML"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.tabnine",
+          "~/Library/Application Support/TabNine"
+        ],
+        "history": false,
+        "id": "tabnine",
+        "kind": "ide_extension",
+        "name": "Tabnine Agent",
+        "vendor": "Tabnine Ltd."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.terry"
+        ],
+        "history": false,
+        "id": "terragon",
+        "kind": "cloud",
+        "name": "Terragon",
+        "vendor": "Terragon Labs"
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [],
+        "history": false,
+        "id": "trae-agent",
+        "kind": "cli",
+        "name": "Trae Agent",
+        "vendor": "ByteDance Ltd."
+      },
+      {
+        "family": "chinese-labs",
+        "folders": [
+          "~/.trae/memory",
+          "~/Library/Application Support/Trae"
+        ],
+        "history": false,
+        "id": "trae-ide",
+        "kind": "ide",
+        "name": "Trae",
+        "vendor": "ByteDance Ltd."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [],
+        "history": false,
+        "id": "vibe-kanban",
+        "kind": "cli",
+        "name": "Vibe Kanban",
+        "vendor": "Bloop AI"
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.void-editor",
+          "~/Library/Application Support/Void/User/globalStorage"
+        ],
+        "history": false,
+        "id": "void-editor",
+        "kind": "ide",
+        "name": "Void Editor",
+        "vendor": "Glass Devtools Inc."
+      },
+      {
+        "family": "github-microsoft",
+        "folders": [
+          "~/Library/Application Support/Code/User/globalStorage/github.copilot-chat",
+          "~/Library/Application Support/Code/User/workspaceStorage"
+        ],
+        "history": false,
+        "id": "vscode-copilot",
+        "kind": "ide_extension",
+        "name": "VS Code GitHub Copilot Agent Mode",
+        "vendor": "Microsoft / GitHub"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.warp/workflows",
+          "~/Library/Group Containers/2BBY89MBSN.dev.warp/Library/Application Support/dev.warp.Warp-Stable"
+        ],
+        "history": false,
+        "id": "warp",
+        "kind": "terminal",
+        "name": "Warp Agent Mode",
+        "vendor": "Warp Technologies"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/.codeium/windsurf/cascade",
+          "~/.windsurf/transcripts",
+          "~/Library/Application Support/Windsurf/User/globalStorage",
+          "~/Library/Application Support/Windsurf/User/workspaceStorage"
+        ],
+        "history": false,
+        "id": "windsurf",
+        "kind": "ide",
+        "name": "Windsurf",
+        "vendor": "Cognition (formerly Codeium)"
+      },
+      {
+        "family": "other",
+        "folders": [
+          "~/Library/Application Support/Zed",
+          "~/Library/Application Support/Zed/threads"
+        ],
+        "history": false,
+        "id": "zed",
+        "kind": "ide",
+        "name": "Zed Assistant",
+        "vendor": "Zed Industries Inc."
+      },
+      {
+        "family": "open-source-clis",
+        "folders": [
+          "~/.zero"
+        ],
+        "history": false,
+        "id": "zero",
+        "kind": "cli",
+        "name": "Zero",
+        "vendor": "gitlawb"
+      }
+    ],
+    "folders": [
+      "$CODEX_HOME/sessions",
+      "$GOOSE_PATH_ROOT/data/sessions",
+      "$INTERPRETER_HOME/sessions",
+      "$KIMI_CODE_HOME/sessions",
+      "$QODER_CONFIG_DIR/projects",
+      "~/.aider",
+      "~/.augment/rules",
+      "~/.augment/sessions",
+      "~/.augment/task-storage",
+      "~/.aws/amazonq/history",
+      "~/.cache/.gemini/tmp",
+      "~/.cache/lm-studio/conversations",
+      "~/.cache/refact",
+      "~/.claude-squad",
+      "~/.claude/projects",
+      "~/.cline/data",
+      "~/.cline/data/sessions",
+      "~/.codeium/windsurf/cascade",
+      "~/.codex/sessions",
+      "~/.config/agent-code",
+      "~/.config/gocode",
+      "~/.config/happy",
+      "~/.config/jules",
+      "~/.config/koda",
+      "~/.config/pi-go",
+      "~/.config/refact",
+      "~/.continue/sessions",
+      "~/.copilot",
+      "~/.copilot/session-state",
+      "~/.cosine",
+      "~/.cursor",
+      "~/.cursor/chats",
+      "~/.cursor/projects",
+      "~/.deepseek/history",
+      "~/.devin",
+      "~/.dsh/sessions",
+      "~/.factory/projects",
+      "~/.factory/sessions",
+      "~/.gemini/antigravity-cli",
+      "~/.gemini/antigravity-cli/brain",
+      "~/.gemini/antigravity-cli/conversations",
+      "~/.gemini/antigravity-ide",
+      "~/.gemini/antigravity/brain",
+      "~/.gemini/tmp",
+      "~/.grok/sessions",
+      "~/.happy",
+      "~/.hermes",
+      "~/.hermes/profiles",
+      "~/.hermes/sessions",
+      "~/.hermes/skills",
+      "~/.iflow/history",
+      "~/.iflow/projects",
+      "~/.junie/sessions",
+      "~/.kilo",
+      "~/.kimi-code/sessions",
+      "~/.kiro",
+      "~/.kiro/agents",
+      "~/.kiro/settings",
+      "~/.letta",
+      "~/.letta/transcripts",
+      "~/.lmstudio/conversations",
+      "~/.local/share/agent-code",
+      "~/.local/share/amp/threads",
+      "~/.local/share/crush",
+      "~/.local/share/devin",
+      "~/.local/share/goose/sessions",
+      "~/.local/share/opencode",
+      "~/.mentat",
+      "~/.mentat/logs",
+      "~/.metagpt",
+      "~/.nca",
+      "~/.omnara",
+      "~/.openhands/conversations",
+      "~/.openinterpreter/sessions",
+      "~/.pearai",
+      "~/.plandex-home-v2",
+      "~/.pool",
+      "~/.poolside",
+      "~/.qoder/logs/sessions",
+      "~/.qoder/projects",
+      "~/.qwen/projects",
+      "~/.qwen/tmp",
+      "~/.roo",
+      "~/.sweep",
+      "~/.tabby",
+      "~/.tabby/ee",
+      "~/.tabby/events",
+      "~/.tabnine",
+      "~/.terry",
+      "~/.trae/memory",
+      "~/.vibe/logs/session",
+      "~/.void-editor",
+      "~/.warp/workflows",
+      "~/.windsurf/transcripts",
+      "~/.zero",
+      "~/Library/Application Support/Block/goose/sessions",
+      "~/Library/Application Support/Claude",
+      "~/Library/Application Support/Claude/local-agent-mode-sessions",
+      "~/Library/Application Support/Code/User/globalStorage/augmentcode.augment",
+      "~/Library/Application Support/Code/User/globalStorage/continue.continue",
+      "~/Library/Application Support/Code/User/globalStorage/continue.continue/sessions",
+      "~/Library/Application Support/Code/User/globalStorage/github.copilot-chat",
+      "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code",
+      "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/tasks",
+      "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+      "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+      "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev",
+      "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/tasks",
+      "~/Library/Application Support/Code/User/workspaceStorage",
+      "~/Library/Application Support/Codex",
+      "~/Library/Application Support/Cursor",
+      "~/Library/Application Support/Cursor/User/globalStorage",
+      "~/Library/Application Support/Cursor/User/globalStorage/continue.continue",
+      "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code",
+      "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code/tasks",
+      "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+      "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+      "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev",
+      "~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/tasks",
+      "~/Library/Application Support/Cursor/User/workspaceStorage",
+      "~/Library/Application Support/Jan/data",
+      "~/Library/Application Support/Jan/data/threads",
+      "~/Library/Application Support/JetBrains",
+      "~/Library/Application Support/Kiro/User/globalStorage",
+      "~/Library/Application Support/Lovable",
+      "~/Library/Application Support/PearAI/User/globalStorage",
+      "~/Library/Application Support/Replit",
+      "~/Library/Application Support/TabNine",
+      "~/Library/Application Support/Trae",
+      "~/Library/Application Support/VSCodium/User/globalStorage/continue.continue",
+      "~/Library/Application Support/VSCodium/User/globalStorage/kilocode.kilo-code",
+      "~/Library/Application Support/VSCodium/User/globalStorage/rooveterinaryinc.roo-cline",
+      "~/Library/Application Support/VSCodium/User/globalStorage/saoudrizwan.claude-dev",
+      "~/Library/Application Support/Void/User/globalStorage",
+      "~/Library/Application Support/Windsurf/User/globalStorage",
+      "~/Library/Application Support/Windsurf/User/globalStorage/continue.continue",
+      "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code",
+      "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code/tasks",
+      "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline",
+      "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline/tasks",
+      "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev",
+      "~/Library/Application Support/Windsurf/User/globalStorage/saoudrizwan.claude-dev/tasks",
+      "~/Library/Application Support/Windsurf/User/workspaceStorage",
+      "~/Library/Application Support/Zed",
+      "~/Library/Application Support/Zed/threads",
+      "~/Library/Application Support/ai.opencode.desktop/dev",
+      "~/Library/Application Support/amazon-q",
+      "~/Library/Application Support/bolt-diy",
+      "~/Library/Application Support/com.openai.chat",
+      "~/Library/Application Support/com.openai.codex",
+      "~/Library/Application Support/com.raycast.macos",
+      "~/Library/Application Support/gptme/logs",
+      "~/Library/Application Support/sculptor",
+      "~/Library/Group Containers/2BBY89MBSN.dev.warp/Library/Application Support/dev.warp.Warp-Stable"
+    ],
+    "platform": "macos"
+  },
+  "source": "mock: recorded by firstrun.rs record_demo_event_log over demo/dataset (synthetic)"
+}

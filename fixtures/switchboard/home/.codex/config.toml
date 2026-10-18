@@ -1,0 +1,20 @@
+model = "gpt-5-codex"
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[mcp_servers.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+env = { GITHUB_TOKEN = "ghp_FAKECODEXTOKENBBBBBBBBBBBBBBBBBBBB", NODE_ENV = "production" }
+
+[mcp_servers.remote-docs]
+url = "https://docs.example.com/mcp"
+bearer_token_env_var = "DOCS_MCP_TOKEN"
+http_headers = { "X-API-KEY" = "apikeyFAKE0123456789apikeyFAKE01234567" }
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@0.0.35"]
+startup_timeout_sec = 10

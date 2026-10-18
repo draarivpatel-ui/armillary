@@ -1,0 +1,82 @@
+# Crush adapter specification
+# Sources:
+# - https://github.com/charmbracelet/crush
+# - https://charm.land/crush
+# - https://github.com/charmbracelet/crush/blob/main/internal/db/connect.go
+#
+# Storage note:
+# Crush stores sessions and messages in a per-project SQLite database (.crush/crush.db)
+# with a relational schema where messages contain polymorphic JSON blob arrays in parts.
+# It is too complex for declarative mapping; shipping detection only with coverage = "detect".
+
+id = "crush"
+name = "Crush"
+vendor = "Charm"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://charm.land/crush"
+docs_url = "https://github.com/charmbracelet/crush"
+coverage = "history"
+
+[[history_sources]]
+id = "crush-sqlite"
+format = "sqlite"
+module = "crush"
+source_unit = "shared_database"
+fixture_paths = [".crush/crush.db"]
+
+[history_sources.paths]
+macos = [
+    "./.crush/crush.db",
+    "~/.local/share/crush/crush.db"
+]
+linux = [
+    "./.crush/crush.db",
+    "~/.local/share/crush/crush.db"
+]
+windows = [
+    ".\\.crush\\crush.db",
+    "%LOCALAPPDATA%\\crush\\crush.db"
+]
+
+[detection]
+binaries = ["crush"]
+generic_binaries = ["crush"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.local/share/crush",
+    "./.crush"
+]
+config_files = [
+    "~/.config/crush/crushrc",
+    "~/.config/crush/crush.json",
+    "./.crushrc",
+    "./crush.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/crush",
+    "./.crush"
+]
+config_files = [
+    "~/.config/crush/crushrc",
+    "~/.config/crush/crush.json",
+    "./.crushrc",
+    "./crush.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%LOCALAPPDATA%\\crush",
+    ".\\.crush"
+]
+config_files = [
+    "%USERPROFILE%\\.config\\crush\\crushrc",
+    "%USERPROFILE%\\.config\\crush\\crush.json",
+    ".\\.crushrc",
+    ".\\crush.json"
+]

@@ -1,0 +1,36 @@
+# agent-code (detection only, A6).
+# Homepage: https://github.com/avala-ai/agent-code
+# Sources: https://crates.io/crates/agent-code ; https://github.com/avala-ai/agent-code
+# Static Rust binary with a native MCP client: configuration in the XDG config
+# directory, session state in the data directory.
+id = "agent-code"
+name = "Agent Code"
+vendor = "Avala AI"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://github.com/avala-ai/agent-code"
+docs_url = "https://github.com/avala-ai/agent-code"
+
+[detection]
+binaries = ["agent-code"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.local/share/agent-code",
+    "~/.config/agent-code"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/agent-code",
+    "~/.config/agent-code"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\agent-code"
+]
+config_files = []

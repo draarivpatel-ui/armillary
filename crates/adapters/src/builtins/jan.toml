@@ -1,0 +1,44 @@
+# Jan (detection only, A6).
+# Homepage: https://jan.ai
+# Sources: https://jan.ai ; https://jan.ai.guide ; https://github.com/jan-condor/jan
+# AGPL local agent app: threads are messages.jsonl under the data directory and
+# assistants are personas in data/assistants; the local server listens on 1337.
+id = "jan"
+name = "Jan"
+vendor = "Jan.ai (Menlo One Ltd.)"
+family = "open-source CLIs"
+kind = "desktop"
+homepage = "https://jan.ai"
+docs_url = "https://jan.ai/docs"
+
+[detection]
+binaries = ["jan", "jan-server"]
+generic_binaries = ["jan"]
+app_bundles = ["Jan"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Jan/data/threads",
+    "~/Library/Application Support/Jan/data"
+]
+config_files = [
+    "~/Library/Application Support/Jan/data/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/Jan/data/threads",
+    "~/.local/share/Jan/data"
+]
+config_files = [
+    "~/.local/share/Jan/data/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Jan\\data\\threads",
+    "%APPDATA%\\Jan\\data"
+]
+config_files = [
+    "%APPDATA%\\Jan\\data\\settings.json"
+]

@@ -1,0 +1,32 @@
+# SWE-agent (detection only, A6).
+# Homepage: https://swe-agent.com
+# Sources: https://swe-agent.com ; https://github.com/SWE-agent/SWE-agent
+# Princeton benchmark harness: trajectories go to ./trajectories/<run>/ inside the
+# working directory and configuration is YAML in the repository, so the only
+# machine-wide signal is the installed console script.
+id = "swe-agent"
+name = "SWE-agent"
+vendor = "Princeton University"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://swe-agent.com"
+docs_url = "https://swe-agent.com"
+
+[detection]
+binaries = ["sweagent", "swe-agent"]
+app_bundles = []
+
+# no-documented-path: macos: trajectories are written under ./trajectories in the working directory.
+[detection.paths.macos]
+data_folders = []
+config_files = []
+
+# no-documented-path: linux: trajectories are written under ./trajectories in the working directory.
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+# no-documented-path: windows: trajectories are written under .\trajectories in the working directory.
+[detection.paths.windows]
+data_folders = []
+config_files = []

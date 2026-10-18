@@ -1,0 +1,10 @@
+tools/__pycache__/
+*.pyc
+node_modules/
+dist/
+target/
+.DS_Store
+
+# Local build and test output
+build/
+test-logs/

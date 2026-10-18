@@ -1,0 +1,328 @@
+[
+  {
+    "session": {
+      "id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+      "agent_id": "aider",
+      "installation_id": null,
+      "native_id": "etl-sandbox/.aider.chat.history.md#2026-10-12 15:04:22",
+      "provenance": {
+        "store": {
+          "id": "ceb211a8afa6e63fb5f8083a97ae068f573eae4f2b19e628262121dde82edd42",
+          "namespace": "aider-history",
+          "canonical_root": "fixture://aider-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "aider-chat-history",
+        "adapter_id": "aider",
+        "adapter_version": "1.1.0",
+        "source_path": "etl-sandbox/.aider.chat.history.md",
+        "file_identity": "synthetic:etl-sandbox/.aider.chat.history.md",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1498,
+          "records": 13,
+          "digest": "5bcf2824bec1b1979c3ee2ea08641c6ed16837ce0dfc17c893869b35b8d23e44"
+        }
+      },
+      "project_root": null,
+      "title": null,
+      "started_at": 1791817462000,
+      "ended_at": null,
+      "model": "claude-sonnet-5-5",
+      "status": "unknown",
+      "completion": null,
+      "turns": 4,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 3200,
+        "output_tokens": 410,
+        "observations": [
+          {
+            "event_id": "3e68480701c33c6ca3f75fe2f8a5376059db61d389d95c4a89d64284eee3f6b6",
+            "semantics": "delta",
+            "input_tokens": 3200,
+            "output_tokens": 410,
+            "at": null
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "87446d686cd45cdc63989d3a61c95d7d3c8b470bc7144da57137832c113ca544",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 1,
+        "role": "system",
+        "at": 1791817462000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Aider v0.86.2\nMain model: claude-sonnet-5-5 with diff edit format\nGit repo: .git with 12 files"
+          }
+        ]
+      },
+      {
+        "id": "6ccd2a0ae8473519bc9a591708a66e7e5092120c5b1c55975c07c00f7216c85d",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "/add src/loader.py"
+          }
+        ]
+      },
+      {
+        "id": "d8eb38cae8c43e5607a541be509f5c27bd80efaa1fb2bd1ccfd42274e2b7460c",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 3,
+        "role": "system",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Added src/loader.py to the chat"
+          }
+        ]
+      },
+      {
+        "id": "c30e545cfc47a4b1d1aaa024f05b5fff22135ddea82bcd2eddd033ce74668930",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 4,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add a latin-1 encoding fallback for CSV files that fail utf-8 decoding."
+          }
+        ]
+      },
+      {
+        "id": "e6bb1dfd19a09da22c37118da0085cb961fdeda67d42f30995d7078b029841d6",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 5,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I'll add a fallback to `src/loader.py`: try utf-8 first, and if a `UnicodeDecodeError` is raised, re-read the file with `encoding=\"latin-1\"`."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "184446081d74dc2ea372640e9c4ae898cbd9addcb863b51b0b58f4e101888c90",
+            "native_id": null,
+            "name": "edit_file",
+            "input": {
+              "diff": "<<<<<<< SEARCH\n    text = path.read_text(encoding=\"utf-8\")\n=======\n    try:\n        text = path.read_text(encoding=\"utf-8\")\n    except UnicodeDecodeError:\n        # some exports are latin-1\n        text = path.read_text(encoding=\"latin-1\")\n>>>>>>> REPLACE",
+              "path": "src/loader.py"
+            },
+            "files": [
+              "src/loader.py"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5195527e5a9e4eb77df53950b4265587eb2585d664c55a44725e9295498def42",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 6,
+        "role": "system",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Tokens: 3.2k sent, 410 received.\nApplied edit to src/loader.py\nCommit 4f2a9c1 aider: latin-1 fallback in loader"
+          }
+        ]
+      },
+      {
+        "id": "e0febece20530e75c8ecc6e37e368146c00470d4cb7d2201096cb2542d0eca18",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 7,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "/run pytest -q"
+          },
+          {
+            "type": "tool_call",
+            "call_id": "cef270789ea1c0f78fe19d50d4cf7a4ae374f44716f6c4416176c462204edd51",
+            "native_id": null,
+            "name": "run_command",
+            "input": {
+              "command": "pytest -q"
+            },
+            "files": []
+          }
+        ]
+      },
+      {
+        "id": "87e8219c70741d2a60c015f665a0f44683faea78b8a5579b9dd085f6d6491577",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 8,
+        "role": "system",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Added 2 lines of output to the chat."
+          }
+        ]
+      },
+      {
+        "id": "8640b3c255ff7ce49d839f89d03c9004eabe67eb3570544e23cc3b8054454760",
+        "session_id": "a5a883e06eddacf842635d61ddc1bb36f9df148c713871eac1dc0db10061ea8d",
+        "native_id": null,
+        "seq": 9,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "/exit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "session": {
+      "id": "ed5e2e19f22ef97655e20c3f169470001dd1314ba195e619cc556e940726bf15",
+      "agent_id": "aider",
+      "installation_id": null,
+      "native_id": "etl-sandbox/.aider.chat.history.md#2026-10-12 16:41:03",
+      "provenance": {
+        "store": {
+          "id": "ceb211a8afa6e63fb5f8083a97ae068f573eae4f2b19e628262121dde82edd42",
+          "namespace": "aider-history",
+          "canonical_root": "fixture://aider-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "aider-chat-history",
+        "adapter_id": "aider",
+        "adapter_version": "1.1.0",
+        "source_path": "etl-sandbox/.aider.chat.history.md",
+        "file_identity": "synthetic:etl-sandbox/.aider.chat.history.md",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1498,
+          "records": 13,
+          "digest": "5bcf2824bec1b1979c3ee2ea08641c6ed16837ce0dfc17c893869b35b8d23e44"
+        }
+      },
+      "project_root": null,
+      "title": null,
+      "started_at": 1791823263000,
+      "ended_at": null,
+      "model": "gpt-5.1",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 8100,
+        "output_tokens": 640,
+        "observations": [
+          {
+            "event_id": "1d32f6f3da0c399656f36e64b83eb42076240f106735aa74dda9fde94f419195",
+            "semantics": "delta",
+            "input_tokens": 8100,
+            "output_tokens": 640,
+            "at": null
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "545853f4bdab99bd9c6ce246f3d1590051c8e2c4f995fd69e25c6a48250e5ae7",
+        "session_id": "ed5e2e19f22ef97655e20c3f169470001dd1314ba195e619cc556e940726bf15",
+        "native_id": null,
+        "seq": 1,
+        "role": "system",
+        "at": 1791823263000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Aider v0.86.2\nMain model: gpt-5.1 with diff edit format\nGit repo: .git with 12 files"
+          }
+        ]
+      },
+      {
+        "id": "df93c94470f5986e39d04efcf2bed22a4ec3459ea270c0212f998047f331ddc4",
+        "session_id": "ed5e2e19f22ef97655e20c3f169470001dd1314ba195e619cc556e940726bf15",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add type hints to src/loader.py without changing behavior."
+          }
+        ]
+      },
+      {
+        "id": "2b395976ecdb559eac57ec492cb355941037c5fde122b6f93a9cf3e5587b4b91",
+        "session_id": "ed5e2e19f22ef97655e20c3f169470001dd1314ba195e619cc556e940726bf15",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Here are the type-hinted signatures for `load_rows()` and `normalize_header()` plus module-level `from __future__ import annotations`."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "f2001a77063bb0179d98cac427affe06f1614e7834518cbd990edbd68ad4db46",
+            "native_id": null,
+            "name": "edit_file",
+            "input": {
+              "diff": "<<<<<<< SEARCH\ndef load_rows(path, encoding=\"utf-8\"):\n=======\ndef load_rows(path: Path, encoding: str = \"utf-8\") -> list[dict[str, str]]:\n>>>>>>> REPLACE",
+              "path": "src/loader.py"
+            },
+            "files": [
+              "src/loader.py"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7bfb47b66e29f705030b1ff4bc9e40e01ea24cd5b67ba379d83d54f2c2a41d16",
+        "session_id": "ed5e2e19f22ef97655e20c3f169470001dd1314ba195e619cc556e940726bf15",
+        "native_id": null,
+        "seq": 4,
+        "role": "system",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Tokens: 8.1k sent, 640 received."
+          }
+        ]
+      }
+    ]
+  }
+]

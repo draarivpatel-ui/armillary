@@ -1,0 +1,33 @@
+{
+  "name": "@orrery/firstrun",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "capture": "node scripts/capture-frames.mjs",
+    "capture:app": "node scripts/capture-app.mjs",
+    "capture:video": "node scripts/capture-video.mjs",
+    "fps": "node scripts/measure-fps.mjs"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.9",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "@vitejs/plugin-react": "4.3.4",
+    "playwright": "1.50.1",
+    "typescript": "5.7.3",
+    "vite": "6.2.0",
+    "vitest": "3.0.7"
+  }
+}

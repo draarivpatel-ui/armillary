@@ -1,0 +1,35 @@
+# Cosine Genie (detection only, A6).
+# Homepage: https://cosine.sh
+# Sources: https://cosine.sh
+# Cloud coding agent with a local CLI launcher; work happens in cloud VMs and the
+# local directory holds the CLI's index and cache, so coverage is detect only.
+id = "cosine-genie"
+name = "Cosine Genie"
+vendor = "Cosine"
+family = "other"
+kind = "cloud"
+homepage = "https://cosine.sh"
+docs_url = "https://docs.cosine.sh"
+
+[detection]
+binaries = ["cosine"]
+generic_binaries = ["cosine"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.cosine"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.cosine"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.cosine"
+]
+config_files = []

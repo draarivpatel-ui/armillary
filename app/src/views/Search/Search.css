@@ -1,0 +1,306 @@
+/* Search: one large box, quiet filters, hits grouped by session. */
+
+/* The head spans the view like every other; the box, filters and results keep a reading measure. */
+.search-view > :not(.view-head) {
+  max-width: 1128px;
+}
+
+/* ---------- The box ---------- */
+.search-box-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box__icon {
+  position: absolute;
+  left: var(--space-4);
+  display: inline-flex;
+  color: var(--color-gilt);
+  pointer-events: none;
+}
+
+/* The input itself is the box, so the global gilt focus ring lands on the real control. */
+.search-box__input {
+  width: 100%;
+  height: 52px;
+  padding: 0 56px 0 52px;
+  background: var(--color-ink-1);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  color: var(--color-star);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--motion-ui) var(--ease-observatory);
+}
+
+.search-box__input:focus {
+  border-color: var(--color-gilt);
+}
+
+.search-box--hinted .search-box__input {
+  padding-right: 248px;
+}
+
+.search-box__trailing {
+  position: absolute;
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.search-box__input::placeholder {
+  color: var(--color-dust);
+  opacity: 1;
+}
+
+.search-box__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-hint {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+}
+
+.search-hint .obs-kbd {
+  margin-left: var(--space-2);
+}
+
+.search-hint .obs-kbd:first-child {
+  margin-left: 0;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ---------- Results ---------- */
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.search-status {
+  min-height: 20px;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.search-status:empty {
+  display: none;
+}
+
+.search-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-group__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-hairline);
+}
+
+.search-group__glyph {
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+}
+
+.search-group__title {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-star);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-group__meta,
+.search-group__count {
+  flex: none;
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.search-group__count {
+  margin-left: auto;
+}
+
+.search-hits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-hits__row + .search-hits__row {
+  border-top: var(--border-hairline);
+}
+
+.search-hit {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px 72px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-2);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  text-align: left;
+  color: var(--color-star);
+  cursor: pointer;
+  transition: background-color var(--motion-ui) var(--ease-observatory);
+}
+
+.search-hit:hover {
+  background: var(--color-gilt-wash);
+}
+
+.search-hit:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-gilt);
+}
+
+.search-hit__kind {
+  font-size: var(--text-xs);
+  color: var(--color-dust);
+}
+
+.search-hit__snippet {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-star);
+  overflow-wrap: anywhere;
+}
+
+.search-hit__snippet mark {
+  padding: 0 1px;
+  background: var(--color-gilt-wash);
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-gilt);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* A hit's one glint: a four-point star that opens and closes once as results arrive. */
+.search-hit__glint {
+  align-self: center;
+  justify-self: center;
+  width: 10px;
+  height: 10px;
+  background: var(--color-gilt);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  opacity: 0;
+  transform: scale(0);
+  animation-name: search-twinkle;
+  animation-duration: var(--motion-twinkle);
+  animation-timing-function: var(--ease-observatory);
+  animation-iteration-count: 1;
+  animation-fill-mode: backwards;
+}
+
+@keyframes search-twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-24deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(24deg);
+  }
+}
+
+/* ---------- Initial and empty states ---------- */
+.search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+}
+
+.search-empty__icon {
+  display: inline-flex;
+  margin-bottom: var(--space-2);
+  color: var(--color-gilt);
+}
+
+.search-empty__line {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-style: italic;
+  color: var(--color-star);
+}
+
+.search-empty__tips {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-dust);
+}
+
+.search-empty__query {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-star);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-hit__glint {
+    display: none;
+    animation: none;
+  }
+
+  .search-box__input,
+  .search-hit {
+    transition: none;
+  }
+}

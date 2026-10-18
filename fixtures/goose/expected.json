@@ -1,0 +1,206 @@
+[
+  {
+    "session": {
+      "id": "303f5c613ab99fdaf4258cae66b41f1081107d2d4601b2c66d9e7c6c463a8525",
+      "agent_id": "goose",
+      "installation_id": null,
+      "native_id": "20261011_7",
+      "provenance": {
+        "store": {
+          "id": "94013c89d2f8bd3edf018a78d0b085a9fb3040e5a39e9cfca9e4fcf7689cffd2",
+          "namespace": "goose",
+          "canonical_root": "fixture://goose",
+          "profile_id": "synthetic"
+        },
+        "source_id": "goose-sessions-db",
+        "adapter_id": "goose",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "sessions/sessions.sqlite",
+        "file_identity": "synthetic:sessions/sessions.sqlite",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 6,
+          "records": 6,
+          "digest": "07740c5948d0dd41837f6acebd75694f9ad7a477ecafbd7c0189db85b6f33de0"
+        }
+      },
+      "project_root": "/Users/developer/code/payments-api",
+      "title": "Debug webhook retries",
+      "started_at": null,
+      "ended_at": null,
+      "model": "gpt-5.1-codex",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 58900,
+        "output_tokens": 2810,
+        "observations": [
+          {
+            "event_id": "795a9c2f60e5aab48c2e50ce7c65e79318c07368309b3a486e8ad2660586ccaa",
+            "semantics": "cumulative",
+            "input_tokens": 58900,
+            "output_tokens": 2810,
+            "at": null
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "c9fd795e18be4f170d595e9e1ca4fd4f8cb3c1d21a9a03ef756edcaaaae61d49",
+        "session_id": "303f5c613ab99fdaf4258cae66b41f1081107d2d4601b2c66d9e7c6c463a8525",
+        "native_id": "msg_20261011_7_0",
+        "seq": 1,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Webhook retries stall after the second failure; find why."
+          }
+        ]
+      },
+      {
+        "id": "ebdc1ad8e2253f4cbad83284a9e5bfc4c0fbc9f48a1560ea9cfc0d795c7aa0e2",
+        "session_id": "303f5c613ab99fdaf4258cae66b41f1081107d2d4601b2c66d9e7c6c463a8525",
+        "native_id": "msg_20261011_7_1",
+        "seq": 2,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "The retry loop reuses an expired bearer token; refresh before each attempt in webhook_worker.rs:114."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "session": {
+      "id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
+      "agent_id": "goose",
+      "installation_id": null,
+      "native_id": "20261012_3",
+      "provenance": {
+        "store": {
+          "id": "94013c89d2f8bd3edf018a78d0b085a9fb3040e5a39e9cfca9e4fcf7689cffd2",
+          "namespace": "goose",
+          "canonical_root": "fixture://goose",
+          "profile_id": "synthetic"
+        },
+        "source_id": "goose-sessions-db",
+        "adapter_id": "goose",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "sessions/sessions.sqlite",
+        "file_identity": "synthetic:sessions/sessions.sqlite",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 6,
+          "records": 6,
+          "digest": "07740c5948d0dd41837f6acebd75694f9ad7a477ecafbd7c0189db85b6f33de0"
+        }
+      },
+      "project_root": "/Users/developer/code/payments-api",
+      "title": "Provider routing refactor",
+      "started_at": null,
+      "ended_at": null,
+      "model": "claude-sonnet-4-5",
+      "status": "unknown",
+      "completion": null,
+      "turns": 2,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 142300,
+        "output_tokens": 6140,
+        "observations": [
+          {
+            "event_id": "c1165280c4e69e228eac041029022046969d316511e21ceeee42df95dde64d5b",
+            "semantics": "cumulative",
+            "input_tokens": 142300,
+            "output_tokens": 6140,
+            "at": null
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "794f392570aea92da78d6fd1269bd5796fbe4aced4b666233ea4759e7b1b0f70",
+        "session_id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
+        "native_id": "msg_20261012_3_0",
+        "seq": 1,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Move provider selection behind a router so we can swap Anthropic and OpenAI per request type."
+          }
+        ]
+      },
+      {
+        "id": "e855e5b25de03ecbe6434f73db64b22f1de5851a232cfbe49530d6f1b829a167",
+        "session_id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
+        "native_id": "msg_20261012_3_1",
+        "seq": 2,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Adding a ProviderRouter in crates/goose/src/providers/router.rs and wiring it into the session factory."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call_1",
+            "native_id": "call_1",
+            "name": "read_file",
+            "input": {
+              "path": "crates/goose/src/providers/mod.rs"
+            },
+            "files": [
+              "crates/goose/src/providers/mod.rs"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "328434d13f06d96c36bd5a32f9013b4bae48f80487e13efb7bf51c76cb57e3b1",
+        "session_id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
+        "native_id": "msg_20261012_3_2",
+        "seq": 3,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add tests for the routing decision."
+          }
+        ]
+      },
+      {
+        "id": "d12263ff25f105e083f4f3f93def7dda12d023fedd19e5214b01c1a569b4acc7",
+        "session_id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
+        "native_id": "msg_20261012_3_3",
+        "seq": 4,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Added three unit tests covering long-context, fast-turn and default routing. All green."
+          }
+        ]
+      }
+    ]
+  }
+]

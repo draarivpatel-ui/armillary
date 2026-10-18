@@ -1,0 +1,6 @@
+{
+  "name": "orrery-workspace",
+  "license": "MIT",
+  "private": true,
+  "workspaces": ["app", "design", "ui/*"]
+}

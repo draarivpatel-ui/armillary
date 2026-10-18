@@ -1,0 +1,48 @@
+# Windsurf (detection only, A6).
+# Homepage: https://windsurf.run
+# Sources: https://windsurf.run ; https://devin.ai/blog/windsurf-is-now-devin-desktop ; https://mcpbundles.com
+# VS Code fork from Codeium, acquired by Cognition and rebranded Devin Desktop in
+# June 2026; both install names are kept so older installs still resolve.
+# Cascade state is a proprietary schema under ~/.codeium/windsurf/cascade.
+id = "windsurf"
+name = "Windsurf"
+vendor = "Cognition (formerly Codeium)"
+family = "other"
+kind = "ide"
+homepage = "https://windsurf.run"
+docs_url = "https://docs.codeium.com/windsurf"
+
+[detection]
+binaries = ["windsurf"]
+app_bundles = ["Windsurf", "Devin Desktop"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Windsurf/User/globalStorage",
+    "~/Library/Application Support/Windsurf/User/workspaceStorage",
+    "~/.windsurf/transcripts",
+    "~/.codeium/windsurf/cascade"
+]
+config_files = [
+    "~/.codeium/windsurf/mcp_config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Windsurf/User/globalStorage",
+    "~/.config/Windsurf/User/workspaceStorage",
+    "~/.codeium/windsurf/cascade"
+]
+config_files = [
+    "~/.codeium/windsurf/mcp_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Windsurf\\User\\globalStorage",
+    "%APPDATA%\\Windsurf\\User\\workspaceStorage",
+    "%USERPROFILE%\\.codeium\\windsurf\\cascade"
+]
+config_files = [
+    "%USERPROFILE%\\.codeium\\windsurf\\mcp_config.json"
+]

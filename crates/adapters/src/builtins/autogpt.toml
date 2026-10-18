@@ -1,0 +1,33 @@
+# AutoGPT (detection only, A6).
+# Homepage: https://agpt.co
+# Sources: https://github.com/Significant-Gravitas/AutoGPT
+# CLI plus the Agent Protocol server. Per the card, agent state is written to
+# {workspace}/.autogpt/agents/AutoGPT-<agent_id>/ relative to the working
+# directory, so there is no stable per-user path to probe and detection uses the
+# console script alone.
+id = "autogpt"
+name = "AutoGPT"
+vendor = "Significant Gravitas"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://agpt.co"
+docs_url = "https://docs.agpt.co"
+
+[detection]
+binaries = ["autogpt"]
+app_bundles = []
+
+# no-documented-path: macos: state lives in a workspace-relative .autogpt directory.
+[detection.paths.macos]
+data_folders = []
+config_files = []
+
+# no-documented-path: linux: state lives in a workspace-relative .autogpt directory.
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+# no-documented-path: windows: state lives in a workspace-relative .autogpt directory.
+[detection.paths.windows]
+data_folders = []
+config_files = []

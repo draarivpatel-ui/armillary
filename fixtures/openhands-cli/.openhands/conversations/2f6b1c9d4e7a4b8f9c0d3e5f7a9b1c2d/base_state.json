@@ -1,0 +1,22 @@
+{
+  "id": "2f6b1c9d4e7a4b8f9c0d3e5f7a9b1c2d",
+  "created_at": "2026-10-07T08:41:12.884",
+  "workspace": {
+    "working_dir": "/Users/demo/reporting",
+    "base_url": "http://localhost:8029"
+  },
+  "agent": {
+    "llm": {
+      "model": "gpt-5-mini",
+      "api_base": "https://api.openai.com/v1"
+    }
+  },
+  "stats": {
+    "accumulated_cost": 0.0412,
+    "accumulated_token_usage": {
+      "prompt_tokens": 18420,
+      "completion_tokens": 1310
+    }
+  },
+  "leaf_event_id": "0e7c3a91-5b48-4d2f-9a6e-31f5c8d7b402"
+}

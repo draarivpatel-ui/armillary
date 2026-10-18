@@ -1,0 +1,82 @@
+# Verification sources:
+# - Official documentation: https://cursor.com/docs/cli/overview
+# - CLI reference: https://cursor.com/docs/cli/reference/parameters
+# - CLI usage guide: https://cursor.com/docs/cli/using
+# - Storage architecture: https://vshulcz.github.io/deja-vu/registry/cursor.html
+# - Format specification: https://github.com/xhluca/session-migrate/blob/main/docs/cursor-format.md
+#
+# Storage analysis:
+# Primary CLI store lives in SQLite database per chat at ~/.cursor/chats/<workspace-hash>/<chat-uuid>/store.db
+# with content-addressed protobuf blobs in blobs(id, data) table and metadata in meta table.
+# Complex store (key-value protobuf DAG blobs) per SPEC section 5; coverage is set to detect.
+# Full message reconstruction will be provided by a dedicated Rust module.
+
+id = "cursor-cli"
+name = "Cursor CLI"
+vendor = "Anysphere"
+family = "Cursor"
+kind = "cli"
+adapter_version = "1.0.0"
+homepage = "https://cursor.com"
+docs_url = "https://cursor.com/docs/cli/overview"
+coverage = "history"
+
+[detection]
+binaries = ["agent", "cursor-agent"]
+generic_binaries = ["agent"]
+shared_evidence = ["Cursor", "~/.cursor", "~/Library/Application Support/Cursor", "~/.config/cursor", "~/.config/Cursor", "%USERPROFILE%\\.cursor", "%APPDATA%\\Cursor", "~/.cursor/mcp.json", "~/.cursor/settings.json", "%USERPROFILE%\\.cursor\\mcp.json"]
+app_bundles = ["Cursor"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.cursor",
+    "~/Library/Application Support/Cursor"
+]
+config_files = [
+    "~/.cursor/cli-config.json",
+    "~/.cursor/mcp.json",
+    "~/.cursor/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.cursor",
+    "~/.config/cursor",
+    "~/.config/Cursor"
+]
+config_files = [
+    "~/.cursor/cli-config.json",
+    "~/.cursor/mcp.json",
+    "~/.config/cursor/cli-config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.cursor",
+    "%APPDATA%\\Cursor"
+]
+config_files = [
+    "%USERPROFILE%\\.cursor\\cli-config.json",
+    "%USERPROFILE%\\.cursor\\mcp.json"
+]
+
+[[history_sources]]
+id = "cursor-cli-history"
+format = "sqlite"
+module = "cursor-cli"
+
+[history_sources.paths]
+macos = [
+    "~/.cursor/chats/*/*",
+    "~/.cursor/projects/*/agent-transcripts/*.jsonl"
+]
+linux = [
+    "~/.cursor/chats/*/*",
+    "~/.config/cursor/chats/*/*",
+    "~/.cursor/projects/*/agent-transcripts/*.jsonl"
+]
+windows = [
+    "%USERPROFILE%\\.cursor\\chats\\*\\*",
+    "%USERPROFILE%\\.cursor\\projects\\*\\agent-transcripts\\*.jsonl"
+]

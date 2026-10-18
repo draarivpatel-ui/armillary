@@ -1,0 +1,80 @@
+# Kilo Code adapter specification
+# Sources:
+# - Official website: https://kilo.ai
+# - Repository: https://github.com/Kilo-Org/kilocode
+# - Extension ID: kilocode.kilo-code
+# - Storage paths and task persistence: https://github.com/Kilo-Org/kilocode/blob/main/src/utils/storage.ts
+
+id = "kilo-code"
+name = "Kilo Code"
+vendor = "Kilo AI"
+family = "open-source CLIs"
+kind = "extension"
+adapter_version = "1.0.0"
+homepage = "https://kilo.ai"
+docs_url = "https://github.com/Kilo-Org/kilocode"
+coverage = "history"
+
+[detection]
+binaries = ["kilo"]
+generic_binaries = ["kilo"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code",
+    "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code",
+    "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code",
+    "~/Library/Application Support/VSCodium/User/globalStorage/kilocode.kilo-code",
+    "~/.kilo"
+]
+config_files = [
+    "~/.kilo/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Code/User/globalStorage/kilocode.kilo-code",
+    "~/.config/Cursor/User/globalStorage/kilocode.kilo-code",
+    "~/.config/Windsurf/User/globalStorage/kilocode.kilo-code",
+    "~/.config/VSCodium/User/globalStorage/kilocode.kilo-code",
+    "~/.kilo"
+]
+config_files = [
+    "~/.kilo/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Code\\User\\globalStorage\\kilocode.kilo-code",
+    "%APPDATA%\\Cursor\\User\\globalStorage\\kilocode.kilo-code",
+    "%APPDATA%\\Windsurf\\User\\globalStorage\\kilocode.kilo-code",
+    "%APPDATA%\\VSCodium\\User\\globalStorage\\kilocode.kilo-code",
+    "%USERPROFILE%\\.kilo"
+]
+config_files = [
+    "%USERPROFILE%\\.kilo\\mcp.json"
+]
+
+[[history_sources]]
+id = "kilo-code-history"
+format = "json"
+module = "kilo-code"
+
+[history_sources.paths]
+macos = [
+    "~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/tasks/*",
+    "~/Library/Application Support/Cursor/User/globalStorage/kilocode.kilo-code/tasks/*",
+    "~/Library/Application Support/Windsurf/User/globalStorage/kilocode.kilo-code/tasks/*"
+]
+linux = [
+    "~/.config/Code/User/globalStorage/kilocode.kilo-code/tasks/*",
+    "~/.config/Cursor/User/globalStorage/kilocode.kilo-code/tasks/*",
+    "~/.config/Windsurf/User/globalStorage/kilocode.kilo-code/tasks/*"
+]
+windows = [
+    "%APPDATA%\\Code\\User\\globalStorage\\kilocode.kilo-code\\tasks\\*",
+    "%APPDATA%\\Cursor\\User\\globalStorage\\kilocode.kilo-code\\tasks\\*",
+    "%APPDATA%\\Windsurf\\User\\globalStorage\\kilocode.kilo-code\\tasks\\*"
+]

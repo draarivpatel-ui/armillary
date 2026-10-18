@@ -1,0 +1,11 @@
+{
+  "id": "msg_2f9c47ae",
+  "orgId": "org_9f31a7",
+  "planId": "plan_4c8e21",
+  "userId": "usr_1a7b3c",
+  "role": "user",
+  "tokens": 412,
+  "num": 1,
+  "message": "Add a retry with backoff to the webhook sender.",
+  "createdAt": "2026-10-04T11:02:17Z"
+}

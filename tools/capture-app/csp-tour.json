@@ -1,0 +1,370 @@
+{
+ "version": 1,
+ "name": "SEC CSP validation: first run, every view, terminal, both themes",
+ "window": {
+  "width": 1440,
+  "height": 900
+ },
+ "theme": "dark",
+ "timeoutMs": 400000,
+ "steps": [
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "first-run start"
+   ]
+  },
+  {
+   "op": "waitFor",
+   "selector": "[data-firstrun-action=\"continue\"]",
+   "timeoutMs": 30000
+  },
+  {
+   "op": "wait",
+   "ms": 2500
+  },
+  {
+   "op": "snapshot",
+   "name": "a-firstrun-consent"
+  },
+  {
+   "op": "click",
+   "selector": "[data-firstrun-action=\"continue\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 6000
+  },
+  {
+   "op": "snapshot",
+   "name": "a-firstrun-running"
+  },
+  {
+   "op": "waitFor",
+   "selector": ".rail__nav",
+   "timeoutMs": 120000
+  },
+  {
+   "op": "waitFor",
+   "selector": ".fr-root",
+   "gone": true,
+   "timeoutMs": 150000
+  },
+  {
+   "op": "wait",
+   "ms": 3000
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "first-run done"
+   ]
+  },
+  {
+   "op": "snapshot",
+   "name": "a-after-firstrun"
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "dark views"
+   ]
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"orrery\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-orrery"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"almanac\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-almanac"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"folio\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-folio"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"field-guide\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-field-guide"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"switchboard\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-switchboard"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"launchpad\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-launchpad"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"search\"]"
+  },
+  {
+   "op": "type",
+   "selector": "input[type=search]",
+   "text": "migration",
+   "clear": true
+  },
+  {
+   "op": "wait",
+   "ms": 1200
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-search"
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "dark terminal"
+   ]
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"launchpad\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 600
+  },
+  {
+   "op": "click",
+   "selector": ".agent-grid .agent-tile:last-child"
+  },
+  {
+   "op": "type",
+   "selector": "input[placeholder=\"/path/to/your/project\"]",
+   "text": "~",
+   "clear": true
+  },
+  {
+   "op": "click",
+   "selector": "[data-launchpad-launch]"
+  },
+  {
+   "op": "waitFor",
+   "selector": ".xterm-screen",
+   "timeoutMs": 15000
+  },
+  {
+   "op": "wait",
+   "ms": 1500
+  },
+  {
+   "op": "snapshot",
+   "name": "a-dark-terminal"
+  },
+  {
+   "op": "theme",
+   "theme": "light"
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "light views"
+   ]
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"orrery\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-orrery"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"almanac\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-almanac"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"folio\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-folio"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"field-guide\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-field-guide"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"switchboard\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-switchboard"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"launchpad\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-launchpad"
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"search\"]"
+  },
+  {
+   "op": "type",
+   "selector": "input[type=search]",
+   "text": "migration",
+   "clear": true
+  },
+  {
+   "op": "wait",
+   "ms": 1200
+  },
+  {
+   "op": "wait",
+   "ms": 900
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-search"
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "light terminal"
+   ]
+  },
+  {
+   "op": "click",
+   "selector": "[data-view-key=\"launchpad\"]"
+  },
+  {
+   "op": "wait",
+   "ms": 600
+  },
+  {
+   "op": "click",
+   "selector": ".agent-grid .agent-tile:last-child"
+  },
+  {
+   "op": "type",
+   "selector": "input[placeholder=\"/path/to/your/project\"]",
+   "text": "~",
+   "clear": true
+  },
+  {
+   "op": "click",
+   "selector": "[data-launchpad-launch]"
+  },
+  {
+   "op": "waitFor",
+   "selector": ".xterm-screen",
+   "timeoutMs": 15000
+  },
+  {
+   "op": "wait",
+   "ms": 1500
+  },
+  {
+   "op": "snapshot",
+   "name": "a-light-terminal"
+  },
+  {
+   "op": "hook",
+   "name": "__armillaryCsp.mark",
+   "args": [
+    "done"
+   ]
+  },
+  {
+   "op": "quit"
+  }
+ ]
+}

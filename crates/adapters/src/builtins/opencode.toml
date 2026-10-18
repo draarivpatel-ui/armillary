@@ -1,0 +1,72 @@
+# OpenCode adapter specification
+# Sources:
+# - https://opencode.ai
+# - https://github.com/anomalyco/opencode
+# - https://github.com/anomalyco/opencode/releases
+#
+# Storage note:
+# OpenCode uses an Electron SQLite key-value blob store (drafts.sqlite: state, document, blob tables)
+# and split JSON storage (session metadata separated from individual message JSON files).
+# It is too complex for declarative mapping; shipping detection only with coverage = "detect".
+
+id = "opencode"
+name = "OpenCode"
+vendor = "Anomaly"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://opencode.ai"
+docs_url = "https://github.com/anomalyco/opencode"
+coverage = "history"
+
+[[history_sources]]
+id = "opencode-sqlite"
+format = "sqlite"
+module = "opencode"
+source_unit = "shared_database"
+fixture_paths = ["opencode.db"]
+
+[history_sources.paths]
+macos = [
+    "~/.local/share/opencode/opencode.db",
+    "~/Library/Application Support/ai.opencode.desktop/dev/drafts.sqlite"
+]
+linux = [
+    "~/.local/share/opencode/opencode.db",
+    "~/.local/share/ai.opencode.desktop/dev/drafts.sqlite"
+]
+windows = [
+    "%USERPROFILE%\\.local\\share\\opencode\\opencode.db",
+    "%APPDATA%\\ai.opencode.desktop.dev\\drafts.sqlite"
+]
+
+[detection]
+binaries = ["opencode"]
+app_bundles = ["ai.opencode.desktop", "OpenCode"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/ai.opencode.desktop/dev",
+    "~/.local/share/opencode"
+]
+config_files = [
+    "~/Library/Application Support/ai.opencode.desktop/dev/opencode.settings"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/ai.opencode.desktop/dev",
+    "~/.local/share/opencode"
+]
+config_files = [
+    "~/.local/share/ai.opencode.desktop/dev/opencode.settings"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\ai.opencode.desktop.dev",
+    "%USERPROFILE%\\.local\\share\\opencode"
+]
+config_files = [
+    "%APPDATA%\\ai.opencode.desktop.dev\\opencode.settings"
+]

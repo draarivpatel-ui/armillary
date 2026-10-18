@@ -1,0 +1,35 @@
+# Sculptor (detection only, A6).
+# Homepage: https://imbue.com/sculptor
+# Sources: https://github.com/imbue-ai/sculptor ; https://imbue.com
+# Imbue's macOS app for agents running in Docker containers with live file sync.
+# Session content stays in container volumes, so detection uses the Electron
+# support directory only.
+id = "sculptor"
+name = "Sculptor"
+vendor = "Imbue"
+family = "open-source CLIs"
+kind = "desktop"
+homepage = "https://imbue.com/sculptor"
+docs_url = "https://github.com/imbue-ai/sculptor"
+
+[detection]
+binaries = []
+app_bundles = ["Sculptor"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/sculptor"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/sculptor"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\sculptor"
+]
+config_files = []

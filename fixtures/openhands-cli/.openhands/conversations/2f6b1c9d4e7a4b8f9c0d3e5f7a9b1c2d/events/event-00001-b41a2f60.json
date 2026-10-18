@@ -1,0 +1,1 @@
+{"kind":"MessageEvent","id":"b41a2f60-9c3d-4e77-8a51-2d6b0f9c4e13","timestamp":"2026-10-07T08:41:18.221","source":"user","llm_message":{"role":"user","content":[{"text":"Which of the reporting queries are doing a sequential scan?","cache":false}]}}

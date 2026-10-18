@@ -1,0 +1,62 @@
+# Amp adapter. Coverage: history (Rust module).
+# Paths verified against:
+#   https://ampcode.com/manual/security (local thread data under ~/.local/share/amp/threads/,
+#     secrets file ~/.local/share/amp/secrets.json which must never be opened)
+#   https://ampcode.com/manual/settings (user settings at ~/.config/amp/settings.json)
+#   https://ampcode.com/manual/cli (binary name "amp", thread ids "T-...")
+#   https://github.com/holgern/toktrail/blob/main/toktrail/adapters/amp.py
+#     (real thread file shape: JSON object with "id", "created" epoch ms, "messages" array
+#     carrying role/messageId/usage per turn, "usageLedger"; cross-check, read 2026-10-12)
+# Amp stores one JSON file per thread. The dedicated Rust module implements
+# schema-drift tolerance, extracts messages and tokens, and ignores secret files.
+id = "amp"
+name = "Amp"
+vendor = "Amp Inc."
+family = "other"
+kind = "cli"
+adapter_version = "1.1.0"
+store_namespace = "amp-history"
+coverage = "history"
+homepage = "https://ampcode.com"
+docs_url = "https://ampcode.com/manual"
+
+[detection]
+binaries = ["amp"]
+generic_binaries = ["amp"]
+app_bundles = ["Amp"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.local/share/amp/threads"
+]
+config_files = [
+    "~/.config/amp/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/amp/threads"
+]
+config_files = [
+    "~/.config/amp/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.local\\share\\amp\\threads"
+]
+config_files = [
+    "%USERPROFILE%\\.config\\amp\\settings.json"
+]
+
+[[history_sources]]
+id = "amp-threads"
+module = "amp"
+fixture_paths = ["threads/*.json"]
+
+[history_sources.paths]
+macos = ["~/.local/share/amp/threads/T-*.json"]
+linux = ["~/.local/share/amp/threads/T-*.json"]
+windows = ["%USERPROFILE%\\.local\\share\\amp\\threads\\T-*.json"]
+

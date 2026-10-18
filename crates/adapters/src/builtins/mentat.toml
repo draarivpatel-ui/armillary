@@ -1,0 +1,46 @@
+# Mentat (detection only, A6).
+# Homepage: https://github.com/AbanteAI/archive-old-cli-mentat
+# Sources: https://github.com/AbanteAI/archive-old-cli-mentat ; https://pypi.org/project/mentat/
+# Git-integrated terminal agent. The upstream CLI is archived (final release
+# 1.0.19 is a deprecation stub), so coverage stays at detect for installs that
+# remain on machines. Transcripts are dated log files; ~/.mentat/.env is never
+# read (credential file).
+id = "mentat"
+name = "Mentat"
+vendor = "Abante AI"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://github.com/AbanteAI/archive-old-cli-mentat"
+docs_url = "https://github.com/AbanteAI/archive-old-cli-mentat"
+
+[detection]
+binaries = ["mentat"]
+generic_binaries = ["mentat"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.mentat/logs",
+    "~/.mentat"
+]
+config_files = [
+    "~/.mentat/.mentat_config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.mentat/logs",
+    "~/.mentat"
+]
+config_files = [
+    "~/.mentat/.mentat_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.mentat\\logs",
+    "%USERPROFILE%\\.mentat"
+]
+config_files = [
+    "%USERPROFILE%\\.mentat\\.mentat_config.json"
+]

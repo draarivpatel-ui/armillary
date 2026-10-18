@@ -1,0 +1,31 @@
+---
+description: Synthetic Cursor project rules
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+
+# Branch and file naming (synthetic fixture)
+
+This file is intentionally long so the Switchboard preview truncation is exercised by the
+fixture instead of by a hand written string in the test.
+
+Rule 01: name branches by intent, not by ticket alone.
+Rule 02: one component per file, file named after the component.
+Rule 03: hooks live next to the component that uses them.
+Rule 04: no barrel files at the root of a package.
+Rule 05: tests sit under a tests directory, mirroring src.
+Rule 06: keep the design tokens in one place and reference them.
+Rule 07: never hard code a color in a component.
+Rule 08: never hard code a duration in a component.
+Rule 09: prefer a plain function over a class with one method.
+Rule 10: prefer an explicit error type over a thrown string.
+Rule 11: keep parse and render separate so each is testable.
+Rule 12: no network calls inside render.
+Rule 13: no secrets in source, even fake ones from a fixture.
+Rule 14: mask anything that looks like a key before showing it.
+Rule 15: if a value is a reference to an environment variable, show the name only.
+Rule 16: a rules preview is a preview, not a full file copy.
+Rule 17: show the path so the user can go read the real file.
+Rule 18: differences between agents are the point of this view.
+Rule 19: an absent file is information, not an error.
+Rule 20: when two agents agree, say so plainly and get out of the way.

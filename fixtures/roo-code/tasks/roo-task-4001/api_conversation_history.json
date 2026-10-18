@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Add synthetic linting rule"
+  },
+  {
+    "role": "assistant",
+    "content": "I will examine the linting configuration."
+  }
+]

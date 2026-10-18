@@ -1,0 +1,40 @@
+# OpenHands CLI adapter specification. Coverage: detect only.
+#
+# Primary sources:
+#   - https://github.com/OpenHands/OpenHands-CLI
+#   - Docs: https://docs.all-hands.dev
+#
+# Secret files under the data folder that this adapter never opens:
+# agent_settings.json, mcp.json.
+
+id = "openhands-cli"
+name = "OpenHands CLI"
+vendor = "OpenHands (All-Hands AI)"
+family = "open-source CLIs"
+kind = "cli"
+coverage = "detect"
+homepage = "https://www.all-hands.dev"
+docs_url = "https://docs.all-hands.dev"
+
+[detection]
+binaries = ["openhands", "openhands-acp"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.openhands/conversations"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.openhands/conversations"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.openhands\\conversations"
+]
+config_files = []

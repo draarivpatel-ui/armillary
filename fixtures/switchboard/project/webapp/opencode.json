@@ -1,0 +1,15 @@
+{
+  "mcp": {
+    "sqlite": {
+      "type": "local",
+      "command": ["uvx", "mcp-server-sqlite", "--db-path", "./archive.db"]
+    },
+    "figma": {
+      "type": "remote",
+      "url": "https://mcp.figma.com/mcp",
+      "headers": {
+        "X-Figma-Token": "figd_FAKEFIGMATOKEN0123456789abcdefgh"
+      }
+    }
+  }
+}

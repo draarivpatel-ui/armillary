@@ -1,0 +1,40 @@
+# gptme adapter specification. Coverage: detect only.
+#
+# Primary sources:
+#   - https://github.com/gptme/gptme
+#   - Docs: https://gptme.org
+#
+# Secret files under the data folder that this adapter never opens:
+# credentials.toml, config.local.toml, OAuth tokens.
+
+id = "gptme"
+name = "gptme"
+vendor = "Erik Bjareholt"
+family = "open-source CLIs"
+kind = "cli"
+coverage = "detect"
+homepage = "https://gptme.org"
+docs_url = "https://github.com/gptme/gptme"
+
+[detection]
+binaries = ["gptme", "gptme-tui"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/gptme/logs"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/gptme/logs"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\gptme\\logs"
+]
+config_files = []

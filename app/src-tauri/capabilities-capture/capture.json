@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "capture",
+  "description": "Only read when built with the capture cargo feature: lets the main window call the screenshot and video capture commands.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "allow-capture-snapshot",
+    "allow-capture-config",
+    "allow-capture-quit",
+    "allow-capture-resize",
+    "allow-capture-report"
+  ]
+}

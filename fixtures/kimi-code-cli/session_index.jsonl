@@ -1,0 +1,2 @@
+{"sessionId":"ses_7f3d9ab4-51c2-4e8a-9b6d-2c1f0a9d8e73","workDir":"/Users/developer/code/my-api","title":"Add rate limiter middleware","createdAt":"2026-10-12T08:12:04.221Z","updatedAt":"2026-10-12T09:47:33.108Z","lastPrompt":"Wire the token bucket limiter into the router"}
+{"sessionId":"ses_2b8c6e91-44f7-4a03-b8e5-9d7c1f2a6b48","workDir":"/Users/developer/code/my-api","title":"Explain cursor pagination","createdAt":"2026-10-11T15:03:22.877Z","updatedAt":"2026-10-11T15:19:40.412Z","lastPrompt":"How does the cursor pagination in list_orders work?"}

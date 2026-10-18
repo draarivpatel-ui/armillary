@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "typo": {
+      "command": "npx",
+      "args": ["-y", "something"],
+  }
+}

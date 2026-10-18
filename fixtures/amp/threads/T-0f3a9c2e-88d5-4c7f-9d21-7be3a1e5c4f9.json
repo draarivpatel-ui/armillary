@@ -1,0 +1,52 @@
+{
+  "id": "T-0f3a9c2e-88d5-4c7f-9d21-7be3a1e5c4f9",
+  "created": 1791800100000,
+  "title": "Flaky upload test triage",
+  "messages": [
+    {
+      "role": "user",
+      "messageId": 0,
+      "content": [
+        {
+          "type": "text",
+          "text": "The upload integration test flakes about once in ten runs. Find the race and fix it."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "messageId": 1,
+      "model": "claude-sonnet-4-5",
+      "content": [
+        {
+          "type": "text",
+          "text": "The uploader closes the stream before the flush task drains. I will gate the close on the flush promise in src/upload.ts."
+        }
+      ],
+      "usage": {
+        "model": "claude-sonnet-4-5",
+        "inputTokens": 8123,
+        "outputTokens": 402,
+        "cacheReadInputTokens": 6200,
+        "cacheCreationInputTokens": 0,
+        "credits": 1.8
+      }
+    }
+  ],
+  "usageLedger": {
+    "events": [
+      {
+        "model": "claude-sonnet-4-5",
+        "timestamp": "2026-10-12T10:15:44.000Z",
+        "toMessageId": 1,
+        "credits": 1.8,
+        "tokens": {
+          "input": 8123,
+          "output": 402,
+          "cacheReadInputTokens": 6200,
+          "cacheCreationInputTokens": 0
+        }
+      }
+    ]
+  }
+}

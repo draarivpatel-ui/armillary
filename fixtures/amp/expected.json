@@ -1,0 +1,89 @@
+[
+  {
+    "session": {
+      "id": "03b57d2c23fdefbfd4fcf72e81179ef37bcb1d81d8046533e5f313847c736cb0",
+      "agent_id": "amp",
+      "installation_id": null,
+      "native_id": "T-0f3a9c2e-88d5-4c7f-9d21-7be3a1e5c4f9",
+      "provenance": {
+        "store": {
+          "id": "4cf5a87bbfc7561a0aedc59d0b961ae21f4c23704a42867678689fc00b8ab71c",
+          "namespace": "amp-history",
+          "canonical_root": "fixture://amp-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "amp-threads",
+        "adapter_id": "amp",
+        "adapter_version": "1.1.0",
+        "source_path": "threads/T-0f3a9c2e-88d5-4c7f-9d21-7be3a1e5c4f9.json",
+        "file_identity": "synthetic:threads/T-0f3a9c2e-88d5-4c7f-9d21-7be3a1e5c4f9.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1269,
+          "records": 2,
+          "digest": "ff591fe86ba5af78b8025e9775e475c704e236ac86332d8e3b5791652baab691"
+        }
+      },
+      "project_root": null,
+      "title": "Flaky upload test triage",
+      "started_at": 1791800100000,
+      "ended_at": 1791800144000,
+      "model": "claude-sonnet-4-5",
+      "status": "done",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "thread usage ledger timestamp",
+        "native_event_id": null,
+        "at": 1791800144000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 8123,
+        "output_tokens": 402,
+        "observations": [
+          {
+            "event_id": "058a638b19f7f537ec0e64fcc151460752b653ac614f4cca9a0cd4f59e4d652d",
+            "semantics": "cumulative",
+            "input_tokens": 8123,
+            "output_tokens": 402,
+            "at": 1791800144000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "87e0d37fb5543d9ec012ba6e3f3077b4e47ba8ad2dbc5e9d16930e0242b39519",
+        "session_id": "03b57d2c23fdefbfd4fcf72e81179ef37bcb1d81d8046533e5f313847c736cb0",
+        "native_id": "0",
+        "seq": 1,
+        "role": "user",
+        "at": 1791800100000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "The upload integration test flakes about once in ten runs. Find the race and fix it."
+          }
+        ]
+      },
+      {
+        "id": "0b33382a6d6de01739553f48c06c1c9363acdcaf66a2cf14b32fe53f193152e8",
+        "session_id": "03b57d2c23fdefbfd4fcf72e81179ef37bcb1d81d8046533e5f313847c736cb0",
+        "native_id": "1",
+        "seq": 2,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "The uploader closes the stream before the flush task drains. I will gate the close on the flush promise in src/upload.ts."
+          }
+        ]
+      }
+    ]
+  }
+]

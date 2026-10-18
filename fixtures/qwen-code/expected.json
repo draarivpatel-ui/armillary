@@ -1,0 +1,96 @@
+[
+  {
+    "session": {
+      "id": "ff91dd93694500a17f1f873891818962afc9d85fa65aa350500fd800accbcb74",
+      "agent_id": "qwen-code",
+      "installation_id": null,
+      "native_id": "qwen-sess-gamma-001",
+      "provenance": {
+        "store": {
+          "id": "751ffca23cd3c6129e1f6344048768d5fd9f1f42c9e31f15a4548327f03c41b5",
+          "namespace": "qwen-code",
+          "canonical_root": "fixture://qwen-code",
+          "profile_id": "synthetic"
+        },
+        "source_id": "qwen-chats",
+        "adapter_id": "qwen-code",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "tmp/prj_qwen_1/chats/session-001.jsonl",
+        "file_identity": "synthetic:tmp/prj_qwen_1/chats/session-001.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 700,
+          "records": 3,
+          "digest": "8a77544df0958f59028b3642a8a9f178bb4c4a160b81f15ded12bda86e7a0fa7"
+        }
+      },
+      "project_root": "/Users/developer/code/qwen-demo",
+      "title": null,
+      "started_at": 1791814800000,
+      "ended_at": null,
+      "model": "qwen-2.5-coder-32b",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 1100,
+        "output_tokens": 150,
+        "observations": [
+          {
+            "event_id": "2f220128982112c245426bb1a2914260853d9afb60f1acd330295412e7a39cd3",
+            "semantics": "delta",
+            "input_tokens": 1100,
+            "output_tokens": 150,
+            "at": 1791814810000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "1300232e7aa72b90ca6d967ebf5ebbf661e8710256e5e1598a45d80aad356a58",
+        "session_id": "ff91dd93694500a17f1f873891818962afc9d85fa65aa350500fd800accbcb74",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": 1791814805000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Optimize database queries."
+          }
+        ]
+      },
+      {
+        "id": "29e9dc5b663ef8200263c0d316610d68e4f9a0b59eb9baaa37396d70bc06c816",
+        "session_id": "ff91dd93694500a17f1f873891818962afc9d85fa65aa350500fd800accbcb74",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": 1791814810000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I have analyzed the query performance and created indexes."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "13cdc6e0aebe1de1ae59391084c4b4ecff906df42735a5dc7610cc4f1751f991",
+            "native_id": null,
+            "name": "benchmark_query",
+            "input": {
+              "path": "src/db.rs"
+            },
+            "files": [
+              "src/db.rs"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

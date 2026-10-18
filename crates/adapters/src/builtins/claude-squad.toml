@@ -1,0 +1,45 @@
+# Claude Squad (detection only, A6).
+# Homepage: https://github.com/smtg-ai/claude-squad
+# Sources: https://github.com/smtg-ai/claude-squad
+# Go TUI that runs several agent CLIs in tmux worktrees; its own registry of
+# instances and settings is ~/.claude-squad (sessions belong to the launched
+# agent, so those stay under that agent's entry).
+id = "claude-squad"
+name = "Claude Squad"
+vendor = "smtg-ai"
+family = "open-source CLIs"
+kind = "tui"
+homepage = "https://github.com/smtg-ai/claude-squad"
+docs_url = "https://github.com/smtg-ai/claude-squad"
+
+[detection]
+binaries = ["cs", "claude-squad"]
+generic_binaries = ["cs"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.claude-squad"
+]
+config_files = [
+    "~/.claude-squad/config.json",
+    "~/.claude-squad/instances.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.claude-squad"
+]
+config_files = [
+    "~/.claude-squad/config.json",
+    "~/.claude-squad/instances.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.claude-squad"
+]
+config_files = [
+    "%USERPROFILE%\\.claude-squad\\config.json",
+    "%USERPROFILE%\\.claude-squad\\instances.json"
+]

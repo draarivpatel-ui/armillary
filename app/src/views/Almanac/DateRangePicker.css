@@ -1,0 +1,244 @@
+/* Observatory date range control: a trigger that matches the design Select, and a quiet calendar panel. */
+
+.obs-date-range-control {
+  position: relative;
+  display: inline-block;
+  width: 216px;
+}
+
+.obs-date-range-field {
+  position: relative;
+}
+
+/* Trigger: same height, hairline, gilt chevron and gilt focus ring as .obs-select__control */
+.obs-date-range-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  padding: 0 28px 0 10px;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-align: left;
+  color: var(--color-star);
+  background-color: var(--color-ink-1);
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-duration) var(--transition-easing),
+              box-shadow var(--transition-duration) var(--transition-easing);
+}
+
+.obs-date-range-control--md .obs-date-range-trigger {
+  height: 32px;
+}
+
+.obs-date-range-trigger--clearable {
+  padding-right: 52px;
+}
+
+.obs-date-range-trigger:hover,
+.obs-date-range-trigger[aria-expanded="true"] {
+  border-color: var(--color-gilt);
+}
+
+.obs-date-range-trigger:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-color: var(--color-gilt);
+}
+
+.obs-date-range-label {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obs-date-range-chevron {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  display: inline-flex;
+  color: var(--color-gilt);
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: transform var(--transition-duration) var(--transition-easing);
+}
+
+.obs-date-range-trigger[aria-expanded="true"] .obs-date-range-chevron {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Clear: a real button, sat over the trigger just left of the chevron */
+.obs-date-range-clear {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-dust);
+  cursor: pointer;
+  outline: none;
+  transform: translateY(-50%);
+  transition: color var(--transition-duration) var(--transition-easing);
+}
+
+.obs-date-range-clear:hover {
+  color: var(--color-star);
+}
+
+.obs-date-range-clear:focus-visible {
+  box-shadow: var(--focus-ring);
+  color: var(--color-star);
+}
+
+/* Popover: an ink-1 panel with a hairline; it only lifts off the page in the light theme */
+.obs-date-range-popover {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  width: 296px;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background-color: var(--color-ink-1);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  outline: none;
+}
+
+[data-theme="light"] .obs-date-range-popover,
+[data-theme="day-almanac"] .obs-date-range-popover {
+  box-shadow: var(--shadow-raised);
+}
+
+/* Month navigation */
+.obs-date-range-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.obs-date-range-month-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-star);
+}
+
+.obs-date-range-nav-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.obs-date-range-nav-btn--prev svg {
+  transform: rotate(90deg);
+}
+
+.obs-date-range-nav-btn--next svg {
+  transform: rotate(-90deg);
+}
+
+/* Days */
+.obs-calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.obs-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.obs-calendar-weekday {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-dust);
+  padding: 4px 0;
+}
+
+.obs-calendar-day-empty {
+  height: 32px;
+}
+
+.obs-calendar-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0.75px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-star);
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--transition-duration) var(--transition-easing),
+              border-color var(--transition-duration) var(--transition-easing);
+}
+
+.obs-calendar-day:hover {
+  background-color: var(--color-ink-2);
+}
+
+.obs-calendar-day:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-color: var(--color-gilt);
+}
+
+.obs-calendar-day--today {
+  border-color: var(--color-line);
+}
+
+.obs-calendar-day--in-range {
+  background-color: var(--color-gilt-wash);
+  border-radius: 0;
+}
+
+.obs-calendar-day--selected,
+.obs-calendar-day--selected:hover {
+  background-color: var(--color-gilt);
+  border-color: var(--color-gilt);
+  color: var(--color-button-gilt-fg);
+}
+
+/* Presets */
+.obs-date-range-presets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: var(--border-hairline);
+}

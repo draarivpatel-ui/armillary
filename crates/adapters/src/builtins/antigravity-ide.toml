@@ -1,0 +1,45 @@
+# Google Antigravity (detection only, A6).
+# Homepage: https://antigravity.google
+# Sources: https://antigravity.google ; https://developers.google.com/antigravity
+# Desktop agent app and IDE surface. Agent transcripts live in
+# ~/.gemini/antigravity*/brain/<id>/.system_generated/logs/transcript.jsonl. The
+# antigravity CLI (agy) is package A3's entry.
+id = "antigravity-ide"
+name = "Google Antigravity"
+vendor = "Google LLC"
+family = "Google"
+kind = "ide"
+homepage = "https://antigravity.google"
+docs_url = "https://antigravity.google"
+
+[detection]
+binaries = []
+app_bundles = ["Google Antigravity", "Antigravity"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.gemini/antigravity/brain",
+    "~/.gemini/antigravity-ide"
+]
+config_files = [
+    "~/.gemini/config/mcp_config.json",
+    "~/.gemini/config/config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.gemini/antigravity/brain",
+    "~/.gemini/antigravity-ide"
+]
+config_files = [
+    "~/.gemini/config/mcp_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.gemini\\antigravity\\brain",
+    "%USERPROFILE%\\.gemini\\antigravity-ide"
+]
+config_files = [
+    "%USERPROFILE%\\.gemini\\config\\mcp_config.json"
+]

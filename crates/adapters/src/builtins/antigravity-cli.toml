@@ -1,0 +1,76 @@
+# Verification sources:
+# - Official product page: https://antigravity.google/product/antigravity-cli
+# - Documentation overview: https://antigravity.google/docs/cli/overview
+# - CLI installation: https://antigravity.google/docs/cli/install/
+# - CLI reference: https://antigravity.google/docs/cli/reference/
+# - Official repository: https://github.com/google-antigravity/antigravity-cli
+# - Release notes: https://github.com/google-antigravity/antigravity-cli/releases/tag/1.3.3
+#
+# Storage analysis:
+# Antigravity CLI stores sessions split across:
+# 1. conversations/<uuid>.db: SQLite database with trajectory metadata and token counts.
+# 2. history.jsonl: global index mapping conversationId to workspace and timestamp.
+# 3. brain/<uuid>/.system_generated/logs/transcript.jsonl: rolling transcript lacking cwd and tokens.
+# The dedicated Rust module joins history.jsonl with transcript.jsonl and optionally reads SQLite.
+# Coverage is upgraded to history.
+
+id = "antigravity-cli"
+name = "Antigravity CLI"
+vendor = "Google DeepMind"
+family = "Google"
+kind = "cli"
+adapter_version = "1.0.0"
+store_namespace = "antigravity-history"
+coverage = "history"
+homepage = "https://antigravity.google/"
+docs_url = "https://antigravity.google/docs/home/"
+
+[detection]
+binaries = ["agy"]
+generic_binaries = ["agy"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.gemini/antigravity-cli",
+    "~/.gemini/antigravity-cli/brain",
+    "~/.gemini/antigravity-cli/conversations"
+]
+config_files = [
+    "~/.gemini/antigravity-cli/settings.json",
+    "~/.gemini/config/mcp_config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.gemini/antigravity-cli",
+    "~/.gemini/antigravity-cli/brain",
+    "~/.gemini/antigravity-cli/conversations"
+]
+config_files = [
+    "~/.gemini/antigravity-cli/settings.json",
+    "~/.gemini/config/mcp_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.gemini\\antigravity-cli",
+    "%USERPROFILE%\\.gemini\\antigravity-cli\\brain",
+    "%USERPROFILE%\\.gemini\\antigravity-cli\\conversations"
+]
+config_files = [
+    "%USERPROFILE%\\.gemini\\antigravity-cli\\settings.json",
+    "%USERPROFILE%\\.gemini\\config\\mcp_config.json"
+]
+
+[[history_sources]]
+id = "antigravity-conversations"
+module = "antigravity-cli"
+fixture_paths = ["history.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.gemini/antigravity-cli/history.jsonl"]
+linux = ["~/.gemini/antigravity-cli/history.jsonl"]
+windows = ["%USERPROFILE%\\.gemini\\antigravity-cli\\history.jsonl"]
+

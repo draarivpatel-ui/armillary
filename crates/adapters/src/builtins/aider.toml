@@ -1,0 +1,75 @@
+# Aider adapter. Coverage: history (Rust module).
+# Paths verified against:
+#   https://aider.chat/docs/config/options.html (chat-history-file, input-history-file defaults)
+#   https://aider.chat/docs/config/aider_conf.html (config file resolution, home ~/.aider.conf.yml)
+#   https://aider.chat/docs/install.html (installers, binary name "aider")
+#   https://github.com/Aider-AI/aider/blob/main/aider/utils.py (split_chat_history_markdown, checked 2026-10-12)
+#   https://github.com/Aider-AI/aider/blob/main/aider/io.py (append_chat_history)
+# Aider keeps chat history inside each Git repository as <git-root>/.aider.chat.history.md,
+# a single append-only Markdown file holding MANY sessions. Session boundaries are the
+# header line "# aider chat started at YYYY-MM-DD HH:MM:SS"; user turns are "#### " lines,
+# "> " lines are tool output (announcements, token reports, edit and commit notes) and every
+# other line is the assistant's reply (aider's utils.split_chat_history_markdown). The dedicated
+# Rust module reads each history file as its own batch, walks the headers, parses prompts,
+# SEARCH/REPLACE edit blocks and token reports, and synthesizes per-session records.
+# 1.1.0 (RV-ADP): roles corrected (they were reversed), one batch per history file.
+id = "aider"
+name = "Aider"
+vendor = "Paul Gauthier (Aider-AI)"
+family = "open-source CLIs"
+kind = "cli"
+adapter_version = "1.1.0"
+store_namespace = "aider-history"
+coverage = "history"
+homepage = "https://aider.chat"
+docs_url = "https://aider.chat/docs/"
+
+[detection]
+binaries = ["aider"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.aider"
+]
+config_files = [
+    "~/.aider.conf.yml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.aider"
+]
+config_files = [
+    "~/.aider.conf.yml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.aider"
+]
+config_files = [
+    "%USERPROFILE%\\.aider.conf.yml"
+]
+
+[[history_sources]]
+id = "aider-chat-history"
+module = "aider"
+fixture_paths = ["**/.aider.chat.history.md"]
+
+[history_sources.paths]
+default = [".aider.chat.history.md"]
+macos = [
+    "~/.aider/.aider.chat.history.md",
+    ".aider.chat.history.md"
+]
+linux = [
+    "~/.aider/.aider.chat.history.md",
+    ".aider.chat.history.md"
+]
+windows = [
+    "%USERPROFILE%\\.aider\\.aider.chat.history.md",
+    ".aider.chat.history.md"
+]
+

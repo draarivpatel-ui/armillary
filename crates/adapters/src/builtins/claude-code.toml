@@ -1,0 +1,91 @@
+id = "claude-code"
+name = "Claude Code"
+vendor = "Anthropic"
+family = "Anthropic"
+kind = "cli"
+adapter_version = "1.1.0"
+store_namespace = "claude-history"
+homepage = "https://code.claude.com"
+docs_url = "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code"
+
+[detection]
+binaries = ["claude"]
+app_bundles = ["Claude", "Claude Code"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.claude/projects",
+    "~/Library/Application Support/Claude/local-agent-mode-sessions"
+]
+config_files = [
+    "~/.claude/settings.json",
+    "~/.claude.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.claude/projects",
+    "~/.config/Claude/local-agent-mode-sessions"
+]
+config_files = [
+    "~/.claude/settings.json",
+    "~/.claude.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.claude\\projects",
+    "%APPDATA%\\Claude\\local-agent-mode-sessions"
+]
+config_files = [
+    "%USERPROFILE%\\.claude\\settings.json",
+    "%USERPROFILE%\\.claude.json"
+]
+
+[[history_sources]]
+id = "claude-code-projects"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["projects/*/*.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.claude/projects/*/*.jsonl"]
+linux = ["~/.claude/projects/*/*.jsonl"]
+windows = ["%USERPROFILE%\\.claude\\projects\\*\\*.jsonl"]
+
+[history_sources.mapping.session]
+id = "/sessionId"
+project_root = "/cwd"
+timestamp = "/timestamp"
+model = "/message/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+native_id_pointer = "/uuid"
+role_pointer = "/message/role"
+text_pointer = "/message/content"
+text_transform = "content_array"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.tool_calls]
+call_id_pointer = "/id"
+content_array_pointer = "/message/content"
+filter_type = "tool_use"
+result_filter_type = "tool_result"
+result_call_id_pointer = "/tool_use_id"
+result_output_pointer = "/content"
+name_pointer = "/name"
+input_pointer = "/input"
+# Real Claude Code tool inputs (Claude Agent SDK docs, "Tool Input Types",
+# https://code.claude.com/docs/en/agent-sdk/typescript): Read, Edit, Write (and MultiEdit) take
+# file_path, NotebookEdit takes notebook_path, Glob and Grep take an optional path search root.
+files_pointers = ["/input/file_path", "/input/notebook_path", "/input/path"]
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+tokens_in_pointer = "/message/usage/input_tokens"
+tokens_out_pointer = "/message/usage/output_tokens"

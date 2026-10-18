@@ -1,0 +1,104 @@
+# Qoder CLI adapter. Coverage: history (jsonl transcripts, Claude-Code shaped).
+# Paths and record shape verified against:
+#   https://docs.qoder.com/cli/sessions (transcripts at ~/.qoder/projects/<project-slug>/<session-id>.jsonl,
+#     one file per session, one JSON record per line)
+#   https://docs.qoder.com/cli/reference/env-vars (QODER_CONFIG_DIR override of ~/.qoder)
+#   https://github.com/superbasedapp/observer/blob/9081edd2/internal/adapter/qoder/adapter.go
+#     (independent production parser, read 2026-10-12: transcript records carry "type"
+#     user|assistant, "sessionId", "cwd", "gitBranch", "uuid", "parentUuid", "isSidechain",
+#     "timestamp" ISO-8601, and "message" {role, id, model, content: string or blocks of
+#     text / tool_use / tool_result}; runtime-config and file-history-snapshot record types
+#     exist and carry no message; the per-session state.json sidecar is encrypted and is
+#     never read; subagent transcripts live under the project slug in subagents/ paths)
+# The layout mirrors Claude Code, so the mapping does too. Session ids are the "sessionId"
+# field inside records (UUID); the file name is the same UUID.
+id = "qoder-cli"
+name = "Qoder CLI"
+vendor = "Bright Zenith Private Limited (Qoder)"
+family = "Chinese labs"
+kind = "cli"
+homepage = "https://qoder.com/cli"
+docs_url = "https://docs.qoder.com"
+
+[detection]
+binaries = ["qoder", "qodercli"]
+app_bundles = ["Qoder"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.qoder/projects",
+    "~/.qoder/logs/sessions",
+    "$QODER_CONFIG_DIR/projects"
+]
+config_files = [
+    "~/.qoder/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.qoder/projects",
+    "~/.qoder/logs/sessions",
+    "$QODER_CONFIG_DIR/projects"
+]
+config_files = [
+    "~/.qoder/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.qoder\\projects",
+    "%USERPROFILE%\\.qoder\\logs\\sessions",
+    "%QODER_CONFIG_DIR%\\projects"
+]
+config_files = [
+    "%USERPROFILE%\\.qoder\\settings.json"
+]
+
+[[history_sources]]
+id = "qoder-projects"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["projects/*/*.jsonl"]
+
+[history_sources.paths]
+macos = [
+    "~/.qoder/projects/*/*.jsonl",
+    "$QODER_CONFIG_DIR/projects/*/*.jsonl"
+]
+linux = [
+    "~/.qoder/projects/*/*.jsonl",
+    "$QODER_CONFIG_DIR/projects/*/*.jsonl"
+]
+windows = [
+    "%USERPROFILE%\\.qoder\\projects\\*\\*.jsonl"
+]
+
+[history_sources.mapping.session]
+id = "/sessionId"
+project_root = "/cwd"
+timestamp = "/timestamp"
+model = "/message/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+native_id_pointer = "/uuid"
+role_pointer = "/message/role"
+text_pointer = "/message/content"
+text_transform = "content_array"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.tool_calls]
+content_array_pointer = "/message/content"
+filter_type = "tool_use"
+name_pointer = "/name"
+input_pointer = "/input"
+files_pointer = "/input/file_path"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+tokens_in_pointer = "/message/usage/input_tokens"
+tokens_out_pointer = "/message/usage/output_tokens"

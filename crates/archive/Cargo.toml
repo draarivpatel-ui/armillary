@@ -1,0 +1,17 @@
+[package]
+name = "orrery-archive"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libc = "=0.2.190"
+armillary-model = { path = "../model" }
+rusqlite = { version = "=0.40.2", features = ["bundled"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+
+[dev-dependencies]
+tempfile = "=3.19.1"
+orrery-adapters = { path = "../adapters" }

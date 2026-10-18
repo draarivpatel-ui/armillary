@@ -1,0 +1,43 @@
+# PearAI (detection only, A6).
+# Homepage: https://trypear.ai
+# Sources: https://trypear.ai ; https://github.com/additive-machine/pearai-submodule
+# VS Code fork bundling Continue and Roo Code; chats land in state.vscdb. Both of
+# those extensions are package A5 entries, so PearAI is its own install signal.
+id = "pearai"
+name = "PearAI"
+vendor = "PearAI open source community"
+family = "open-source CLIs"
+kind = "ide"
+homepage = "https://trypear.ai"
+docs_url = "https://trypear.ai"
+
+[detection]
+binaries = ["pearai"]
+app_bundles = ["PearAI"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/PearAI/User/globalStorage",
+    "~/.pearai"
+]
+config_files = [
+    "~/.pearai/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/PearAI/User/globalStorage",
+    "~/.pearai"
+]
+config_files = [
+    "~/.pearai/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\PearAI\\User\\globalStorage",
+    "%USERPROFILE%\\.pearai"
+]
+config_files = [
+    "%USERPROFILE%\\.pearai\\mcp.json"
+]

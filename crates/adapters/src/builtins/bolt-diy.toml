@@ -1,0 +1,34 @@
+# Bolt.diy desktop (detection only, A6).
+# Homepage: https://github.com/stackblitz-labs/bolt.diy
+# Sources: https://github.com/stackblitz-labs/bolt.diy
+# Open-source Electron build of Bolt; conversations are local SQLite/IndexedDB
+# and it can drive local models through Ollama or LM Studio.
+id = "bolt-diy"
+name = "Bolt.diy"
+vendor = "StackBlitz and community (stackblitz-labs)"
+family = "open-source CLIs"
+kind = "desktop"
+homepage = "https://github.com/stackblitz-labs/bolt.diy"
+docs_url = "https://github.com/stackblitz-labs/bolt.diy"
+
+[detection]
+binaries = []
+app_bundles = ["bolt.diy"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/bolt-diy"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/bolt-diy"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\bolt-diy"
+]
+config_files = []

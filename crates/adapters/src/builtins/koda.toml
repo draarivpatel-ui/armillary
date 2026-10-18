@@ -1,0 +1,35 @@
+# Koda (detection only, A6).
+# Homepage: https://github.com/lijunzh/koda
+# Sources: https://github.com/lijunzh/koda
+# Rust terminal agent that also serves ACP (Agent Client Protocol), so editors
+# can drive it; configuration lives in the per-user config directory.
+id = "koda"
+name = "Koda"
+vendor = "lijunzh"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://github.com/lijunzh/koda"
+docs_url = "https://github.com/lijunzh/koda"
+
+[detection]
+binaries = ["koda"]
+generic_binaries = ["koda"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.config/koda"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/koda"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\koda"
+]
+config_files = []

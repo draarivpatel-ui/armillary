@@ -1,0 +1,96 @@
+# GitHub Copilot CLI adapter specification
+# Sources:
+# - https://docs.github.com/en/copilot/using-github-copilot-cli
+# - https://docs.github.com/en/copilot/using-github-copilot-cli/using-github-copilot-cli-session-data
+# - https://github.com/github/copilot-cli
+
+id = "github-copilot-cli"
+name = "GitHub Copilot CLI"
+vendor = "GitHub"
+family = "GitHub/Microsoft"
+kind = "cli"
+homepage = "https://github.com/features/copilot"
+docs_url = "https://docs.github.com/en/copilot"
+
+[detection]
+binaries = ["copilot"]
+generic_binaries = ["copilot"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.copilot/session-state",
+    "~/.copilot"
+]
+config_files = [
+    "~/.copilot/config.json",
+    "~/.copilot/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.copilot/session-state",
+    "~/.copilot"
+]
+config_files = [
+    "~/.copilot/config.json",
+    "~/.copilot/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.copilot\\session-state",
+    "%USERPROFILE%\\.copilot"
+]
+config_files = [
+    "%USERPROFILE%\\.copilot\\config.json",
+    "%USERPROFILE%\\.copilot\\settings.json"
+]
+
+[[history_sources]]
+id = "copilot-events"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["session-state/*/events.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.copilot/session-state/*/events.jsonl"]
+linux = ["~/.copilot/session-state/*/events.jsonl"]
+windows = ["%USERPROFILE%\\.copilot\\session-state\\*\\events.jsonl"]
+
+[history_sources.mapping.session]
+meta_filter_pointer = "/type"
+meta_filter_value = "session.start"
+id = "/payload/sessionId"
+project_root = "/payload/cwd"
+timestamp = "/timestamp"
+model = "/payload/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+item_type_pointer = "/type"
+text_pointer = "/payload/text"
+fallback_text_pointer = "/payload/content"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.messages.role_map]
+"user.message" = "user"
+"assistant.message" = "assistant"
+
+[history_sources.mapping.records.tool_calls]
+item_type_pointer = "/type"
+tool_types = ["tool.execution_start"]
+name_pointer = "/payload/toolName"
+input_pointer = "/payload/command"
+files_pointer = "/payload/path"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+usage_filter_pointer = "/type"
+usage_filter_value = "assistant.usage"
+tokens_in_pointer = "/payload/inputTokens"
+tokens_out_pointer = "/payload/outputTokens"

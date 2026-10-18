@@ -1,0 +1,11 @@
+{
+  "session_id": "019c1f2a-7b3e-7000-8a21-4f6d2c9b1e55",
+  "title": "Trim invoice export latency",
+  "cwd": "/Users/demo/api-server",
+  "model_id": "grok-build-fast",
+  "opened_at": "2026-10-06T14:22:05.412Z",
+  "updated_at": "2026-10-06T14:47:31.008Z",
+  "turn_count": 3,
+  "tool_call_count": 4,
+  "archived": false
+}

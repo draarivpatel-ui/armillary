@@ -1,0 +1,45 @@
+# DeepSeek Harness (detection only, A6).
+# Homepage: https://github.com/deepseek-ai/deepseek-harness
+# Sources: https://github.com/deepseek-ai/deepseek-harness ; https://github.com/holasoymalva/deepseek-cli
+# "dsh" writes one directory per session under ~/.dsh/sessions/<projectKey>/ and
+# patches MCP clients through ~/.dsh/cordis.patch.yml. The community deepseek-cli
+# keeps its prompt history in ~/.deepseek/history.
+id = "deepseek-cli"
+name = "DeepSeek Harness"
+vendor = "DeepSeek AI"
+family = "Chinese labs"
+kind = "cli"
+homepage = "https://github.com/deepseek-ai/deepseek-harness"
+docs_url = "https://github.com/deepseek-ai/deepseek-harness"
+
+[detection]
+binaries = ["dsh", "deepseek"]
+generic_binaries = ["dsh"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.dsh/sessions",
+    "~/.deepseek/history"
+]
+config_files = [
+    "~/.dsh/cordis.patch.yml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.dsh/sessions",
+    "~/.deepseek/history"
+]
+config_files = [
+    "~/.dsh/cordis.patch.yml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.dsh\\sessions",
+    "%USERPROFILE%\\.deepseek\\history"
+]
+config_files = [
+    "%USERPROFILE%\\.dsh\\cordis.patch.yml"
+]

@@ -1,0 +1,95 @@
+# Gemini CLI adapter specification
+# Sources:
+# - https://github.com/google-gemini/gemini-cli
+# - https://geminicli.com/docs/cli/session-management/
+# - https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/session-management.md
+
+id = "gemini-cli"
+name = "Gemini CLI"
+vendor = "Google"
+family = "Google"
+kind = "cli"
+homepage = "https://geminicli.com"
+docs_url = "https://geminicli.com/docs/"
+
+# Still "unverified" as a whole (session cwd/model and the user message shape have not been checked
+# against real files); 0.2.0 only corrects the tool call fields below (RV-ADP).
+adapter_version = "0.2.0-unverified"
+
+[detection]
+binaries = ["gemini"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.gemini/tmp",
+    "~/.cache/.gemini/tmp"
+]
+config_files = [
+    "~/.gemini/settings.json",
+    "~/.gemini/projects.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.gemini/tmp",
+    "~/.cache/.gemini/tmp"
+]
+config_files = [
+    "~/.gemini/settings.json",
+    "~/.gemini/projects.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.gemini\\tmp"
+]
+config_files = [
+    "%USERPROFILE%\\.gemini\\settings.json",
+    "%USERPROFILE%\\.gemini\\projects.json"
+]
+
+[[history_sources]]
+id = "gemini-cli-chats"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["tmp/*/chats/session-*.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.gemini/tmp/*/chats/session-*.jsonl", "~/.cache/.gemini/tmp/*/chats/session-*.jsonl"]
+linux = ["~/.gemini/tmp/*/chats/session-*.jsonl", "~/.cache/.gemini/tmp/*/chats/session-*.jsonl"]
+windows = ["%USERPROFILE%\\.gemini\\tmp\\*\\chats\\session-*.jsonl"]
+
+[history_sources.mapping.session]
+id = "/sessionId"
+project_root = "/cwd"
+timestamp = "/startTime"
+model = "/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+item_type_pointer = "/type"
+text_pointer = "/content"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.messages.role_map]
+user = "user"
+gemini = "assistant"
+
+[history_sources.mapping.records.tool_calls]
+content_array_pointer = "/toolCalls"
+# Real ToolCallRecord (google-gemini/gemini-cli, packages/core/src/services/chatRecordingTypes.ts):
+# { id, name, args, result, status, timestamp }. The file tools (read_file, write_file, replace) take
+# file_path (packages/core/src/tools/read-file.ts, write-file.ts, edit.ts).
+input_pointer = "/args"
+result_pointer = "/result"
+files_pointers = ["/args/file_path"]
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+tokens_in_pointer = "/tokens/input"
+tokens_out_pointer = "/tokens/output"

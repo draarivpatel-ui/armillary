@@ -1,0 +1,14 @@
+[
+  {
+    "ts": 1791817000000,
+    "type": "say",
+    "say": "text",
+    "text": "Setup unit tests with mock runners."
+  },
+  {
+    "ts": 1791817025000,
+    "type": "say",
+    "say": "text",
+    "text": "Unit tests configured with synthetic runners."
+  }
+]

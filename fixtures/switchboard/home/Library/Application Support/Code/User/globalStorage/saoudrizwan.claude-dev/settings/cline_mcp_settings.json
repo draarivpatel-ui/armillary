@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "seqora": {
+      "command": "npx",
+      "args": ["-y", "seqora-mcp@0.4.2"],
+      "alwaysAllowResources": ["seqora://runs/recent"]
+    },
+    "linear": {
+      "type": "streamableHttp",
+      "url": "https://mcp.linear.app/mcp",
+      "headers": {
+        "Authorization": "Bearer linFAKE0123456789linFAKE0123456789"
+      },
+      "disabled": true,
+      "autoApprove": ["list_issues"]
+    }
+  }
+}

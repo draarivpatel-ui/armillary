@@ -1,0 +1,108 @@
+[
+  {
+    "session": {
+      "id": "3a1f7f93a4358bcd5b3efe14cbc0fb73a1d69432fcad0f1b734bdc78b94adeac",
+      "agent_id": "codex-cli",
+      "installation_id": null,
+      "native_id": "codex-thread-9876",
+      "provenance": {
+        "store": {
+          "id": "5c77e282a0baedaebc34d6105ffe7e2bdb6370a7db6993f516784ac628dc83c2",
+          "namespace": "codex-history",
+          "canonical_root": "fixture://codex-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "codex-sessions",
+        "adapter_id": "codex-cli",
+        "adapter_version": "1.0.0",
+        "source_path": "sessions/2026/10/12/rollout-2026-10-12T14-00-00-abc123.jsonl",
+        "file_identity": "synthetic:sessions/2026/10/12/rollout-2026-10-12T14-00-00-abc123.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1084,
+          "records": 5,
+          "digest": "3993cc36fe6705d99b616539f1213499ebad1f7870fc88a7c7c241c0c2535d46"
+        }
+      },
+      "project_root": "/home/developer/projects/core-api",
+      "title": null,
+      "started_at": 1791813600000,
+      "ended_at": null,
+      "model": "gpt-5.2-codex",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 1800,
+        "output_tokens": 420,
+        "observations": [
+          {
+            "event_id": "4feee15f31ea8bc449ff8819d2e671e8f13aca576d420a3ca6d2b8586e5711ac",
+            "semantics": "cumulative",
+            "input_tokens": 1800,
+            "output_tokens": 420,
+            "at": 1791813621000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "54e777886b429228b46a7e33beb47fa736dece1a4d0671094c12973bc3704090",
+        "session_id": "3a1f7f93a4358bcd5b3efe14cbc0fb73a1d69432fcad0f1b734bdc78b94adeac",
+        "native_id": "item_user_1",
+        "seq": 2,
+        "role": "user",
+        "at": 1791813605000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Refactor connection pool and run migration test"
+          }
+        ]
+      },
+      {
+        "id": "9132aa21e9fe6511b8dd00cf8aeb6fbda95d47878f83b30a89fd9e88d9ac054a",
+        "session_id": "3a1f7f93a4358bcd5b3efe14cbc0fb73a1d69432fcad0f1b734bdc78b94adeac",
+        "native_id": "item_cmd_1",
+        "seq": 3,
+        "role": "assistant",
+        "at": 1791813610000,
+        "blocks": [
+          {
+            "type": "tool_call",
+            "call_id": "item_cmd_1",
+            "native_id": "item_cmd_1",
+            "name": "command_execution",
+            "input": "cargo test --test migrations",
+            "files": []
+          },
+          {
+            "type": "tool_result",
+            "call_id": "item_cmd_1",
+            "output": "test result: ok. 4 passed",
+            "is_error": null
+          }
+        ]
+      },
+      {
+        "id": "b979c81aa0be407c98bd8b8800c1c38cc20954a76891e17c7d85c46c2cf4dc9e",
+        "session_id": "3a1f7f93a4358bcd5b3efe14cbc0fb73a1d69432fcad0f1b734bdc78b94adeac",
+        "native_id": "item_agent_1",
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791813620000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "The connection pool has been refactored and all migration tests passed."
+          }
+        ]
+      }
+    ]
+  }
+]

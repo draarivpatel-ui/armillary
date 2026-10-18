@@ -1,0 +1,21 @@
+{
+  "sessionId": "6c7a8b9c-0123-4567-89ab-cdef01234567",
+  "title": "Synthetic documentation update",
+  "workspaceDirectory": "/workspace/synth-continue",
+  "history": [
+    {
+      "message": {
+        "role": "user",
+        "content": "Update the readme with synthetic examples."
+      },
+      "contextItems": []
+    },
+    {
+      "message": {
+        "role": "assistant",
+        "content": "I have updated the readme file with examples."
+      },
+      "contextItems": []
+    }
+  ]
+}

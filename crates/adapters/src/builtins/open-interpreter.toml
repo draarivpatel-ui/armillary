@@ -1,0 +1,92 @@
+# Open Interpreter adapter specification.
+#
+# Primary sources:
+#   - https://github.com/openinterpreter/openinterpreter
+#   - Docs: https://www.openinterpreter.com/docs/terminal
+#   - Rollout format: Codex fork architecture with rollout JSONL records.
+#
+# Secret files under the data folder that this adapter never opens:
+# .credentials.json, auth.json, config.toml, secrets.
+
+id = "open-interpreter"
+name = "Open Interpreter"
+vendor = "Open Interpreter"
+family = "open-source CLIs"
+kind = "cli"
+adapter_version = "0.1.0-unverified"
+coverage = "history"
+homepage = "https://www.openinterpreter.com"
+docs_url = "https://www.openinterpreter.com/docs/terminal"
+
+[detection]
+binaries = ["interpreter", "i"]
+generic_binaries = ["interpreter", "i"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.openinterpreter/sessions",
+    "$INTERPRETER_HOME/sessions"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.openinterpreter/sessions",
+    "$INTERPRETER_HOME/sessions"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.openinterpreter\\sessions",
+    "%INTERPRETER_HOME%\\sessions"
+]
+config_files = []
+
+[[history_sources]]
+id = "openinterpreter-rollouts"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = [".openinterpreter/sessions/**/rollout-*.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.openinterpreter/sessions/*/*/*/rollout-*.jsonl"]
+linux = ["~/.openinterpreter/sessions/*/*/*/rollout-*.jsonl"]
+windows = ["%USERPROFILE%\\.openinterpreter\\sessions\\*\\*\\*\\rollout-*.jsonl"]
+
+[history_sources.mapping.session]
+id = "/payload/session_id"
+project_root = "/payload/cwd"
+model = "/payload/model"
+title = "/payload/thread_name"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+match_type = "event_msg"
+item_type_pointer = "/payload/type"
+text_pointer = "/payload/message"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.messages.role_map]
+user_message = "user"
+agent_message = "assistant"
+
+[history_sources.mapping.records.tool_calls]
+match_type = "response_item"
+item_type_pointer = "/payload/type"
+tool_types = ["function_call"]
+name_pointer = "/payload/name"
+input_pointer = "/payload/arguments"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+match_type = "event_msg"
+usage_filter_pointer = "/payload/type"
+usage_filter_value = "token_count"
+tokens_in_pointer = "/payload/info/last_token_usage/input_tokens"
+tokens_out_pointer = "/payload/info/last_token_usage/output_tokens"

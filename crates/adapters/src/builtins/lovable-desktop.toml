@@ -1,0 +1,34 @@
+# Lovable Desktop (detection only, A6).
+# Homepage: https://lovable.dev
+# Sources: https://lovable.dev/download ; https://toDesktop.com
+# Desktop shell over a cloud workspace; local data is cached tokens and tabs.
+# No Linux client is published, hence the empty linux section.
+# no-documented-path: linux: Lovable ships macOS and Windows (MS Store) clients only.
+id = "lovable-desktop"
+name = "Lovable Desktop"
+vendor = "Lovable Labs Inc."
+family = "other"
+kind = "desktop"
+homepage = "https://lovable.dev"
+docs_url = "https://docs.lovable.dev"
+
+[detection]
+binaries = []
+app_bundles = ["Lovable"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Lovable"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Lovable",
+    "%LOCALAPPDATA%\\Packages\\LovableLabsInc.Lovable_fpy7cghqjq4g0"
+]
+config_files = []

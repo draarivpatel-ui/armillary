@@ -1,0 +1,44 @@
+# VS Code with GitHub Copilot Agent Mode (detection only, A6).
+# Homepage: https://visualstudio.com
+# Sources: https://visualstudio.com ; https://github.com/features/copilot ; https://code.visualstudio.com/docs/agents/mcp
+# The github.copilot-chat extension surface, not the Copilot CLI (package A1).
+# Transcripts land in workspaceStorage/<hash>/chatSessions/, indexed in state.vscdb.
+id = "vscode-copilot"
+name = "VS Code GitHub Copilot Agent Mode"
+vendor = "Microsoft / GitHub"
+family = "GitHub/Microsoft"
+kind = "ide_extension"
+homepage = "https://visualstudio.com"
+docs_url = "https://code.visualstudio.com/docs/copilot/overview"
+
+[detection]
+binaries = ["code"]
+generic_binaries = ["code"]
+app_bundles = ["Visual Studio Code"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Code/User/globalStorage/github.copilot-chat",
+    "~/Library/Application Support/Code/User/workspaceStorage"
+]
+config_files = [
+    "~/Library/Application Support/Code/User/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Code/User/globalStorage/github.copilot-chat",
+    "~/.config/Code/User/workspaceStorage"
+]
+config_files = [
+    "~/.config/Code/User/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Code\\User\\globalStorage\\github.copilot-chat",
+    "%APPDATA%\\Code\\User\\workspaceStorage"
+]
+config_files = [
+    "%APPDATA%\\Code\\User\\mcp.json"
+]

@@ -1,0 +1,35 @@
+# Vibe Kanban (detection only, A6).
+# Homepage: https://vibekanban.com
+# Sources: https://vibekanban.com ; https://github.com/BloopAI/vibe-kanban
+# Kanban orchestrator started with npx; task cards map to Git worktrees and its
+# own SQLite database. On macOS the database and worktrees live under the system
+# temporary directory, which the docs do not pin to a stable path, so detection
+# there relies on the command being installed.
+# no-documented-path: macos: the card documents per-user data on Linux and Windows and a system temp path on macOS.
+id = "vibe-kanban"
+name = "Vibe Kanban"
+vendor = "Bloop AI"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://vibekanban.com"
+docs_url = "https://github.com/BloopAI/vibe-kanban"
+
+[detection]
+binaries = ["vibe-kanban"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = []
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/vibe-kanban"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\bloop\\vibe-kanban\\data"
+]
+config_files = []

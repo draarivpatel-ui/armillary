@@ -1,0 +1,104 @@
+[
+  {
+    "session": {
+      "id": "689b9e3f6d8526de3882a03f4db804a97b11913d4f2c3485f88b74c13a20c1a6",
+      "agent_id": "github-copilot-cli",
+      "installation_id": null,
+      "native_id": "copilot-sess-beta-001",
+      "provenance": {
+        "store": {
+          "id": "9b06524c9ad7e4966831aaed63e6245f0a5670bfabfb6b0c41f441c875a379dd",
+          "namespace": "github-copilot-cli",
+          "canonical_root": "fixture://github-copilot-cli",
+          "profile_id": "synthetic"
+        },
+        "source_id": "copilot-events",
+        "adapter_id": "github-copilot-cli",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "session-state/sess-12345/events.jsonl",
+        "file_identity": "synthetic:session-state/sess-12345/events.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 760,
+          "records": 5,
+          "digest": "ba5ff18c03d5bcada6b5f84c7c262b47570afcd31a79f3d8638358f08616c6cd"
+        }
+      },
+      "project_root": "/Users/developer/code/copilot-project",
+      "title": null,
+      "started_at": 1791813600000,
+      "ended_at": null,
+      "model": "gpt-4o",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 1500,
+        "output_tokens": 250,
+        "observations": [
+          {
+            "event_id": "d01189a0d11247b4d7405781515827f026a865a29b7ae352de32b5f2d5b4f5e8",
+            "semantics": "delta",
+            "input_tokens": 1500,
+            "output_tokens": 250,
+            "at": 1791813621000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "43cab8f33f1455bd46a84945474785b46b4d5767d05f04fb144385297c3bc0bc",
+        "session_id": "689b9e3f6d8526de3882a03f4db804a97b11913d4f2c3485f88b74c13a20c1a6",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": 1791813605000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Explain the authentication flow."
+          }
+        ]
+      },
+      {
+        "id": "35dc7a2a0c706efca1ac34f3ba679af4bb376ca398ab348844b596c969cef5ad",
+        "session_id": "689b9e3f6d8526de3882a03f4db804a97b11913d4f2c3485f88b74c13a20c1a6",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": 1791813610000,
+        "blocks": [
+          {
+            "type": "tool_call",
+            "call_id": "evt-003",
+            "native_id": "evt-003",
+            "name": "grep_search",
+            "input": "grep -rn 'auth' src/",
+            "files": [
+              "src/auth.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9d21e1f45628e81aa35d9223e79006eb5398888c5308dabc8543cdfdf80f44ea",
+        "session_id": "689b9e3f6d8526de3882a03f4db804a97b11913d4f2c3485f88b74c13a20c1a6",
+        "native_id": null,
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791813620000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "The authentication flow uses JSON Web Tokens."
+          }
+        ]
+      }
+    ]
+  }
+]

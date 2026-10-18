@@ -1,0 +1,101 @@
+[
+  {
+    "session": {
+      "id": "43ae134ebc91cbfdf8adb9f4f0bdecd9a3b24b868f3e52f9de99247303b14135",
+      "agent_id": "cline",
+      "installation_id": null,
+      "native_id": "1728740000000_abcde",
+      "provenance": {
+        "store": {
+          "id": "33f8117478a2c2bc888cfb4eb345ed4adb312ad6b1c53a4070eb98a5ffef8a3d",
+          "namespace": "cline",
+          "canonical_root": "fixture://cline",
+          "profile_id": "synthetic"
+        },
+        "source_id": "cline-history",
+        "adapter_id": "cline",
+        "adapter_version": "1.0.0",
+        "source_path": "sessions/1728740000000_abcde/1728740000000_abcde.json",
+        "file_identity": "synthetic:sessions/1728740000000_abcde/1728740000000_abcde.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 423,
+          "records": 3,
+          "digest": "02dd302b3336116880164e2b7479dfc4f176f65959b68d78cc0e0c85ac5217ab"
+        }
+      },
+      "project_root": "/workspace/synth-app",
+      "title": "Create synthetic helper function",
+      "started_at": 1791815400000,
+      "ended_at": 1791815460000,
+      "model": "claude-3-7-sonnet-20250219",
+      "status": "completed",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "native completed status",
+        "native_event_id": null,
+        "at": 1791815460000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 1450,
+        "output_tokens": 210,
+        "observations": [
+          {
+            "event_id": "c4552ac1fc47255d04732dffe4af58739f015e97b4558951dc7a7698e38e9eb1",
+            "semantics": "cumulative",
+            "input_tokens": 1450,
+            "output_tokens": 210,
+            "at": 1791815460000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "7f234da8d4d772e5abf24e6854d08bf5e17b853ba7463b6af598a2190b364621",
+        "session_id": "43ae134ebc91cbfdf8adb9f4f0bdecd9a3b24b868f3e52f9de99247303b14135",
+        "native_id": "msg_001",
+        "seq": 1,
+        "role": "user",
+        "at": 1791815400000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Create a synthetic helper function for formatting metrics."
+          }
+        ]
+      },
+      {
+        "id": "50dc3248b7d5fa7e07c3bbe84c433d5fe67de0de4420508771a46fd603ffc740",
+        "session_id": "43ae134ebc91cbfdf8adb9f4f0bdecd9a3b24b868f3e52f9de99247303b14135",
+        "native_id": "msg_002",
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791815460000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will create a helper module with formatting functions."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call_1",
+            "native_id": "call_1",
+            "name": "write_to_file",
+            "input": {
+              "path": "src/format.ts"
+            },
+            "files": [
+              "src/format.ts"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

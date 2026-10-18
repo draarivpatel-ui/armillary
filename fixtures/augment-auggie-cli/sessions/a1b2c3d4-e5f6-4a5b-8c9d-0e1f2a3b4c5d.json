@@ -1,0 +1,55 @@
+{
+  "sessionId": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+  "created": "2026-10-12T13:00:00.000Z",
+  "modified": "2026-10-12T13:05:00.000Z",
+  "title": "Fix memory leak in websocket handler",
+  "customTitle": "Fix memory leak in websocket handler",
+  "rootTaskUuid": "task-uuid-9999",
+  "workspaceId": "ws-12345",
+  "agentState": {
+    "modelId": "claude-3-7-sonnet"
+  },
+  "chatHistory": [
+    {
+      "sequenceId": 1,
+      "finishedAt": "2026-10-12T13:05:00.000Z",
+      "completed": true,
+      "source": "local",
+      "exchange": {
+        "request_nodes": [
+          {
+            "id": 1,
+            "type": 0,
+            "content": "Check ws-handler.ts for memory leaks."
+          },
+          {
+            "id": 2,
+            "type": 4,
+            "workspace_folders": [
+              {
+                "repository_root": "/Users/developer/code/websocket-service",
+                "folder_root": "/Users/developer/code/websocket-service"
+              }
+            ]
+          }
+        ],
+        "response_nodes": [
+          {
+            "id": 3,
+            "type": 0,
+            "content": "I identified an unclosed subscription in ws-handler.ts."
+          },
+          {
+            "id": 4,
+            "type": 5,
+            "tool_use": {
+              "tool_use_id": "tool-call-1",
+              "tool_name": "view_file",
+              "input_json": "{\"file\":\"src/ws-handler.ts\"}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

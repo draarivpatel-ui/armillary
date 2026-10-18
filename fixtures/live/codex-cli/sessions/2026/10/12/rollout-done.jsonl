@@ -1,0 +1,2 @@
+{"type":"session_meta","payload":{"id":"codex-live-done","cwd":"/projects/old-task","timestamp":"2026-10-12T13:00:00Z"}}
+{"type":"event_msg","payload":{"type":"item_completed","item":{"type":"agent_message"}}}

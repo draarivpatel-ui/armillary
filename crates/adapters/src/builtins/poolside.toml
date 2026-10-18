@@ -1,0 +1,38 @@
+# Poolside (detection only, A6).
+# Homepage: https://poolside.ai
+# Sources: https://poolside.ai
+# "pool" terminal agent and desktop assistant over the Laguna models; sessions are
+# tracked as isolated Git worktrees with a JSON index in the home directory.
+id = "poolside"
+name = "Poolside"
+vendor = "Poolside AI"
+family = "other"
+kind = "cli"
+homepage = "https://poolside.ai"
+docs_url = "https://poolside.ai"
+
+[detection]
+binaries = ["pool"]
+generic_binaries = ["pool"]
+app_bundles = ["Poolside"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.poolside",
+    "~/.pool"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.poolside",
+    "~/.pool"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.poolside",
+    "%USERPROFILE%\\.pool"
+]
+config_files = []

@@ -1,0 +1,46 @@
+# Kiro CLI (detection only, A6).
+# Homepage: https://kiro.dev
+# Sources: https://kiro.dev ; https://docs.kiro.dev/reference/kiro-cli
+# Successor to the Amazon Q Developer CLI; agent and MCP definitions live in
+# ~/.kiro (KIRO_HOME can override, which is why the home path is listed first).
+id = "kiro-cli"
+name = "Kiro CLI"
+vendor = "Amazon Web Services"
+family = "other"
+kind = "cli"
+homepage = "https://kiro.dev"
+docs_url = "https://kiro.dev/docs/mcp/"
+
+[detection]
+binaries = ["kiro-cli"]
+app_bundles = ["Kiro"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.kiro/settings",
+    "~/.kiro/agents"
+]
+config_files = [
+    "~/.kiro/settings/cli.json",
+    "~/.kiro/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.kiro/settings",
+    "~/.kiro/agents"
+]
+config_files = [
+    "~/.kiro/settings/cli.json",
+    "~/.kiro/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.kiro\\settings",
+    "%USERPROFILE%\\.kiro\\agents"
+]
+config_files = [
+    "%USERPROFILE%\\.kiro\\settings\\cli.json",
+    "%USERPROFILE%\\.kiro\\mcp.json"
+]

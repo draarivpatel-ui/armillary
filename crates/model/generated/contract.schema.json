@@ -1,0 +1,1016 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Agent": {
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "vendor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "family",
+        "id",
+        "kind",
+        "name",
+        "vendor"
+      ],
+      "type": "object"
+    },
+    "ChecklistItem": {
+      "additionalProperties": false,
+      "properties": {
+        "checked": {
+          "type": "boolean"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "checked",
+        "text"
+      ],
+      "type": "object"
+    },
+    "Checkpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "type": "string"
+        },
+        "offset": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "records": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "revision": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "digest",
+        "offset",
+        "records",
+        "revision"
+      ],
+      "type": "object"
+    },
+    "Confidence": {
+      "enum": [
+        "unknown",
+        "low",
+        "medium",
+        "high"
+      ],
+      "type": "string"
+    },
+    "ConfirmedSourceDeletion": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/definitions/Evidence"
+        },
+        "source": {
+          "$ref": "#/definitions/SourceProvenance"
+        }
+      },
+      "required": [
+        "evidence",
+        "source"
+      ],
+      "type": "object"
+    },
+    "ContentBlock": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "text"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "language": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "code"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "call_id": {
+              "type": "string"
+            },
+            "files": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "input": true,
+            "name": {
+              "type": "string"
+            },
+            "native_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "tool_call"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "call_id",
+            "files",
+            "input",
+            "name",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "call_id": {
+              "type": "string"
+            },
+            "is_error": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "output": true,
+            "type": {
+              "enum": [
+                "tool_result"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "call_id",
+            "output",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "after": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "before": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "diff": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "path": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "edit"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "items": {
+                "$ref": "#/definitions/ChecklistItem"
+              },
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "checklist"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "items",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "message": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "error"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "message",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "mime_type": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reference": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "attachment"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "reference",
+            "type"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "native_event_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "detail",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "ImportBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "items": {
+            "$ref": "#/definitions/ImportDiagnostic"
+          },
+          "type": "array"
+        },
+        "live_updates": {
+          "items": {
+            "$ref": "#/definitions/LiveMutation"
+          },
+          "type": "array"
+        },
+        "mode": {
+          "$ref": "#/definitions/ImportMode"
+        },
+        "read_status": {
+          "$ref": "#/definitions/ReadStatus"
+        },
+        "sessions": {
+          "items": {
+            "$ref": "#/definitions/NormalizedSession"
+          },
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/definitions/SourceProvenance"
+        }
+      },
+      "required": [
+        "diagnostics",
+        "live_updates",
+        "mode",
+        "read_status",
+        "sessions",
+        "source"
+      ],
+      "type": "object"
+    },
+    "ImportDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "source_key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "source_key"
+      ],
+      "type": "object"
+    },
+    "ImportMode": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": [
+                "snapshot"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "from": {
+              "$ref": "#/definitions/Checkpoint"
+            },
+            "mode": {
+              "enum": [
+                "append"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "mode"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Install": {
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "type": "string"
+        },
+        "executable_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "paths": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "store_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "agent_id",
+        "id",
+        "paths",
+        "profile_id",
+        "store_ids"
+      ],
+      "type": "object"
+    },
+    "Live": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/definitions/Confidence"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/definitions/Evidence"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "observed_at": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "process": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProcessIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "since": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "state": {
+          "$ref": "#/definitions/LiveState"
+        }
+      },
+      "required": [
+        "confidence",
+        "evidence",
+        "observed_at",
+        "session_id",
+        "state"
+      ],
+      "type": "object"
+    },
+    "LiveAction": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "enum": [
+                "preserve"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "enum": [
+                "update"
+              ],
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/definitions/Live"
+            }
+          },
+          "required": [
+            "action",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "enum": [
+                "remove"
+              ],
+              "type": "string"
+            },
+            "evidence": {
+              "$ref": "#/definitions/Evidence"
+            }
+          },
+          "required": [
+            "action",
+            "evidence"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "LiveMutation": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/LiveAction"
+        },
+        "session_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "LiveState": {
+      "enum": [
+        "unknown",
+        "working",
+        "waiting",
+        "idle",
+        "done"
+      ],
+      "type": "string"
+    },
+    "Message": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "blocks": {
+          "items": {
+            "$ref": "#/definitions/ContentBlock"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "native_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "type": "string"
+        },
+        "seq": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "blocks",
+        "id",
+        "role",
+        "seq",
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "NormalizedSession": {
+      "additionalProperties": false,
+      "properties": {
+        "messages": {
+          "items": {
+            "$ref": "#/definitions/Message"
+          },
+          "type": "array"
+        },
+        "session": {
+          "$ref": "#/definitions/Session"
+        }
+      },
+      "required": [
+        "messages",
+        "session"
+      ],
+      "type": "object"
+    },
+    "ProcessIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "pid": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "started_at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "pid"
+      ],
+      "type": "object"
+    },
+    "ReadStatus": {
+      "enum": [
+        "complete",
+        "incomplete",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "Session": {
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "type": "string"
+        },
+        "completion": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Evidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ended_at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "installation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_parent_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parent_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "project_root": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/definitions/SourceProvenance"
+        },
+        "started_at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "turns": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "usage": {
+          "$ref": "#/definitions/Usage"
+        }
+      },
+      "required": [
+        "agent_id",
+        "id",
+        "provenance",
+        "status",
+        "turns",
+        "usage"
+      ],
+      "type": "object"
+    },
+    "SourceProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_id": {
+          "type": "string"
+        },
+        "adapter_version": {
+          "type": "string"
+        },
+        "checkpoint": {
+          "$ref": "#/definitions/Checkpoint"
+        },
+        "file_identity": {
+          "type": "string"
+        },
+        "generation": {
+          "description": "Monotonic incarnation assigned by the importer after observed rotation.",
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_path": {
+          "description": "Path relative to the canonical store root, with '/' separators.",
+          "type": "string"
+        },
+        "store": {
+          "$ref": "#/definitions/StoreIdentity"
+        }
+      },
+      "required": [
+        "adapter_id",
+        "adapter_version",
+        "checkpoint",
+        "file_identity",
+        "generation",
+        "source_id",
+        "source_path",
+        "store"
+      ],
+      "type": "object"
+    },
+    "StoreIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_root": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "profile_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "canonical_root",
+        "id",
+        "namespace",
+        "profile_id"
+      ],
+      "type": "object"
+    },
+    "Usage": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/definitions/UsageObservation"
+          },
+          "type": "array"
+        },
+        "output_tokens": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "semantics": {
+          "$ref": "#/definitions/UsageSemantics"
+        }
+      },
+      "required": [
+        "observations",
+        "semantics"
+      ],
+      "type": "object"
+    },
+    "UsageObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "input_tokens": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "output_tokens": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "semantics": {
+          "$ref": "#/definitions/UsageSemantics"
+        }
+      },
+      "required": [
+        "event_id",
+        "semantics"
+      ],
+      "type": "object"
+    },
+    "UsageSemantics": {
+      "enum": [
+        "unknown",
+        "cumulative",
+        "delta"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "Schema generation entry point. This is a type catalogue, not an API response.",
+  "properties": {
+    "agent": {
+      "$ref": "#/definitions/Agent"
+    },
+    "batch": {
+      "$ref": "#/definitions/ImportBatch"
+    },
+    "deletion": {
+      "$ref": "#/definitions/ConfirmedSourceDeletion"
+    },
+    "install": {
+      "$ref": "#/definitions/Install"
+    }
+  },
+  "required": [
+    "agent",
+    "batch",
+    "deletion",
+    "install"
+  ],
+  "title": "Contract",
+  "type": "object"
+}

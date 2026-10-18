@@ -1,0 +1,89 @@
+[
+  {
+    "session": {
+      "id": "111c9fb574d3617e4e21f4b1714bb79a5243fbef0071305c0116c38c674f85dc",
+      "agent_id": "roo-code",
+      "installation_id": null,
+      "native_id": "roo-task-4001",
+      "provenance": {
+        "store": {
+          "id": "8e58a7f699e2e61fe531e4d36b4f5b55864e99656c01ed34734fe57da6bd1167",
+          "namespace": "roo-code",
+          "canonical_root": "fixture://roo-code",
+          "profile_id": "synthetic"
+        },
+        "source_id": "roo-code-history",
+        "adapter_id": "roo-code",
+        "adapter_version": "1.0.0",
+        "source_path": "tasks/roo-task-4001/history_item.json",
+        "file_identity": "synthetic:tasks/roo-task-4001/history_item.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 260,
+          "records": 2,
+          "digest": "b8a650e05525ed7c3443972e21bd8051d45c743571c4f4ea2d463f921baca795"
+        }
+      },
+      "project_root": "/workspace/synth-lint",
+      "title": "Add synthetic linting rule",
+      "started_at": 1791816000000,
+      "ended_at": 1791816020000,
+      "model": null,
+      "status": "completed",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "native completed status",
+        "native_event_id": null,
+        "at": 1791816020000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 3200,
+        "output_tokens": 450,
+        "observations": [
+          {
+            "event_id": "df2a5d61a26caefae811855e974a900f785e8f5cee7e3c8e079e44f4616daf04",
+            "semantics": "cumulative",
+            "input_tokens": 3200,
+            "output_tokens": 450,
+            "at": 1791816020000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "28677c4735a7cb11932f248756a5993a89ec2e8280e7f55c5e9bff869b9b8736",
+        "session_id": "111c9fb574d3617e4e21f4b1714bb79a5243fbef0071305c0116c38c674f85dc",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": 1791816000000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add synthetic linting rule"
+          }
+        ]
+      },
+      {
+        "id": "9ae2bfc7e42ccba118d4661046a41497c936e7f6b9b62ccacef0a21ae6531465",
+        "session_id": "111c9fb574d3617e4e21f4b1714bb79a5243fbef0071305c0116c38c674f85dc",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791816020000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will examine the linting configuration."
+          }
+        ]
+      }
+    ]
+  }
+]

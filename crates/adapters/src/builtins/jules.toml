@@ -1,0 +1,36 @@
+# Jules (detection only, A6).
+# Homepage: https://jules.google
+# Sources: https://jules.google ; https://blog.google/technology/developers/jules
+# Google's asynchronous cloud coding agent. Runs are on Google's VMs; the local
+# footprint is the CLI's OAuth token and session JSON cache, so coverage is
+# detect only and the token file itself is never read.
+id = "jules"
+name = "Jules"
+vendor = "Google"
+family = "Google"
+kind = "cloud"
+homepage = "https://jules.google"
+docs_url = "https://jules.google"
+
+[detection]
+binaries = ["jules"]
+generic_binaries = ["jules"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.config/jules"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/jules"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Google\\Jules"
+]
+config_files = []

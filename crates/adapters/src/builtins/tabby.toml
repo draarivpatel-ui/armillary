@@ -1,0 +1,46 @@
+# Tabby (detection only, A6).
+# Homepage: https://tabbyml.com
+# Sources: https://tabbyml.com ; https://github.com/TabbyML/tabby
+# Self-hosted completion server. The default root is ~/.tabby (TABBY_ROOT can move
+# it), with the SQLite metadata under the ee directory and JSONL event logs.
+id = "tabby"
+name = "Tabby"
+vendor = "TabbyML"
+family = "open-source CLIs"
+kind = "server"
+homepage = "https://tabbyml.com"
+docs_url = "https://tabby.tabbyml.com"
+
+[detection]
+binaries = ["tabby"]
+generic_binaries = ["tabby"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.tabby/ee",
+    "~/.tabby/events",
+    "~/.tabby"
+]
+config_files = [
+    "~/.tabby/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.tabby/ee",
+    "~/.tabby/events",
+    "~/.tabby"
+]
+config_files = [
+    "~/.tabby/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.tabby\\ee",
+    "%USERPROFILE%\\.tabby"
+]
+config_files = [
+    "%USERPROFILE%\\.tabby\\config.toml"
+]

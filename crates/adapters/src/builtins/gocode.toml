@@ -1,0 +1,35 @@
+# Gocode (detection only, A6).
+# Homepage: https://github.com/firebitsbr/gocode
+# Sources: https://github.com/firebitsbr/gocode
+# Go terminal agent that talks to models directly and indexes through LSP; its
+# configuration sits in the per-user config directory.
+id = "gocode"
+name = "Gocode"
+vendor = "firebitsbr"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://github.com/firebitsbr/gocode"
+docs_url = "https://github.com/firebitsbr/gocode"
+
+[detection]
+binaries = ["gocode"]
+generic_binaries = ["gocode"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.config/gocode"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/gocode"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\gocode"
+]
+config_files = []

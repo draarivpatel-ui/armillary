@@ -1,0 +1,13 @@
+{
+  "id": "msg_6b1d8ef3",
+  "orgId": "org_9f31a7",
+  "planId": "plan_4c8e21",
+  "userId": "usr_1a7b3c",
+  "role": "assistant",
+  "tokens": 1180,
+  "num": 2,
+  "message": "I added an exponential backoff of 1s, 2s, 4s with a cap of five attempts in sender.go, plus a test for the retry path.",
+  "subtask": "webhook-retry",
+  "flags": { "planOnly": true },
+  "createdAt": "2026-10-04T11:05:41Z"
+}

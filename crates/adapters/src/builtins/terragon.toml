@@ -1,0 +1,36 @@
+# Terragon (detection only, A6).
+# Homepage: https://github.com/terragon-labs/terragon-oss
+# Sources: https://github.com/terragon-labs/terragon-oss ; https://terragonlabs.com
+# Background orchestrator that moved from a hosted service to an open-source,
+# self-hosted repository. The "terry" CLI keeps a branch-to-sandbox mapping in
+# ~/.terry; runs themselves happen in remote microVMs.
+id = "terragon"
+name = "Terragon"
+vendor = "Terragon Labs"
+family = "open-source CLIs"
+kind = "cloud"
+homepage = "https://github.com/terragon-labs/terragon-oss"
+docs_url = "https://github.com/terragon-labs/terragon-oss"
+
+[detection]
+binaries = ["terry"]
+generic_binaries = ["terry"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.terry"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.terry"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.terry"
+]
+config_files = []

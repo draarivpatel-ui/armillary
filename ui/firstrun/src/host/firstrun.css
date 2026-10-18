@@ -1,0 +1,384 @@
+/* The first run: always the night sky. Sizes scale with the window (1 at 1440 x 900). */
+.fr-root {
+  --fr-u: min(calc(100vw / 1440), calc(100vh / 900));
+  --fr-ink: #0b1220;
+  --fr-gilt: #c9a24a;
+  --fr-gilt-soft: #e2c77e;
+  --fr-gilt-deep: #8a6a22;
+  --fr-parchment: #f1e8d5;
+  --fr-text: #1d1a14;
+  --fr-muted: #5e5546;
+  --fr-verdigris: #2f6f62;
+  --fr-vermilion: #b83a24;
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  background: var(--fr-ink);
+  overflow: hidden;
+  color-scheme: dark;
+  font-family: "Instrument Sans", system-ui, sans-serif;
+}
+.fr-sky,
+.fr-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.fr-overlay {
+  pointer-events: none;
+}
+
+/* ---- Skip ---- */
+.fr-skip {
+  position: absolute;
+  top: calc(40 * var(--fr-u));
+  right: calc(44 * var(--fr-u));
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 12px;
+  border: 0.75px solid rgba(201, 162, 74, 0.55);
+  border-radius: 2px;
+  background: rgba(11, 18, 32, 0.72);
+  color: #e2c77e;
+  font: 600 11px/1 "Instrument Sans", system-ui, sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 220ms cubic-bezier(0.25, 0.1, 0.25, 1), color 220ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.fr-skip:hover {
+  border-color: #e2c77e;
+  color: #f4f1e8;
+}
+.fr-skip:focus-visible {
+  outline: 2px solid #e2c77e;
+  outline-offset: 3px;
+}
+.fr-skip kbd,
+.fr-plaque kbd {
+  font: 500 10px/1 "Commit Mono", ui-monospace, monospace;
+  letter-spacing: 0;
+  padding: 2px 4px;
+  border: 0.75px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+.fr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- The plaque, hung on two gilt chains ---- */
+.fr-plaque-layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.fr-plaque-rig {
+  position: relative;
+  transform-origin: 50% -60vh;
+  will-change: transform;
+}
+.fr-plaque {
+  position: relative;
+  width: calc(640 * var(--fr-u));
+  max-width: 92vw;
+  pointer-events: auto;
+  color: var(--fr-text);
+  background-color: var(--fr-parchment);
+  background-image:
+    radial-gradient(120% 90% at 50% 40%, rgba(255, 252, 240, 0.55), rgba(255, 252, 240, 0) 60%),
+    radial-gradient(140% 120% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(120, 88, 30, 0.22) 100%),
+    repeating-linear-gradient(0deg, rgba(90, 70, 30, 0.025) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    repeating-linear-gradient(90deg, rgba(90, 70, 30, 0.018) 0 1px, rgba(0, 0, 0, 0) 1px 4px);
+  box-shadow:
+    0 0 0 1px var(--fr-gilt-deep),
+    0 0 0 4px var(--fr-parchment),
+    0 0 0 5px rgba(138, 106, 34, 0.75),
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 6px 18px rgba(0, 0, 0, 0.4);
+  border-radius: 1px;
+}
+.fr-plaque__inner {
+  padding: calc(34 * var(--fr-u)) calc(44 * var(--fr-u)) calc(26 * var(--fr-u));
+  border: 0.75px solid rgba(138, 106, 34, 0.55);
+  margin: calc(10 * var(--fr-u));
+}
+.fr-eyelet {
+  position: absolute;
+  top: -9px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--fr-gilt);
+  background: radial-gradient(circle at 35% 30%, #f3dc9c, #8a6a22 70%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.fr-eyelet--left {
+  left: 18%;
+}
+.fr-eyelet--right {
+  right: 18%;
+}
+.fr-chain {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  width: 8px;
+  height: 120vh;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='14' viewBox='0 0 8 14'><ellipse cx='4' cy='4.6' rx='2.6' ry='4' fill='none' stroke='%23c9a24a' stroke-width='1.3'/><ellipse cx='4' cy='4.6' rx='2.6' ry='4' fill='none' stroke='%23f2dd9f' stroke-width='0.5' stroke-dasharray='3 30' stroke-dashoffset='-1'/><rect x='3.3' y='8' width='1.4' height='6' rx='0.7' fill='%23a8822f'/></svg>");
+  background-repeat: repeat-y;
+  background-position: bottom center;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+.fr-chain--left {
+  left: calc(18% + 3px);
+}
+.fr-chain--right {
+  right: calc(18% + 3px);
+}
+.fr-plaque__eyebrow {
+  margin: 0 0 6px;
+  text-align: center;
+  font: 600 calc(10.5 * var(--fr-u)) / 1.2 "Instrument Sans", system-ui, sans-serif;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--fr-gilt-deep);
+}
+.fr-plaque__title {
+  margin: 0;
+  text-align: center;
+  font: 600 calc(34 * var(--fr-u)) / 1.1 "Cormorant Garamond", Cormorant, Georgia, serif;
+  letter-spacing: 0.01em;
+  color: var(--fr-text);
+}
+.fr-plaque__title::after {
+  content: "";
+  display: block;
+  width: calc(120 * var(--fr-u));
+  height: 7px;
+  margin: 10px auto 0;
+  background:
+    linear-gradient(var(--fr-gilt-deep), var(--fr-gilt-deep)) left 50% / 44% 0.75px no-repeat,
+    linear-gradient(var(--fr-gilt-deep), var(--fr-gilt-deep)) right 50% / 44% 0.75px no-repeat,
+    radial-gradient(circle, var(--fr-gilt-deep) 2.4px, transparent 2.6px) center / 7px 7px no-repeat;
+}
+.fr-plaque__lede {
+  margin: 14px auto 18px;
+  max-width: 46ch;
+  text-align: center;
+  font: 400 calc(14 * var(--fr-u)) / 1.55 "Instrument Sans", system-ui, sans-serif;
+  color: #3d362a;
+}
+.fr-plaque__lists {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: calc(26 * var(--fr-u));
+  padding: 14px 0 6px;
+  border-top: 0.75px solid rgba(138, 106, 34, 0.45);
+  border-bottom: 0.75px solid rgba(138, 106, 34, 0.45);
+}
+.fr-plaque__lists ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fr-plaque__lists li {
+  position: relative;
+  padding-left: 16px;
+  margin: 0 0 7px;
+  font: 400 calc(13 * var(--fr-u)) / 1.45 "Instrument Sans", system-ui, sans-serif;
+  color: #2a251c;
+}
+.fr-plaque__lists section:first-child li::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 0.62em;
+  width: 7px;
+  height: 4px;
+  border-left: 1.4px solid var(--fr-verdigris);
+  border-bottom: 1.4px solid var(--fr-verdigris);
+  transform: rotate(-45deg);
+}
+.fr-plaque__lists section:last-child li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.68em;
+  width: 8px;
+  height: 1.4px;
+  background: var(--fr-vermilion);
+  box-shadow: none;
+  transform: rotate(45deg);
+}
+.fr-plaque__lists section:last-child li::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.68em;
+  width: 8px;
+  height: 1.4px;
+  background: var(--fr-vermilion);
+  transform: rotate(-45deg);
+}
+.fr-plaque__head {
+  margin: 0 0 8px;
+  font: 700 calc(10.5 * var(--fr-u)) / 1 "Instrument Sans", system-ui, sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.fr-plaque__head--reads {
+  color: var(--fr-verdigris);
+}
+.fr-plaque__head--never {
+  color: var(--fr-vermilion);
+}
+.fr-plaque__folders {
+  margin-top: 14px;
+}
+.fr-plaque__head--where {
+  color: var(--fr-gilt-deep);
+}
+.fr-plaque__folders-head {
+  margin: 0 0 8px;
+  font: 400 calc(12.5 * var(--fr-u)) / 1.45 "Instrument Sans", system-ui, sans-serif;
+  color: var(--fr-muted);
+}
+.fr-plaque__agents,
+.fr-plaque__all-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 22px;
+  row-gap: 5px;
+  margin: 0;
+}
+.fr-plaque__agent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.fr-plaque__agent dt {
+  font: 600 calc(12 * var(--fr-u)) / 1.3 "Instrument Sans", system-ui, sans-serif;
+  color: #2a251c;
+}
+.fr-plaque__agent dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  min-width: 0;
+}
+.fr-plaque__agent code {
+  font: 400 calc(11 * var(--fr-u)) / 1.45 "Commit Mono", ui-monospace, monospace;
+  color: #3d362a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.fr-plaque__more {
+  font: 400 calc(11 * var(--fr-u)) / 1.45 "Instrument Sans", system-ui, sans-serif;
+  color: var(--fr-muted);
+}
+.fr-plaque__all {
+  margin-top: 8px;
+}
+.fr-plaque__all summary {
+  cursor: pointer;
+  width: fit-content;
+  font: 600 calc(12 * var(--fr-u)) / 1.4 "Instrument Sans", system-ui, sans-serif;
+  color: var(--fr-gilt-deep);
+  border-radius: 2px;
+}
+.fr-plaque__all summary:focus-visible {
+  outline: 2px solid var(--fr-gilt-deep);
+  outline-offset: 3px;
+}
+.fr-plaque__all-list {
+  margin-top: 8px;
+  max-height: calc(150 * var(--fr-u));
+  overflow-y: auto;
+  padding: 8px 10px;
+  background: rgba(138, 106, 34, 0.07);
+  border: 0.75px solid rgba(138, 106, 34, 0.35);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 106, 34, 0.6) transparent;
+}
+.fr-plaque__all-list:focus-visible {
+  outline: 2px solid var(--fr-gilt-deep);
+  outline-offset: 2px;
+}
+.fr-plaque__note {
+  margin: 16px 0 0;
+  font: 400 calc(12 * var(--fr-u)) / 1.4 "Instrument Sans", system-ui, sans-serif;
+  color: var(--fr-muted);
+}
+.fr-plaque__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+.fr-btn {
+  min-width: calc(128 * var(--fr-u));
+  padding: 10px 18px;
+  border-radius: 2px;
+  font: 600 calc(13 * var(--fr-u)) / 1 "Instrument Sans", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 220ms cubic-bezier(0.25, 0.1, 0.25, 1), color 220ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 220ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.fr-btn:disabled {
+  cursor: default;
+}
+.fr-btn--quiet {
+  background: transparent;
+  color: #3d362a;
+  border: 0.75px solid rgba(61, 54, 42, 0.45);
+}
+.fr-btn--quiet:hover:not(:disabled) {
+  background: rgba(138, 106, 34, 0.1);
+}
+.fr-btn--gilt {
+  color: #0b1220;
+  border: 1px solid #6d5218;
+  background: linear-gradient(180deg, #ecd391 0%, #c9a24a 55%, #a8822f 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 246, 214, 0.75), 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.fr-btn--gilt:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f3dea4 0%, #d4ae55 55%, #b08933 100%);
+}
+.fr-btn:focus-visible {
+  outline: 2px solid #0b1220;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(201, 162, 74, 0.55);
+}
+.fr-plaque__keys {
+  margin: 12px 0 0;
+  text-align: right;
+  font: 400 calc(11 * var(--fr-u)) / 1 "Instrument Sans", system-ui, sans-serif;
+  color: var(--fr-muted);
+}
+.fr-plaque__keys kbd {
+  color: #3d362a;
+}
+.fr-dot {
+  margin: 0 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fr-skip,
+  .fr-btn {
+    transition: none;
+  }
+}

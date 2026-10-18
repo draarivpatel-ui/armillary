@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "./archive.db"]
+    },
+    "stripe": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-stripe", "--secret-key", "sk_live_FAKESTRIPEKEY0123456789abcdef"],
+      "env": {
+        "STRIPE_SECRET_KEY": "sk_live_FAKESTRIPEKEY0123456789abcdef"
+      }
+    }
+  }
+}

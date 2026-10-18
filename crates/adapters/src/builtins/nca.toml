@@ -1,0 +1,40 @@
+# NCA, Native CLI AI (detection only, A6).
+# Homepage: https://nca-cli.com
+# Sources: https://nca-cli.com ; https://github.com/madebyaris/native-cli-ai
+# Rust terminal agent; configuration and MCP servers live in ~/.nca/config.toml.
+id = "nca"
+name = "NCA"
+vendor = "madebyaris"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://nca-cli.com"
+docs_url = "https://github.com/madebyaris/native-cli-ai"
+
+[detection]
+binaries = ["nca"]
+generic_binaries = ["nca"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.nca"
+]
+config_files = [
+    "~/.nca/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.nca"
+]
+config_files = [
+    "~/.nca/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.nca"
+]
+config_files = [
+    "%USERPROFILE%\\.nca\\config.toml"
+]

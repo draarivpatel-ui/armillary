@@ -1,0 +1,44 @@
+[package]
+name = "orrery-app"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+default-run = "orrery-app"
+
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2.7.2", features = [] }
+
+[dependencies]
+tauri = { version = "2.12.3", features = [] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+toml = "=0.8.23"
+armillary-model = { path = "../../crates/model" }
+orrery-adapters = { path = "../../crates/adapters" }
+orrery-archive = { path = "../../crates/archive" }
+portable-pty = "=0.9.0"
+sysinfo = "=0.39.6"
+glob = "=0.3.2"
+sha2 = "=0.10.8"
+notify = "=8.2.0"
+crossbeam-channel = "=0.5.17"
+libc = "=0.2.190"
+
+# Capture build only (cargo feature `capture`, off by default): in-process WKWebView snapshots,
+# so real-app frames need no Screen Recording permission. See src/snapshot.rs and tools/capture-app.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { version = "0.6.5", optional = true, default-features = false, features = ["std"] }
+objc2-foundation = { version = "0.3.2", optional = true, default-features = false, features = ["std", "NSData", "NSDictionary", "NSError", "NSString", "NSThread", "NSGeometry", "NSValue"] }
+objc2-app-kit = { version = "0.3.2", optional = true, default-features = false, features = ["std", "NSImage", "NSImageRep", "NSBitmapImageRep", "NSView", "NSResponder", "NSWindow"] }
+objc2-web-kit = { version = "0.3.2", optional = true, default-features = false, features = ["std", "WKWebView", "WKSnapshotConfiguration", "block2", "objc2-core-foundation", "objc2-app-kit"] }
+objc2-core-foundation = { version = "0.3.2", optional = true, default-features = false, features = ["std"] }
+block2 = { version = "0.6.2", optional = true, default-features = false, features = ["std"] }
+
+[features]
+default = []
+capture = ["dep:objc2", "dep:objc2-foundation", "dep:objc2-app-kit", "dep:objc2-web-kit", "dep:objc2-core-foundation", "dep:block2"]
+
+[dev-dependencies]
+tempfile = "=3.19.1"

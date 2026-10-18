@@ -1,0 +1,37 @@
+# Augment Code extension (detection only, A6).
+# Homepage: https://augmentcode.com
+# Sources: https://augmentcode.com ; https://docs.augmentcode.com
+# IDE extension surface (VS Code globalStorage directory). The auggie CLI, which
+# owns ~/.augment/session.json, is package A3's entry.
+id = "augment-ide"
+name = "Augment Code"
+vendor = "Augment Inc."
+family = "other"
+kind = "ide_extension"
+homepage = "https://augmentcode.com"
+docs_url = "https://docs.augmentcode.com"
+
+[detection]
+binaries = []
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Code/User/globalStorage/augmentcode.augment",
+    "~/.augment/rules"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Code/User/globalStorage/augmentcode.augment",
+    "~/.augment/rules"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Code\\User\\globalStorage\\augmentcode.augment",
+    "%USERPROFILE%\\.augment\\rules"
+]
+config_files = []

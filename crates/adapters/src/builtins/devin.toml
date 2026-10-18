@@ -1,0 +1,46 @@
+# Devin (detection only, A6).
+# Homepage: https://devin.ai
+# Sources: https://devin.ai
+# Cloud agent: only the local CLI and desktop shell are detectable here. Session
+# trees themselves live in Cognition's cloud; exports are ATIF/JSON files.
+id = "devin"
+name = "Devin"
+vendor = "Cognition AI Inc."
+family = "other"
+kind = "cloud"
+homepage = "https://devin.ai"
+docs_url = "https://docs.devin.ai"
+
+[detection]
+binaries = ["devin"]
+generic_binaries = ["devin"]
+app_bundles = ["Devin"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.devin",
+    "~/.local/share/devin"
+]
+config_files = [
+    "~/.config/devin/config.json",
+    "~/.config/devin/mcp_config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.devin",
+    "~/.local/share/devin"
+]
+config_files = [
+    "~/.config/devin/config.json",
+    "~/.config/devin/mcp_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.devin",
+    "%APPDATA%\\devin"
+]
+config_files = [
+    "%APPDATA%\\devin\\config.json"
+]

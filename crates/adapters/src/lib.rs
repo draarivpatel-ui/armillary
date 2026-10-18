@@ -1,0 +1,22 @@
+pub mod adapter_spec;
+pub mod boundary;
+pub mod builtins;
+pub mod credentials;
+pub mod detection;
+pub mod engine;
+pub mod env;
+pub mod harness;
+pub mod mapping;
+pub mod model;
+pub mod modules;
+pub mod path_expansion;
+pub mod probe;
+pub mod readers;
+
+pub use adapter_spec::AdapterDef;
+pub use builtins::{builtin_adapters, builtin_toml, get_builtin_adapter, BUILTINS};
+pub use detection::{detect_agent, DetectionResult};
+pub use engine::AdapterEngine;
+pub use env::{Environment, FileSystem, MockEnvironment, MockFileSystem, TargetOs};
+pub use harness::GoldenHarness;
+pub use model::*;

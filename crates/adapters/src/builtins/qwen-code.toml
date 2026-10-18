@@ -1,0 +1,89 @@
+# Qwen Code adapter specification
+# Sources:
+# - https://github.com/QwenLM/qwen-code
+# - https://qwenlm.github.io/qwen-code-docs/
+# - https://github.com/QwenLM/qwen-code/blob/main/docs/cli/session-management.md
+
+id = "qwen-code"
+name = "Qwen Code"
+vendor = "Alibaba"
+family = "Chinese labs"
+kind = "cli"
+homepage = "https://qwenlm.github.io/qwen-code-docs/"
+docs_url = "https://qwenlm.github.io/qwen-code-docs/"
+
+[detection]
+binaries = ["qwen"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.qwen/tmp",
+    "~/.qwen/projects"
+]
+config_files = [
+    "~/.qwen/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.qwen/tmp",
+    "~/.qwen/projects"
+]
+config_files = [
+    "~/.qwen/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.qwen\\tmp",
+    "%USERPROFILE%\\.qwen\\projects"
+]
+config_files = [
+    "%USERPROFILE%\\.qwen\\settings.json"
+]
+
+[[history_sources]]
+id = "qwen-chats"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["tmp/*/chats/*.jsonl"]
+
+[history_sources.paths]
+macos = [
+    "~/.qwen/tmp/*/chats/*.jsonl",
+    "~/.qwen/projects/*/chats/*.jsonl"
+]
+linux = [
+    "~/.qwen/tmp/*/chats/*.jsonl",
+    "~/.qwen/projects/*/chats/*.jsonl"
+]
+windows = [
+    "%USERPROFILE%\\.qwen\\tmp\\*\\chats\\*.jsonl",
+    "%USERPROFILE%\\.qwen\\projects\\*\\chats\\*.jsonl"
+]
+
+[history_sources.mapping.session]
+id = "/sessionId"
+project_root = "/cwd"
+timestamp = "/timestamp"
+model = "/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+role_pointer = "/message/role"
+text_pointer = "/message/content"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.tool_calls]
+content_array_pointer = "/toolCalls"
+files_pointer = "/input/path"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+tokens_in_pointer = "/usageMetadata/promptTokenCount"
+tokens_out_pointer = "/usageMetadata/candidatesTokenCount"

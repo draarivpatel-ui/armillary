@@ -1,0 +1,54 @@
+# Verification sources:
+# - Official documentation: https://docs.augmentcode.com
+# - CLI overview: https://docs.augmentcode.com/cli/overview
+# - CLI reference: https://docs.augmentcode.com/cli/reference
+# - Official repository: https://github.com/augmentcode/auggie
+# - Published package: https://www.npmjs.com/package/@augmentcode/auggie
+#
+# Storage analysis:
+# Auggie CLI stores session history at ~/.augment/sessions/<sessionId>.json.
+# Each session is a serialized AST exchange graph with request_nodes and response_nodes.
+# Roles are not stored as explicit fields (derived from request vs response containers),
+# and nodes use integer type discriminators (0=text, 4=ide_state, 5=tool_use).
+# Complex store format requires a dedicated Rust parser module.
+# Coverage is set to detect.
+
+id = "augment-auggie-cli"
+name = "Auggie CLI"
+vendor = "Augment Code"
+family = "other"
+kind = "cli"
+homepage = "https://www.augmentcode.com"
+docs_url = "https://docs.augmentcode.com"
+
+[detection]
+binaries = ["auggie"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.augment/sessions",
+    "~/.augment/task-storage"
+]
+config_files = [
+    "~/.augment/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.augment/sessions",
+    "~/.augment/task-storage"
+]
+config_files = [
+    "~/.augment/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.augment\\sessions",
+    "%USERPROFILE%\\.augment\\task-storage"
+]
+config_files = [
+    "%USERPROFILE%\\.augment\\settings.json"
+]

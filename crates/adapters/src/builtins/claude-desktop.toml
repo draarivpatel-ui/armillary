@@ -1,0 +1,42 @@
+# Claude Desktop (detection only, A6).
+# Homepage: https://claude.com
+# Sources: https://claude.com ; https://modelcontextprotocol.io/docs
+# Desktop app; local agent mode writes sessions under Application Support.
+id = "claude-desktop"
+name = "Claude Desktop"
+vendor = "Anthropic PBC"
+family = "Anthropic"
+kind = "desktop"
+homepage = "https://claude.com"
+docs_url = "https://modelcontextprotocol.io/docs"
+
+[detection]
+binaries = []
+app_bundles = ["Claude"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Claude/local-agent-mode-sessions",
+    "~/Library/Application Support/Claude"
+]
+config_files = [
+    "~/Library/Application Support/Claude/claude_desktop_config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Claude/local-agent-mode-sessions",
+    "~/.config/Claude"
+]
+config_files = [
+    "~/.config/Claude/claude_desktop_config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Claude\\local-agent-mode-sessions",
+    "%APPDATA%\\Claude"
+]
+config_files = [
+    "%APPDATA%\\Claude\\claude_desktop_config.json"
+]

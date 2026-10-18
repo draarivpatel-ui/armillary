@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server", "--api-key", "exaFAKE0123456789exaFAKE0123456789ab"],
+      "env": {
+        "EXA_API_KEY": "exaFAKE0123456789exaFAKE0123456789ab"
+      }
+    },
+    "db-inspector": {
+      "serverUrl": "https://db.example.com/mcp?apiKey=dbFAKE0123456789dbFAKE0123456789aa"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}

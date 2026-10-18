@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "trust": false
+    },
+    "jira": {
+      "url": "https://jira.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MY_JIRA_TOKEN}"
+      }
+    }
+  },
+  "context": {
+    "fileName": "GEMINI.md"
+  }
+}

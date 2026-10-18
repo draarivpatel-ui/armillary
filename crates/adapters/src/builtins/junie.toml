@@ -1,0 +1,48 @@
+# JetBrains Junie (detection only, A6).
+# Homepage: https://junie.jetbrains.com
+# Sources: https://junie.jetbrains.com ; https://www.jetbrains.com/help/ai-junie/mcp.html
+# CLI agent sessions live under ~/.junie/sessions (index.jsonl plus per-session
+# events.jsonl); the IDE plugin shares the same MCP file.
+id = "junie"
+name = "JetBrains Junie"
+vendor = "JetBrains s.r.o."
+family = "other"
+kind = "cli"
+homepage = "https://junie.jetbrains.com"
+docs_url = "https://junie.jetbrains.com"
+
+[detection]
+binaries = ["junie"]
+generic_binaries = ["junie"]
+shared_evidence = ["~/Library/Application Support/JetBrains", "~/.config/JetBrains", "%APPDATA%\\JetBrains"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.junie/sessions",
+    "~/Library/Application Support/JetBrains"
+]
+config_files = [
+    "~/.junie/config.json",
+    "~/.junie/mcp/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.junie/sessions",
+    "~/.config/JetBrains"
+]
+config_files = [
+    "~/.junie/config.json",
+    "~/.junie/mcp/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.junie\\sessions",
+    "%APPDATA%\\JetBrains"
+]
+config_files = [
+    "%USERPROFILE%\\.junie\\config.json",
+    "%USERPROFILE%\\.junie\\mcp\\mcp.json"
+]

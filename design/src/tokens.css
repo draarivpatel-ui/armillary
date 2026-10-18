@@ -1,0 +1,174 @@
+/* Observatory Design System - SPEC Section 3 */
+
+:root,
+[data-theme="dark"] {
+  /* 3.1 Palette - Dark theme (default) */
+  --color-ink-0: #0B1220;
+  --color-ink-1: #111A2E;
+  --color-ink-2: #18233B;
+  --color-line: #2A3756;
+  --color-gilt: #C9A24A;
+  --color-gilt-soft: #E2C77E;
+  --color-vermilion: #D2462E;
+  --color-verdigris: #3E8E7E;
+  --color-star: #F4F1E8;
+  --color-dust: #8E9AB4;
+  --color-parchment: #F1E8D5;
+
+  /* Semantic Foreground Tokens (Finding 18: WCAG AA >= 4.5:1 on component backgrounds) */
+  --color-verdigris-text: #4EBAA4;
+  --color-vermilion-text: #F06B52;
+  --color-gilt-text: #C9A24A;
+  --color-list-selected-fg: #E2C77E;
+  --color-button-destructive-fg: #FFFFFF;
+  --color-button-gilt-fg: #0B1220;
+
+  /* Hairline accents and texture (decorative only, never text) */
+  --color-gilt-hairline: rgba(201, 162, 74, 0.42);
+  --color-gilt-wash: rgba(201, 162, 74, 0.07);
+  --color-line-soft: rgba(42, 55, 86, 0.6);
+  --color-vermilion-wash: rgba(210, 70, 46, 0.12);
+  --color-verdigris-wash: rgba(62, 142, 126, 0.12);
+  /* A faint star field: tiled dots at 2 to 3 percent so the night never reads as flat fill. */
+  --texture-ground: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23F4F1E8'%3E%3Ccircle cx='12' cy='30' r='0.6' opacity='0.5'/%3E%3Ccircle cx='71' cy='9' r='0.5' opacity='0.35'/%3E%3Ccircle cx='131' cy='52' r='0.8' opacity='0.45'/%3E%3Ccircle cx='199' cy='23' r='0.5' opacity='0.3'/%3E%3Ccircle cx='224' cy='98' r='0.6' opacity='0.4'/%3E%3Ccircle cx='160' cy='141' r='0.5' opacity='0.3'/%3E%3Ccircle cx='93' cy='117' r='0.7' opacity='0.4'/%3E%3Ccircle cx='38' cy='166' r='0.5' opacity='0.35'/%3E%3Ccircle cx='117' cy='208' r='0.6' opacity='0.45'/%3E%3Ccircle cx='211' cy='196' r='0.8' opacity='0.3'/%3E%3Ccircle cx='58' cy='229' r='0.5' opacity='0.3'/%3E%3Ccircle cx='181' cy='76' r='0.4' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
+  --texture-opacity: 0.55;
+
+  /* Shadows / Depth: Depth comes from ink steps and hairlines, no drop shadows on dark */
+  --shadow-panel: none;
+  --shadow-raised: none;
+  --shadow-dialog: none;
+}
+
+[data-theme="light"],
+[data-theme="day-almanac"],
+.theme-day-almanac {
+  /* 3.1 Palette - Light theme ("Day almanac") */
+  --color-ink-0: #F3EBDA;
+  --color-ink-1: #EADFC8;
+  --color-ink-2: #DFD1B4;
+  --color-line: #C9B78F;
+  --color-gilt: #8A6A22;
+  --color-gilt-soft: #A88634;
+  --color-vermilion: #B83A24;
+  --color-verdigris: #2F6F62;
+  --color-star: #1D1A14;
+  --color-dust: #63594A;
+  --color-parchment: #FBF6EA;
+
+  /* Semantic Foreground Tokens (Finding 18: WCAG AA >= 4.5:1 on component backgrounds) */
+  --color-verdigris-text: #1E584D;
+  --color-vermilion-text: #872210;
+  --color-gilt-text: #5C4410;
+  --color-list-selected-fg: #5C4410;
+  --color-button-destructive-fg: #FFFFFF;
+  --color-button-gilt-fg: #FFFFFF;
+
+  --color-gilt-hairline: rgba(138, 106, 34, 0.45);
+  --color-gilt-wash: rgba(138, 106, 34, 0.08);
+  --color-line-soft: rgba(201, 183, 143, 0.7);
+  --color-vermilion-wash: rgba(184, 58, 36, 0.10);
+  --color-verdigris-wash: rgba(47, 111, 98, 0.10);
+  /* Paper grain at about 3 percent (fractal noise, no network). */
+  --texture-ground: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.09 0 0 0 0 0.05 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  --texture-opacity: 1;
+
+  /* Day almanac: family inks deepened toward the page ink so glyphs read on paper (3:1 or better);
+     the hues stay those of SPEC 3.2. The Orrery's planets keep the SPEC colours. */
+  --family-anthropic: color-mix(in srgb, #D08A5C 62%, #1D1A14);
+  --family-openai: color-mix(in srgb, #6FB7A8 55%, #1D1A14);
+  --family-google: color-mix(in srgb, #7A9CE0 62%, #1D1A14);
+  --family-github-microsoft: color-mix(in srgb, #9C8ADE 62%, #1D1A14);
+  --family-cursor: color-mix(in srgb, #B9B2A6 50%, #1D1A14);
+  --family-open-source-clis: color-mix(in srgb, #C9A24A 62%, #1D1A14);
+  --family-chinese-labs: color-mix(in srgb, #D46A6A 66%, #1D1A14);
+  --family-other: color-mix(in srgb, #8E9AB4 55%, #1D1A14);
+
+  --shadow-panel: 0 1px 3px rgba(100, 80, 50, 0.08);
+  --shadow-raised: 0 4px 16px rgba(100, 80, 50, 0.12);
+  --shadow-dialog: 0 12px 36px rgba(60, 45, 25, 0.2);
+}
+
+:root {
+  /* 3.2 Agent Families */
+  --family-anthropic: #D08A5C;
+  --family-openai: #6FB7A8;
+  --family-google: #7A9CE0;
+  --family-github-microsoft: #9C8ADE;
+  --family-cursor: #B9B2A6;
+  --family-open-source-clis: #C9A24A;
+  --family-chinese-labs: #D46A6A;
+  --family-other: #8E9AB4;
+
+  /* 3.3 Typography */
+  --font-display: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Commit Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* 8 px spacing rhythm */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Type sizes */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px; /* body 14px per SPEC 3.3 */
+  --text-lg: 16px;  /* Folio body 16px */
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-4xl: 36px;
+
+  /* Display scale (Cormorant): titles, day names and numerals */
+  --text-2xs: 11px;            /* small caps eyebrows only, never body */
+  --text-display-sm: 24px;
+  --text-display-md: 32px;
+  --text-display-lg: 40px;
+  --text-numeral: 56px;
+  --tracking-caps: 0.12em;
+  --leading-display: 1.05;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-folio: 1.6;
+
+  /* 3.4 Texture and Line */
+  --border-hairline-width: 0.75px;
+  --border-hairline: 0.75px solid var(--color-line);
+  --border-gilt: 0.75px solid var(--color-gilt);
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --focus-ring: 0 0 0 2px var(--color-gilt);
+
+  /* 3.5 Motion */
+  --transition-duration: 220ms;
+  --transition-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-default: 220ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-observatory: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --motion-ui: 220ms;          /* rail marker, controls, view cross-fade */
+  --motion-swing: 600ms;       /* the needs-you swing */
+  --motion-unroll: 640ms;      /* the Folio unrolling from the top */
+  --motion-twinkle: 640ms;     /* a search hit's single glint */
+  --motion-stagger: 36ms;      /* Almanac days, per day, capped */
+  --view-parallax: 10px;       /* content travel during a view change */
+  --view-parallax-deco: 3px;   /* decorative layers travel less */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0.01ms;
+    --transition-default: none;
+    --view-parallax: 0px;
+    --view-parallax-deco: 0px;
+    --motion-stagger: 0ms;
+  }
+}

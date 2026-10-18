@@ -1,0 +1,100 @@
+[
+  {
+    "session": {
+      "id": "e9c35494eca997fd8a88af46220be7c956ced5504de55b4cd99726c18e5c8fe2",
+      "agent_id": "crush",
+      "installation_id": null,
+      "native_id": "crush_sess_001",
+      "provenance": {
+        "store": {
+          "id": "945de1ac04018fd09a49252883e4931605d418914e225bf654b5a2dd7ea397f9",
+          "namespace": "crush",
+          "canonical_root": "fixture://crush",
+          "profile_id": "synthetic"
+        },
+        "source_id": "crush-sqlite",
+        "adapter_id": "crush",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": ".crush/crush.db",
+        "file_identity": "synthetic:.crush/crush.db",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 2,
+          "records": 2,
+          "digest": "439a2fb8b860a531cc9ffc8982237cc74db2ce50a92f6e3d780650ef348012fc"
+        }
+      },
+      "project_root": "/Users/developer/code/terminal-app",
+      "title": "Refactor terminal renderer",
+      "started_at": 1791810000000,
+      "ended_at": null,
+      "model": "claude-3-5-sonnet",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 1250,
+        "output_tokens": 420,
+        "observations": [
+          {
+            "event_id": "baf8ba770b3cc5aadf11314bcc6cfad06c2515805ff5a40d215c70eb132155b2",
+            "semantics": "cumulative",
+            "input_tokens": 1250,
+            "output_tokens": 420,
+            "at": 1791810200000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "a56ef32ea2d5069b451a964270fd21cfa8887b1a4bed9198919b954131e1c60a",
+        "session_id": "e9c35494eca997fd8a88af46220be7c956ced5504de55b4cd99726c18e5c8fe2",
+        "native_id": "msg_001",
+        "seq": 1,
+        "role": "user",
+        "at": 1791810000000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Make the terminal view resize gracefully"
+          }
+        ]
+      },
+      {
+        "id": "cfb437dd2ec812bce897af972551c0cae0e2afa1a0a91ac470f2cb8951c10294",
+        "session_id": "e9c35494eca997fd8a88af46220be7c956ced5504de55b4cd99726c18e5c8fe2",
+        "native_id": "msg_002",
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791810100000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will inspect the terminal resize handler."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call_view_1",
+            "native_id": "call_view_1",
+            "name": "view",
+            "input": "{\"path\":\"src/view.rs\"}",
+            "files": [
+              "src/view.rs"
+            ]
+          },
+          {
+            "type": "tool_result",
+            "call_id": "call_view_1",
+            "output": "fn resize() { ... }",
+            "is_error": null
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+# ChatGPT Desktop (detection only, A6).
+# Homepage: https://openai.com
+# Sources: https://openai.com ; https://massivepixel.at
+# macOS and Windows only; chats are cloud-synced, local state is cached app data.
+# no-documented-path: linux: OpenAI ships the ChatGPT desktop client for macOS and Windows only.
+id = "chatgpt-desktop"
+name = "ChatGPT Desktop"
+vendor = "OpenAI"
+family = "OpenAI"
+kind = "desktop"
+homepage = "https://openai.com"
+
+[detection]
+binaries = []
+app_bundles = ["ChatGPT"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/com.openai.chat",
+    "~/Library/Application Support/Codex"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\OpenAI\\ChatGPT"
+]
+config_files = []

@@ -1,0 +1,97 @@
+[
+  {
+    "session": {
+      "id": "ccf2c0cc478923e174663394ced1a6582f60325f8be8cda1454bdbeef34cdc08",
+      "agent_id": "opencode",
+      "installation_id": null,
+      "native_id": "ses_001",
+      "provenance": {
+        "store": {
+          "id": "b8ae91858df8e8375ca4b24718ad1f4c1e6b1e10a455b8e7b32dcc0650566bf3",
+          "namespace": "opencode",
+          "canonical_root": "fixture://opencode",
+          "profile_id": "synthetic"
+        },
+        "source_id": "opencode-sqlite",
+        "adapter_id": "opencode",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "opencode.db",
+        "file_identity": "synthetic:opencode.db",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 2,
+          "records": 2,
+          "digest": "863e50fc912d85861894be9adacc51648814a9b9c5b7a1a0e61dbb13be4314f2"
+        }
+      },
+      "project_root": "/Users/developer/code/opencode-app",
+      "title": "Setup development environment",
+      "started_at": 1791814000000,
+      "ended_at": null,
+      "model": "claude-3-5-sonnet",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 3500,
+        "output_tokens": 620,
+        "observations": [
+          {
+            "event_id": "031f90daaf16f40b58738e3612a367bf8cc1a41c0f73a3b7749ec6d85e23e5fb",
+            "semantics": "cumulative",
+            "input_tokens": 3500,
+            "output_tokens": 620,
+            "at": 1791814120000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "850ca429328015888f7aa5381f0fb5c7268819db5d3a942c823a568303b7a66e",
+        "session_id": "ccf2c0cc478923e174663394ced1a6582f60325f8be8cda1454bdbeef34cdc08",
+        "native_id": "msg_001",
+        "seq": 1,
+        "role": "user",
+        "at": 1791814005000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Install development dependencies and configure build tools"
+          }
+        ]
+      },
+      {
+        "id": "195c66452154ac76ccf52554341efc3150f5b6b3c60f33007a8de7a20d861326",
+        "session_id": "ccf2c0cc478923e174663394ced1a6582f60325f8be8cda1454bdbeef34cdc08",
+        "native_id": "msg_002",
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791814015000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Running npm install to setup dependencies"
+          },
+          {
+            "type": "tool_call",
+            "call_id": "58bcfc1d3e5f7c8a6d40976099a2a5ed28123e05311e1bc9fd4d1b961ed8a6d5",
+            "native_id": null,
+            "name": "bash",
+            "input": {
+              "command": "npm install",
+              "cwd": "/Users/developer/code/opencode-app"
+            },
+            "files": [
+              "/Users/developer/code/opencode-app"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

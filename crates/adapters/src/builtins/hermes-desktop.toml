@@ -1,0 +1,47 @@
+# Hermes Desktop (detection only, A6).
+# Homepage: https://nousresearch.com
+# Sources: https://nousresearch.com ; https://github.com/NousResearch/hermes-agent
+# Open-source agent from Nous Research: state.db (SQLite) plus skills and
+# profiles under ~/.hermes. The hermes-agent CLI is package A3's entry and shares
+# this directory; the desktop shell is the surface covered here.
+id = "hermes-desktop"
+name = "Hermes Desktop"
+vendor = "Nous Research"
+family = "open-source CLIs"
+kind = "desktop"
+homepage = "https://nousresearch.com"
+docs_url = "https://hermes-agent.nousresearch.com"
+
+[detection]
+binaries = ["hermes"]
+generic_binaries = ["hermes"]
+app_bundles = ["Hermes"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.hermes/skills",
+    "~/.hermes/profiles",
+    "~/.hermes"
+]
+config_files = [
+    "~/.hermes/config.yaml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.hermes/skills",
+    "~/.hermes/profiles",
+    "~/.hermes"
+]
+config_files = [
+    "~/.hermes/config.yaml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%LOCALAPPDATA%\\hermes",
+    "%USERPROFILE%\\.hermes"
+]
+config_files = [
+    "%LOCALAPPDATA%\\hermes\\config.yaml"
+]

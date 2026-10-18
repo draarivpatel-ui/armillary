@@ -1,0 +1,93 @@
+[
+  {
+    "session": {
+      "id": "10759ca95b97c438b31f589435d9738b9e29a83c5be847c21ea5fdb34241d31c",
+      "agent_id": "antigravity-cli",
+      "installation_id": null,
+      "native_id": "f8e7d6c5-b4a3-4210-9876-543210fedcba",
+      "provenance": {
+        "store": {
+          "id": "538e5ce46b29cacf237b98c356d91fa44260f73f280dd73353bd44e6981b5d19",
+          "namespace": "antigravity-history",
+          "canonical_root": "fixture://antigravity-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "antigravity-conversations",
+        "adapter_id": "antigravity-cli",
+        "adapter_version": "1.0.0",
+        "source_path": "history.jsonl",
+        "file_identity": "synthetic:history.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 180,
+          "records": 0,
+          "digest": "616e0795a92ad66c98c5d0a22ae06338ddb739e1958112e4b6a1191f2719f0d2"
+        }
+      },
+      "project_root": "/Users/developer/code/ml-pipeline",
+      "title": "Optimize matrix operations",
+      "started_at": 1791814500000,
+      "ended_at": 1791814505000,
+      "model": null,
+      "status": "done",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "transcript completion",
+        "native_event_id": null,
+        "at": 1791814505000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "unknown",
+        "input_tokens": null,
+        "output_tokens": null,
+        "observations": []
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "2219c39d5d5c43341d8d2268c43496bec33b208099658c7376105fb6371e2b19",
+        "session_id": "10759ca95b97c438b31f589435d9738b9e29a83c5be847c21ea5fdb34241d31c",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": 1791814500000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Optimize matrix operations in kernel.py"
+          }
+        ]
+      },
+      {
+        "id": "37e521fc89d4d0095e5c90d85c673fb65ac7fe5d8e5f9ad552a3849da1a723d8",
+        "session_id": "10759ca95b97c438b31f589435d9738b9e29a83c5be847c21ea5fdb34241d31c",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791814505000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I need to review kernel.py for vectorization opportunities."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "6adb799d0321fab06a332972bc85f7264e95a3037452d5e7db795bc8da6ddfbc",
+            "native_id": null,
+            "name": "view_file",
+            "input": {
+              "AbsolutePath": "/Users/developer/code/ml-pipeline/kernel.py"
+            },
+            "files": [
+              "/Users/developer/code/ml-pipeline/kernel.py"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

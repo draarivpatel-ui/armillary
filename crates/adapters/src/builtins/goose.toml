@@ -1,0 +1,95 @@
+# Goose adapter. Coverage: history at session level (SQLite sessions table),
+# messages deferred to a Rust module (they live as JSON blobs in messages.content_json).
+# Paths verified against:
+#   https://raw.githubusercontent.com/aaif-goose/goose/main/crates/goose/src/config/paths.rs
+#     (etcetera AppStrategy author "Block": macOS data dir ~/Library/Application Support/Block/goose,
+#     Linux ~/.local/share/goose, Windows %APPDATA%\Block\goose; GOOSE_PATH_ROOT override
+#     creates config/, data/, state/ under the root; checked 2026-10-12)
+#   https://raw.githubusercontent.com/aaif-goose/goose/main/crates/goose/src/session/session_manager.rs
+#     (DB_NAME "sessions.db", SESSIONS_FOLDER "sessions", schema v17 with accumulated_* counters)
+#   https://goose-docs.ai/docs/guides/logs (legacy macOS ~/.local/share/goose/sessions variant)
+# The declarative sqlite source imports session rows only; the query renames the real
+# columns to the normalized keys the engine expects and skips archived sessions.
+# NOTE: sessions are stored in one shared database (source_unit "shared_database"),
+# one session per row, unlike the file_per_session jsonl adapters.
+id = "goose"
+name = "Goose"
+vendor = "Block (Agentic AI Foundation)"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://goose-docs.ai/"
+docs_url = "https://goose-docs.ai/"
+coverage = "history"
+
+[detection]
+binaries = ["goose"]
+generic_binaries = ["goose"]
+app_bundles = ["Goose"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.local/share/goose/sessions",
+    "~/Library/Application Support/Block/goose/sessions"
+]
+config_files = [
+    "~/.config/goose/config.yaml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/goose/sessions",
+    "$GOOSE_PATH_ROOT/data/sessions"
+]
+config_files = [
+    "~/.config/goose/config.yaml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Block\\goose\\data\\sessions",
+    "%APPDATA%\\Block\\goose\\sessions",
+    "%GOOSE_PATH_ROOT%\\data\\sessions"
+]
+config_files = [
+    "%APPDATA%\\Block\\goose\\config\\config.yaml"
+]
+
+[[history_sources]]
+id = "goose-sessions-db"
+format = "sqlite"
+module = "goose"
+source_unit = "shared_database"
+fixture_paths = ["sessions/sessions.sqlite"]
+query = "SELECT id, working_dir AS cwd, COALESCE(NULLIF(user_set_name, ''), NULLIF(name, ''), description) AS title, strftime('%Y-%m-%dT%H:%M:%SZ', created_at) AS created_at, strftime('%Y-%m-%dT%H:%M:%SZ', updated_at) AS updated_at, json_extract(model_config_json, '$.model') AS model, accumulated_output_tokens AS tokens_used FROM sessions WHERE archived_at IS NULL AND COALESCE(session_type, 'user') = 'user' ORDER BY updated_at DESC"
+
+[history_sources.paths]
+macos = [
+    "~/.local/share/goose/sessions/sessions.db",
+    "~/.local/share/goose/sessions/sessions.sqlite",
+    "~/Library/Application Support/Block/goose/sessions/sessions.db",
+    "~/Library/Application Support/Block/goose/sessions/sessions.sqlite",
+    "$GOOSE_PATH_ROOT/data/sessions/sessions.db",
+    "$GOOSE_PATH_ROOT/data/sessions/sessions.sqlite"
+]
+linux = [
+    "~/.local/share/goose/sessions/sessions.db",
+    "~/.local/share/goose/sessions/sessions.sqlite",
+    "$GOOSE_PATH_ROOT/data/sessions/sessions.db",
+    "$GOOSE_PATH_ROOT/data/sessions/sessions.sqlite"
+]
+windows = [
+    "%APPDATA%\\Block\\goose\\data\\sessions\\sessions.db",
+    "%APPDATA%\\Block\\goose\\data\\sessions\\sessions.sqlite",
+    "%APPDATA%\\Block\\goose\\sessions\\sessions.db",
+    "%APPDATA%\\Block\\goose\\sessions\\sessions.sqlite"
+]
+
+
+[history_sources.mapping.session]
+id = "/id"
+project_root = "/cwd"
+title = "/title"
+started_at = "/created_at"
+model = "/model"
+tokens_out = "/tokens_used"

@@ -1,0 +1,45 @@
+# Void Editor (detection only, A6).
+# Homepage: https://voideditor.com
+# Sources: https://voideditor.com ; https://github.com/voideditor/void
+# Open-source VS Code fork from Glass Devtools. Kept in the registry for installs
+# that predate it: the card records the upstream repository as archived in June
+# 2026, so coverage stays at detect.
+id = "void-editor"
+name = "Void Editor"
+vendor = "Glass Devtools Inc."
+family = "open-source CLIs"
+kind = "ide"
+homepage = "https://voideditor.com"
+docs_url = "https://voideditor.com"
+
+[detection]
+binaries = ["void"]
+generic_binaries = ["void"]
+app_bundles = ["Void"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Void/User/globalStorage",
+    "~/.void-editor"
+]
+config_files = [
+    "~/.void-editor/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Void/User/globalStorage",
+    "~/.void-editor"
+]
+config_files = [
+    "~/.void-editor/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Void\\User\\globalStorage",
+    "%USERPROFILE%\\.void-editor"
+]
+config_files = [
+    "%USERPROFILE%\\.void-editor\\mcp.json"
+]

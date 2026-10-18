@@ -1,0 +1,34 @@
+# Replit Agent desktop (detection only, A6).
+# Homepage: https://replit.com
+# Sources: https://replit.com
+# Electron shell around the cloud agent: sessions run on Replit's servers, so the
+# local directory holds cache and settings only. Coverage stays at detect.
+id = "replit-desktop"
+name = "Replit Agent Desktop"
+vendor = "Replit Inc."
+family = "other"
+kind = "desktop"
+homepage = "https://replit.com"
+docs_url = "https://docs.replit.com"
+
+[detection]
+binaries = []
+app_bundles = ["Replit"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Replit"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Replit"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Replit"
+]
+config_files = []

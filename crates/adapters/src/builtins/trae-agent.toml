@@ -1,0 +1,33 @@
+# Trae Agent CLI (detection only, A6).
+# Homepage: https://github.com/bytedance/trae-agent
+# Sources: https://github.com/bytedance/trae-agent/blob/main/docs/TRAJECTORY_RECORDING.md
+# Open-source Python agent from ByteDance. Detection is the console script only:
+# the card confirms it writes trajectories and trae_config.yaml into the current
+# workspace and "nothing under ~/.trae, ~/.config, Application Support or %APPDATA%".
+id = "trae-agent"
+name = "Trae Agent"
+vendor = "ByteDance Ltd."
+family = "Chinese labs"
+kind = "cli"
+homepage = "https://github.com/bytedance/trae-agent"
+docs_url = "https://github.com/bytedance/trae-agent"
+
+[detection]
+binaries = ["trae-cli"]
+app_bundles = []
+version_args = ["--version"]
+
+# no-documented-path: macos: artifacts are workspace-relative (./trajectories, ./trae_config.yaml).
+[detection.paths.macos]
+data_folders = []
+config_files = []
+
+# no-documented-path: linux: artifacts are workspace-relative (./trajectories, ./trae_config.yaml).
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+# no-documented-path: windows: artifacts are workspace-relative (.\trajectories, .\trae_config.yaml).
+[detection.paths.windows]
+data_folders = []
+config_files = []

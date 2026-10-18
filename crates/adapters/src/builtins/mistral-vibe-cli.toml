@@ -1,0 +1,48 @@
+# Mistral Vibe CLI adapter specification. Coverage: detect only.
+#
+# Primary sources:
+#   - https://github.com/mistralai/mistral-vibe
+#   - Product page: https://mistral.ai/products/vibe/code/
+#   - Docs: https://docs.mistral.ai/vibe/code/cli/install-setup
+#
+# Secret files under the data folder that this adapter never opens:
+# .env.
+
+id = "mistral-vibe-cli"
+name = "Mistral Vibe CLI"
+vendor = "Mistral AI"
+family = "other"
+kind = "cli"
+coverage = "detect"
+homepage = "https://mistral.ai/products/vibe/code/"
+docs_url = "https://docs.mistral.ai/vibe/code/cli/install-setup"
+
+[detection]
+binaries = ["vibe", "vibe-acp", "vibe-app-server"]
+generic_binaries = ["vibe"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.vibe/logs/session"
+]
+config_files = [
+    "~/.vibe/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.vibe/logs/session"
+]
+config_files = [
+    "~/.vibe/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.vibe\\logs\\session"
+]
+config_files = [
+    "%USERPROFILE%\\.vibe\\config.toml"
+]

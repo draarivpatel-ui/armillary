@@ -1,0 +1,102 @@
+[
+  {
+    "session": {
+      "id": "70862af73166593f0390544b699969d7386ff32cd7a535c9568ca94e753e2381",
+      "agent_id": "open-interpreter",
+      "installation_id": null,
+      "native_id": "oi-thread-4821",
+      "provenance": {
+        "store": {
+          "id": "79501dc0dee378c5e81b9bd8dd6cf55931a7dd6be476289912b0e36663e1230e",
+          "namespace": "open-interpreter",
+          "canonical_root": "fixture://open-interpreter",
+          "profile_id": "synthetic"
+        },
+        "source_id": "openinterpreter-rollouts",
+        "adapter_id": "open-interpreter",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": ".openinterpreter/sessions/2026/10/06/rollout-2026-10-06T11-30-00-d8e2a1b4-5c6f-4a3b-9e1d-7f8a9b0c1d2e.jsonl",
+        "file_identity": "synthetic:.openinterpreter/sessions/2026/10/06/rollout-2026-10-06T11-30-00-d8e2a1b4-5c6f-4a3b-9e1d-7f8a9b0c1d2e.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 952,
+          "records": 6,
+          "digest": "143de0ae1f094a14d7e7e4fc2bb8f31e02e411efda5e3fc971a23ebaff2756c6"
+        }
+      },
+      "project_root": "/Users/demo/cache-service",
+      "title": "Add in-memory cache layer",
+      "started_at": 1791286200000,
+      "ended_at": null,
+      "model": "gpt-5-codex",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 1250,
+        "output_tokens": 310,
+        "observations": [
+          {
+            "event_id": "10427eb7608e67d316b78261d9141be0c162489e16a5dbfc19a829c1f1fb3315",
+            "semantics": "delta",
+            "input_tokens": 1250,
+            "output_tokens": 310,
+            "at": 1791286222000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "de447f08a790158b266dcce9619a3d046d94c879d63f17d04104683553a69a8d",
+        "session_id": "70862af73166593f0390544b699969d7386ff32cd7a535c9568ca94e753e2381",
+        "native_id": null,
+        "seq": 3,
+        "role": "user",
+        "at": 1791286205000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add in-memory cache layer with TTL support"
+          }
+        ]
+      },
+      {
+        "id": "fb366f34d43024658280b0dcce2f9d5a859594d7fd7b2649d85a87f05b53d2f0",
+        "session_id": "70862af73166593f0390544b699969d7386ff32cd7a535c9568ca94e753e2381",
+        "native_id": null,
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791286210000,
+        "blocks": [
+          {
+            "type": "tool_call",
+            "call_id": "3cfcc8fab01d4dfbb7172e2ec0045ab18442370955ac14190ea86865890b53d8",
+            "native_id": null,
+            "name": "write_file",
+            "input": "{\"path\":\"src/cache.rs\"}",
+            "files": []
+          }
+        ]
+      },
+      {
+        "id": "440b2fd535d5d9868f53a4cf7064e82df477f3ee3c657c1568855961d950eeb7",
+        "session_id": "70862af73166593f0390544b699969d7386ff32cd7a535c9568ca94e753e2381",
+        "native_id": null,
+        "seq": 5,
+        "role": "assistant",
+        "at": 1791286220000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Implemented InMemoryCache with 60-second default TTL and eviction thread."
+          }
+        ]
+      }
+    ]
+  }
+]

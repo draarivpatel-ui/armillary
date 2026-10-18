@@ -1,0 +1,50 @@
+# Cursor IDE (detection only, A6).
+# Homepage: https://cursor.com
+# Sources: https://cursor.com ; https://vibe-replay.com
+# The editor itself, not the cursor-agent CLI (package A3). Agent chats live in
+# the state.vscdb SQLite store (cursorDiskKV table).
+id = "cursor-ide"
+name = "Cursor"
+vendor = "Anysphere Inc."
+family = "Cursor"
+kind = "ide"
+homepage = "https://cursor.com"
+docs_url = "https://docs.cursor.com"
+
+[detection]
+binaries = ["cursor"]
+generic_binaries = ["cursor"]
+app_bundles = ["Cursor"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Cursor/User/globalStorage",
+    "~/Library/Application Support/Cursor/User/workspaceStorage",
+    "~/.cursor/chats",
+    "~/.cursor/projects"
+]
+config_files = [
+    "~/.cursor/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Cursor/User/globalStorage",
+    "~/.config/Cursor/User/workspaceStorage",
+    "~/.cursor/chats",
+    "~/.cursor/projects"
+]
+config_files = [
+    "~/.cursor/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Cursor\\User\\globalStorage",
+    "%APPDATA%\\Cursor\\User\\workspaceStorage",
+    "%USERPROFILE%\\.cursor\\chats",
+    "%USERPROFILE%\\.cursor\\projects"
+]
+config_files = [
+    "%USERPROFILE%\\.cursor\\mcp.json"
+]

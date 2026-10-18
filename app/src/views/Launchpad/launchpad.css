@@ -1,0 +1,416 @@
+/* Launchpad: pick an installed agent and a project, then run it in a terminal. Tokens only. */
+
+.launchpad-view {
+  gap: var(--space-8);
+}
+
+.launchpad-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.launchpad-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 880px;
+}
+
+.launchpad-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.launchpad-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-star);
+}
+
+/* ---------- Agent tiles ---------- */
+.agent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.agent-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  background: var(--color-ink-1);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  font: inherit;
+  text-align: left;
+  color: var(--color-star);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-ui) var(--ease-observatory),
+    background-color var(--motion-ui) var(--ease-observatory);
+}
+
+.agent-tile:hover {
+  border-color: var(--color-gilt-hairline);
+  background: var(--color-ink-2);
+}
+
+.agent-tile--selected,
+.agent-tile--selected:hover {
+  border-color: var(--color-gilt);
+}
+
+.agent-tile__glyph {
+  display: inline-flex;
+  flex: none;
+}
+
+.agent-tile__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.agent-tile__name {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-star);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-tile__cmd {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-dust);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-tile__check {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: inline-flex;
+  color: var(--color-gilt);
+}
+
+/* Agents that are not on this Mac: collapsed, listed quietly, never selectable. */
+.agent-absent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.agent-absent__toggle {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  margin-left: calc(var(--space-2) * -1);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+  cursor: pointer;
+}
+
+.agent-absent__toggle:hover {
+  color: var(--color-star);
+}
+
+.agent-absent__chevron {
+  transition: transform var(--motion-ui) var(--ease-observatory);
+}
+
+.agent-absent__toggle[aria-expanded="true"] .agent-absent__chevron {
+  transform: rotate(180deg);
+}
+
+.agent-absent__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agent-absent__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+}
+
+.agent-absent__glyph {
+  display: inline-flex;
+  opacity: 0.7;
+}
+
+/* ---------- Project ---------- */
+.launchpad-roots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- Launch ---------- */
+.launchpad-launch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.launchpad-launch__reason {
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+}
+
+.launchpad-launch__hint {
+  color: var(--color-dust);
+}
+
+.launchpad-error {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-star);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Recent launches ---------- */
+.launchpad-recent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 880px;
+}
+
+.launchpad-recent__empty {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-dust);
+}
+
+.launchpad-recent__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--border-hairline);
+}
+
+.launchpad-recent__row {
+  border-bottom: var(--border-hairline);
+}
+
+.recent-launch {
+  display: grid;
+  grid-template-columns: 16px minmax(120px, 180px) minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-2);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  text-align: left;
+  color: var(--color-star);
+  cursor: pointer;
+  transition: background-color var(--motion-ui) var(--ease-observatory);
+}
+
+.recent-launch:hover {
+  background: var(--color-gilt-wash);
+}
+
+.recent-launch__glyph {
+  display: inline-flex;
+}
+
+.recent-launch__agent {
+  font-size: var(--text-base);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-launch__project {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-dust);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-launch__time {
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---------- Tabs ---------- */
+.launchpad-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-bottom: var(--border-hairline);
+}
+
+.launchpad-tablist {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.launchpad-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: var(--space-1);
+  padding-right: var(--space-2);
+}
+
+.launchpad-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.75px;
+  height: 2px;
+  background: var(--color-gilt);
+  opacity: 0;
+  transition: opacity var(--motion-ui) var(--ease-observatory);
+}
+
+.launchpad-tab--active::after {
+  opacity: 1;
+}
+
+.launchpad-tab__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-3);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-dust);
+  cursor: pointer;
+  transition: color var(--motion-ui) var(--ease-observatory);
+}
+
+.launchpad-tab__label:hover,
+.launchpad-tab--active .launchpad-tab__label {
+  color: var(--color-star);
+}
+
+.launchpad-tab__close.obs-icon-button {
+  width: 24px;
+  height: 24px;
+  border-color: transparent;
+}
+
+/* ---------- Terminal frame ---------- */
+.terminal-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 480px;
+  overflow: hidden;
+  background: var(--color-ink-0);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+}
+
+.terminal-frame[hidden] {
+  display: none;
+}
+
+.terminal-frame__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--border-hairline);
+}
+
+.terminal-frame__cwd {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-dust);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.terminal-container {
+  flex: 1;
+  min-height: 420px;
+  padding: var(--space-3) var(--space-4);
+  box-sizing: border-box;
+  background: var(--color-ink-0);
+}
+
+.terminal-container .xterm {
+  height: 100%;
+}
+
+.terminal-container .xterm-viewport {
+  background-color: var(--color-ink-0) !important;
+}
+
+@media (max-width: 900px) {
+  .recent-launch {
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+  }
+
+  .recent-launch__project {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-tile,
+  .agent-absent__chevron,
+  .launchpad-tab::after,
+  .launchpad-tab__label,
+  .recent-launch {
+    transition: none;
+  }
+}

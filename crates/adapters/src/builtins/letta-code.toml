@@ -1,0 +1,44 @@
+# Letta Code adapter specification. Coverage: detect only.
+#
+# Primary sources:
+#   - npm package @letta-ai/letta-code
+#   - Docs: https://docs.letta.com
+#
+# Secret files under the data folder that this adapter never opens:
+# auth.json, local-agent-secrets.json, settings.json.
+
+id = "letta-code"
+name = "Letta Code"
+vendor = "Letta"
+family = "open-source CLIs"
+kind = "cli"
+coverage = "detect"
+homepage = "https://www.letta.com"
+docs_url = "https://docs.letta.com"
+
+[detection]
+binaries = ["letta"]
+generic_binaries = ["letta"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.letta/transcripts",
+    "~/.letta"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.letta/transcripts",
+    "~/.letta"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.letta\\transcripts",
+    "%USERPROFILE%\\.letta"
+]
+config_files = []

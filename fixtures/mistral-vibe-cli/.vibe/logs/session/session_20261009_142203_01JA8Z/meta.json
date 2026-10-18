@@ -1,0 +1,16 @@
+{
+  "session_id": "01JA8Z3Q6T9WV2X4Y7B0C1D2E3",
+  "start_time": "2026-10-09T14:22:03Z",
+  "end_time": "2026-10-09T14:41:55Z",
+  "title": "Fix flaky upload test",
+  "git_branch": "main",
+  "environment": {
+    "working_directory": "/Users/jp/uploader",
+    "platform": "darwin"
+  },
+  "origin_directory": "/Users/jp/uploader",
+  "username": "jp",
+  "config": {
+    "active_model": "devstral-2"
+  }
+}

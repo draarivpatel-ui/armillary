@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "every view, both themes, plus a 3 second burst",
+  "window": { "width": 1440, "height": 900 },
+  "theme": "dark",
+  "steps": [
+    { "op": "waitFrames", "frames": 30 },
+    { "op": "navigate", "view": "orrery" },
+    { "op": "snapshot", "name": "orrery-dark" },
+    { "op": "burst", "name": "orrery-burst", "durationMs": 3000 },
+    { "op": "navigate", "view": "almanac" },
+    { "op": "snapshot", "name": "almanac-dark" },
+    { "op": "theme", "theme": "light" },
+    { "op": "snapshot", "name": "almanac-light" },
+    { "op": "quit" }
+  ]
+}

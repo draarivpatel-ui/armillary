@@ -1,0 +1,133 @@
+[
+  {
+    "session": {
+      "id": "69d29068ec92f8e6e43600a4be0a601d54c2b4eae6421f7c96d31201a996532e",
+      "agent_id": "claude-code",
+      "installation_id": null,
+      "native_id": "claude-sess-alpha-001",
+      "provenance": {
+        "store": {
+          "id": "d373cc009579fb54a713a3126a726ba166fafaaefc683eb5f75ad9b52c8d012c",
+          "namespace": "claude-history",
+          "canonical_root": "fixture://claude-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "claude-code-projects",
+        "adapter_id": "claude-code",
+        "adapter_version": "1.1.0",
+        "source_path": "projects/my-web-app/session-001.jsonl",
+        "file_identity": "synthetic:projects/my-web-app/session-001.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1370,
+          "records": 4,
+          "digest": "81f1f78ca08138974d799bcdac7f8a0173b0b311e50601a0ef21bd251f4cca8c"
+        }
+      },
+      "project_root": "/Users/developer/code/my-web-app",
+      "title": null,
+      "started_at": 1791814200000,
+      "ended_at": null,
+      "model": "claude-3-7-sonnet-20250219",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 2550,
+        "output_tokens": 205,
+        "observations": [
+          {
+            "event_id": "6f144a32f5e2e504a1352b73c1c782521e216e4e00c209c7766d47541432113d",
+            "semantics": "delta",
+            "input_tokens": 1200,
+            "output_tokens": 85,
+            "at": 1791814205000
+          },
+          {
+            "event_id": "7b01dc6d91408b06e416ce2b36ef873ff553e59caf627e58987fe3a39ce49044",
+            "semantics": "delta",
+            "input_tokens": 1350,
+            "output_tokens": 120,
+            "at": 1791814215000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "7248bbcd2ebd23f31993adcc8a683884b9958b045fcfba7dc0b895a079911bb5",
+        "session_id": "69d29068ec92f8e6e43600a4be0a601d54c2b4eae6421f7c96d31201a996532e",
+        "native_id": "u1",
+        "seq": 1,
+        "role": "user",
+        "at": 1791814200000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Inspect package.json and add a test script."
+          }
+        ]
+      },
+      {
+        "id": "efcb56a5ec0194b8f10af8fe30700df80639caab7e7c6147ec795a34f57c071b",
+        "session_id": "69d29068ec92f8e6e43600a4be0a601d54c2b4eae6421f7c96d31201a996532e",
+        "native_id": "a1",
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791814205000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Let me read package.json to see the current scripts."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "toolu_01",
+            "native_id": "toolu_01",
+            "name": "Read",
+            "input": {
+              "file_path": "/Users/developer/code/my-web-app/package.json"
+            },
+            "files": [
+              "/Users/developer/code/my-web-app/package.json"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "376bf59f84fd44933498db1d60fb475d9c6517174504137d3614b86deee461b5",
+        "session_id": "69d29068ec92f8e6e43600a4be0a601d54c2b4eae6421f7c96d31201a996532e",
+        "native_id": "u2",
+        "seq": 3,
+        "role": "user",
+        "at": 1791814208000,
+        "blocks": [
+          {
+            "type": "tool_result",
+            "call_id": "toolu_01",
+            "output": "{\"name\":\"my-web-app\",\"scripts\":{}}",
+            "is_error": null
+          }
+        ]
+      },
+      {
+        "id": "5c21f70de720638e5c96860cfc3974caf194d77499bd2175d12fd49c5e8b3825",
+        "session_id": "69d29068ec92f8e6e43600a4be0a601d54c2b4eae6421f7c96d31201a996532e",
+        "native_id": "a2",
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791814215000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I have reviewed package.json and added the test script."
+          }
+        ]
+      }
+    ]
+  }
+]

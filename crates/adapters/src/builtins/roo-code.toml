@@ -1,0 +1,82 @@
+# Roo Code adapter specification
+# Sources:
+# - Official repository: https://github.com/RooCodeInc/Roo-Code
+# - Extension ID: https://open-vsx.org/api/RooVeterinaryInc/roo-cline
+# - Storage paths: https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/src/utils/storage.ts
+# - Task persistence: https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/src/core/task-persistence/TaskHistoryStore.ts
+# - CLI commands: https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/apps/cli/src/index.ts
+# - Settings file names: https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/src/shared/globalFileNames.ts
+
+id = "roo-code"
+name = "Roo Code"
+vendor = "Roo Code Inc."
+family = "open-source CLIs"
+kind = "extension"
+adapter_version = "1.0.0"
+homepage = "https://roocodeinc.github.io/Roo-Code/"
+docs_url = "https://github.com/RooCodeInc/Roo-Code"
+coverage = "history"
+
+[detection]
+binaries = ["roo"]
+generic_binaries = ["roo"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/Library/Application Support/VSCodium/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/.roo"
+]
+config_files = [
+    "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/.config/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/.config/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/.config/VSCodium/User/globalStorage/rooveterinaryinc.roo-cline",
+    "~/.roo"
+]
+config_files = [
+    "~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Code\\User\\globalStorage\\rooveterinaryinc.roo-cline",
+    "%APPDATA%\\Cursor\\User\\globalStorage\\rooveterinaryinc.roo-cline",
+    "%APPDATA%\\Windsurf\\User\\globalStorage\\rooveterinaryinc.roo-cline",
+    "%APPDATA%\\VSCodium\\User\\globalStorage\\rooveterinaryinc.roo-cline",
+    "%USERPROFILE%\\.roo"
+]
+config_files = [
+    "%APPDATA%\\Code\\User\\globalStorage\\rooveterinaryinc.roo-cline\\settings\\mcp_settings.json"
+]
+
+[[history_sources]]
+id = "roo-code-history"
+format = "json"
+module = "roo-code"
+
+[history_sources.paths]
+macos = [
+    "~/Library/Application Support/Code/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*",
+    "~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*",
+    "~/Library/Application Support/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*"
+]
+linux = [
+    "~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*",
+    "~/.config/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*",
+    "~/.config/Windsurf/User/globalStorage/rooveterinaryinc.roo-cline/tasks/*"
+]
+windows = [
+    "%APPDATA%\\Code\\User\\globalStorage\\rooveterinaryinc.roo-cline\\tasks\\*",
+    "%APPDATA%\\Cursor\\User\\globalStorage\\rooveterinaryinc.roo-cline\\tasks\\*",
+    "%APPDATA%\\Windsurf\\User\\globalStorage\\rooveterinaryinc.roo-cline\\tasks\\*"
+]

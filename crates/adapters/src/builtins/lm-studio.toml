@@ -1,0 +1,44 @@
+# LM Studio (detection only, A6).
+# Homepage: https://lmstudio.ai
+# Sources: https://lmstudio.ai ; https://lmstudio.ai/docs/basics/mcp
+# Local model runner with an agent chat and an MCP server registry; conversations
+# are flat JSON files, and lms is the companion CLI.
+id = "lm-studio"
+name = "LM Studio"
+vendor = "Element Labs Inc."
+family = "other"
+kind = "desktop"
+homepage = "https://lmstudio.ai"
+docs_url = "https://lmstudio.ai/docs"
+
+[detection]
+binaries = ["lms"]
+generic_binaries = ["lms"]
+app_bundles = ["LM Studio"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.lmstudio/conversations",
+    "~/.cache/lm-studio/conversations"
+]
+config_files = [
+    "~/.lmstudio/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.lmstudio/conversations",
+    "~/.cache/lm-studio/conversations"
+]
+config_files = [
+    "~/.lmstudio/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.lmstudio\\conversations",
+    "%USERPROFILE%\\.cache\\lm-studio\\conversations"
+]
+config_files = [
+    "%USERPROFILE%\\.lmstudio\\mcp.json"
+]

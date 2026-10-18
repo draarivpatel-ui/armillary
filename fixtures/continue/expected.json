@@ -1,0 +1,81 @@
+[
+  {
+    "session": {
+      "id": "fe0b327ba611c77f8fd84d594e50e3c749c494ffb0cb1c26c92f11a3f5843f39",
+      "agent_id": "continue",
+      "installation_id": null,
+      "native_id": "6c7a8b9c-0123-4567-89ab-cdef01234567",
+      "provenance": {
+        "store": {
+          "id": "f991fe4e2579d45fc0bd3c5809f36972ff15b79efb79a6e26ecc0301d153fb2c",
+          "namespace": "continue",
+          "canonical_root": "fixture://continue",
+          "profile_id": "synthetic"
+        },
+        "source_id": "continue-history",
+        "adapter_id": "continue",
+        "adapter_version": "1.0.0",
+        "source_path": "sessions/6c7a8b9c-0123-4567-89ab-cdef01234567.json",
+        "file_identity": "synthetic:sessions/6c7a8b9c-0123-4567-89ab-cdef01234567.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 491,
+          "records": 2,
+          "digest": "fa3b5962d91b3f3bda1628f6d81d57d3251addd00c2fae6456c5d9c2e6970fb3"
+        }
+      },
+      "project_root": "/workspace/synth-continue",
+      "title": "Synthetic documentation update",
+      "started_at": null,
+      "ended_at": null,
+      "model": null,
+      "status": "completed",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "native completed status",
+        "native_event_id": null,
+        "at": null
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "unknown",
+        "input_tokens": null,
+        "output_tokens": null,
+        "observations": []
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "43784d2649e2afabae7b0ecea8b918995fb300b8cbe7df7c83490eb1a8009771",
+        "session_id": "fe0b327ba611c77f8fd84d594e50e3c749c494ffb0cb1c26c92f11a3f5843f39",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Update the readme with synthetic examples."
+          }
+        ]
+      },
+      {
+        "id": "9efc0e95689fa86d69fa1d7c014aec3f56d0dccd801c5f13636c80358221bfdc",
+        "session_id": "fe0b327ba611c77f8fd84d594e50e3c749c494ffb0cb1c26c92f11a3f5843f39",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I have updated the readme file with examples."
+          }
+        ]
+      }
+    ]
+  }
+]

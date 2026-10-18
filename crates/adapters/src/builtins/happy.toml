@@ -1,0 +1,38 @@
+# Happy (detection only, A6).
+# Homepage: https://happy.engineering
+# Sources: https://happy.engineering ; https://github.com/slopus/happy
+# End-to-end encrypted bridge that lets a phone drive a local CLI agent. The
+# daemon keeps its own store under ~/.happy; session content belongs to the
+# wrapped agent, so this entry is detection only.
+id = "happy"
+name = "Happy"
+vendor = "slopus"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://happy.engineering"
+docs_url = "https://happy.engineering"
+
+[detection]
+binaries = ["happy"]
+generic_binaries = ["happy"]
+app_bundles = ["Happy"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.happy",
+    "~/.config/happy"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.happy",
+    "~/.config/happy"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\happy"
+]
+config_files = []

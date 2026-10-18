@@ -1,0 +1,6 @@
+/add src/loader.py
+Add a latin-1 encoding fallback for CSV files that fail utf-8 decoding.
+/run pytest -q
+/exit
+model gpt-5.1
+Add type hints to src/loader.py without changing behavior.

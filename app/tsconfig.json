@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@orrery/folio": ["../ui/folio/src/index.ts"],
+      "react": ["../node_modules/@types/react"],
+      "react/jsx-runtime": ["../node_modules/@types/react/jsx-runtime"],
+      "react-dom": ["../node_modules/@types/react-dom"],
+      "@armillary/model": ["../crates/model/generated/contract.ts"],
+      "@contract": ["../crates/model/generated/contract.ts"],
+      "crates/model/generated/contract.ts": ["../crates/model/generated/contract.ts"]
+    }
+  },
+  "include": ["src", "tests"]
+}

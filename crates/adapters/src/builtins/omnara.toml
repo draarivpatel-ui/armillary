@@ -1,0 +1,41 @@
+# Omnara (detection only, A6).
+# Homepage: https://omnara.com
+# Sources: https://omnara.com ; https://github.com/omnara-ai/omnara
+# Control plane with a local daemon (omnarad) that brokers sessions to the web and
+# mobile clients. Its own SQLite store and transcripts are under ~/.omnara; the
+# underlying agent keeps its history elsewhere.
+id = "omnara"
+name = "Omnara"
+vendor = "Omnara AI"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://omnara.com"
+docs_url = "https://github.com/omnara-ai/omnara"
+
+[detection]
+binaries = ["omnara", "omnarad"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.omnara"
+]
+config_files = [
+    "~/.omnara/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.omnara"
+]
+config_files = [
+    "~/.omnara/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.omnara"
+]
+config_files = [
+    "%USERPROFILE%\\.omnara\\mcp.json"
+]

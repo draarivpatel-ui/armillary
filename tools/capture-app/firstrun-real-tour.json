@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "BUILD: the real first run, replayed frame by frame at 60 fps from a real run (no consent seeded)",
+  "window": { "width": 1440, "height": 900 },
+  "theme": "dark",
+  "timeoutMs": 900000,
+  "steps": [
+    { "op": "waitFor", "selector": "[data-firstrun]", "timeoutMs": 30000 },
+    { "op": "wait", "ms": 11000 },
+    { "op": "waitFor", "selector": "[data-firstrun-action=\"continue\"]", "timeoutMs": 30000 },
+    { "op": "click", "selector": "[data-firstrun-action=\"continue\"]" },
+    { "op": "wait", "ms": 6000 },
+    { "op": "hook", "name": "__armillaryFirstRun.pause" },
+    { "op": "sequence", "name": "fr", "fromMs": 0, "toMs": 27300, "stepMs": 16.6667, "seek": { "kind": "hook", "hook": "__armillaryFirstRun.seek" } },
+    { "op": "quit" }
+  ]
+}

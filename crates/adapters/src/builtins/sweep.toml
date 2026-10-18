@@ -1,0 +1,35 @@
+# Sweep (detection only, A6).
+# Homepage: https://sweep.dev
+# Sources: https://sweep.dev ; https://github.com/sweepai/sweep
+# GitHub App cloud agent: runs on issue labels and PR comments. The local CLI only
+# caches debug output, which is all detection can see; rules are SWEEP.md.
+id = "sweep"
+name = "Sweep"
+vendor = "Sweep AI"
+family = "other"
+kind = "cloud"
+homepage = "https://sweep.dev"
+docs_url = "https://github.com/sweepai/sweep"
+
+[detection]
+binaries = ["sweep"]
+generic_binaries = ["sweep"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.sweep"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.sweep"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.sweep"
+]
+config_files = []

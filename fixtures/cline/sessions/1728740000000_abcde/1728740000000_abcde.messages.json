@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "updated_at": "2026-10-12T14:32:00.000Z",
+  "agent": "lead",
+  "sessionId": "1728740000000_abcde",
+  "messages": [
+    {
+      "id": "msg_001",
+      "role": "user",
+      "content": "Create a synthetic helper function for formatting metrics.",
+      "ts": 1791815400000
+    },
+    {
+      "id": "msg_002",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "I will create a helper module with formatting functions."
+        },
+        {
+          "type": "tool_use",
+          "id": "call_1",
+          "name": "write_to_file",
+          "input": {
+            "path": "src/format.ts"
+          }
+        }
+      ],
+      "ts": 1791815460000,
+      "metrics": {
+        "inputTokens": 1450,
+        "outputTokens": 210,
+        "cost": 0.008
+      }
+    }
+  ]
+}

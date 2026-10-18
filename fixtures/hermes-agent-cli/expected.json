@@ -1,0 +1,93 @@
+[
+  {
+    "session": {
+      "id": "0c3ce4c7f6d073e823ec32c7b0d29c0b10115f7b602a4e5944c7159e2b61e229",
+      "agent_id": "hermes-agent-cli",
+      "installation_id": null,
+      "native_id": "sess_20261012_143000",
+      "provenance": {
+        "store": {
+          "id": "7e4940f4a8b563d73db467f22fe0be36156c42ae22fa3219f70e5b5215b23fcd",
+          "namespace": "hermes-agent-cli",
+          "canonical_root": "fixture://hermes-agent-cli",
+          "profile_id": "synthetic"
+        },
+        "source_id": "hermes-state-db",
+        "adapter_id": "hermes-agent-cli",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "state.db",
+        "file_identity": "synthetic:state.db",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 2,
+          "records": 2,
+          "digest": "60dd90c11a6e9a928a0852e3012fc2e08975a788be94443ef4569e8c34a2edb0"
+        }
+      },
+      "project_root": "/Users/developer/code/research",
+      "title": "Explore optimization algorithms",
+      "started_at": 1791814000000,
+      "ended_at": 1791814100000,
+      "model": "anthropic/claude-sonnet-4",
+      "status": "unknown",
+      "completion": {
+        "kind": "native_status",
+        "detail": "sessions.ended_at",
+        "native_event_id": null,
+        "at": 1791814100000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "unknown",
+        "input_tokens": null,
+        "output_tokens": null,
+        "observations": []
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "05d4f75f703480749046c8c26e4a45b372374ce378b5f4c5be061a07317cd2a2",
+        "session_id": "0c3ce4c7f6d073e823ec32c7b0d29c0b10115f7b602a4e5944c7159e2b61e229",
+        "native_id": "1",
+        "seq": 1,
+        "role": "user",
+        "at": 1791814005000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Analyze benchmark results"
+          }
+        ]
+      },
+      {
+        "id": "248facdc7fad496f15914bd782c1426e73051375fac69736c182db7d07596538",
+        "session_id": "0c3ce4c7f6d073e823ec32c7b0d29c0b10115f7b602a4e5944c7159e2b61e229",
+        "native_id": "2",
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791814015000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Checking benchmark log file"
+          },
+          {
+            "type": "tool_call",
+            "call_id": "7e526ce07b7ca2b5e3c869ed17099c7d99cf8e195fc76ef5cd90cc08a37908f6",
+            "native_id": null,
+            "name": "read_file",
+            "input": {
+              "path": "bench.log"
+            },
+            "files": [
+              "bench.log"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

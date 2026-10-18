@@ -1,0 +1,10 @@
+---
+description: Synthetic Cursor user rules
+globs:
+alwaysApply: true
+---
+
+# Global Cursor rules (synthetic)
+
+- Match the existing naming style in a file before adding your own.
+- Never log a token, even in debug builds.

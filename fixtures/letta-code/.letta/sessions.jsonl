@@ -1,0 +1,4 @@
+{"session_id":"9b7e2c4a-1d63-4f08-8a55-2c1e6d7b3a90","agent_id":"agent_01H8X2","event":"start","project":"/Users/demo/memory-service","model":"letta-70b-agent","provider":"letta-cloud","timestamp":1791900000000}
+{"session_id":"9b7e2c4a-1d63-4f08-8a55-2c1e6d7b3a90","agent_id":"agent_01H8X2","event":"end","project":"/Users/demo/memory-service","model":"letta-70b-agent","provider":"letta-cloud","timestamp":1791900512000,"usage":{"prompt_tokens":8420,"completion_tokens":615},"cost_usd":0.031}
+{"session_id":"c4f18d02-7a95-4b3e-9c10-5e8e2f1a6d47","agent_id":"agent_01H8X2","event":"start","project":"/Users/demo/docs-site","model":"letta-70b-agent","provider":"local","timestamp":1791911100000}
+{"session_id":"c4f18d02-7a95-4b3e-9c10-5e8e2f1a6d47","agent_id":"agent_01H8X2","event":"end","project":"/Users/demo/docs-site","model":"letta-70b-agent","provider":"local","timestamp":1791911845000,"usage":{"prompt_tokens":12030,"completion_tokens":988},"cost_usd":0.0}

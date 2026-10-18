@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Setup unit tests with mock runners."
+  },
+  {
+    "role": "assistant",
+    "content": "Unit tests configured with synthetic runners."
+  }
+]

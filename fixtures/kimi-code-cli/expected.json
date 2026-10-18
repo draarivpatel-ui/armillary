@@ -1,0 +1,150 @@
+[
+  {
+    "session": {
+      "id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+      "agent_id": "kimi-code-cli",
+      "installation_id": null,
+      "native_id": "ses_7f3d9ab4-51c2-4e8a-9b6d-2c1f0a9d8e73",
+      "provenance": {
+        "store": {
+          "id": "cb24c12757ca0a8e3ae35e037269da9ea060e6821e03faa02f68bb11e58a3738",
+          "namespace": "kimi-history",
+          "canonical_root": "fixture://kimi-history",
+          "profile_id": "synthetic"
+        },
+        "source_id": "kimi-sessions",
+        "adapter_id": "kimi-code-cli",
+        "adapter_version": "1.0.0",
+        "source_path": "sessions/wd_my-api_1a2b3c4d5e6f/ses_7f3d9ab4-51c2-4e8a-9b6d-2c1f0a9d8e73/state.json",
+        "file_identity": "synthetic:sessions/wd_my-api_1a2b3c4d5e6f/ses_7f3d9ab4-51c2-4e8a-9b6d-2c1f0a9d8e73/state.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 719,
+          "records": 0,
+          "digest": "13d0c19b106f0b5ed0164cd182a62af347b9a65b7a72ecc015b2ae161b2e8291"
+        }
+      },
+      "project_root": "/Users/developer/code/my-api",
+      "title": "Add rate limiter middleware",
+      "started_at": 1791792724221,
+      "ended_at": 1791798453108,
+      "model": "kimi-k2-0711-preview",
+      "status": "done",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "session state updatedAt",
+        "native_event_id": null,
+        "at": 1791798453108
+      },
+      "turns": 2,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 19105,
+        "output_tokens": 311,
+        "observations": [
+          {
+            "event_id": "b17e69289884a47b5c1b4bc5cb8976af83cf219e9f90ad2bdb35a2f10a8dfabb",
+            "semantics": "cumulative",
+            "input_tokens": 18234,
+            "output_tokens": 742,
+            "at": 1791798453108
+          },
+          {
+            "event_id": "831262293f837f998cbacdf613d058b43e9a6fa49064b83cb08baac99e4063ca",
+            "semantics": "cumulative",
+            "input_tokens": 19105,
+            "output_tokens": 311,
+            "at": 1791798453108
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "4ba877f68ece9857292ac615ed566a957571369c1b39a48aa1fe288ed50fedb0",
+        "session_id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": 1791792724221,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Wire the token bucket limiter into the router. Each API key should get its own bucket."
+          }
+        ]
+      },
+      {
+        "id": "54b49ca85702f3987948ceda81bfe826253fb1a41d4728ed7a7eda8b0a0a0ea6",
+        "session_id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will read app.py and limiter.py first, then register the middleware."
+          }
+        ]
+      },
+      {
+        "id": "4de664a965cb3438f0b69f48e34692e0e43801032a5071ed7f79592b1edd4eb3",
+        "session_id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "tool_call",
+            "call_id": "call_9d1c2f",
+            "native_id": null,
+            "name": "Read",
+            "input": {
+              "path": "/Users/developer/code/my-api/app.py"
+            },
+            "files": [
+              "/Users/developer/code/my-api/app.py"
+            ]
+          },
+          {
+            "type": "text",
+            "text": "Added RateLimitMiddleware with a per-key TokenBucket in app.py. Run pytest tests/test_limiter.py to verify."
+          }
+        ]
+      },
+      {
+        "id": "990e14401a78ff58292d80653a2c81086787624966a7aa8f4b84670fcf17b2f9",
+        "session_id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+        "native_id": null,
+        "seq": 4,
+        "role": "user",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Make the burst size configurable via config.toml."
+          }
+        ]
+      },
+      {
+        "id": "224f53f3264e5d6cac7db765d7093798778aecd9249f7b681d0b5afc81c743ba",
+        "session_id": "c9168fffa8a278f0d1057b3a6edbed1bea710a7d417d1cbadca6d82e056f0516",
+        "native_id": null,
+        "seq": 5,
+        "role": "assistant",
+        "at": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Done: rate_limit.burst now read from [limiter] in config.toml, defaulting to 20."
+          }
+        ]
+      }
+    ]
+  }
+]

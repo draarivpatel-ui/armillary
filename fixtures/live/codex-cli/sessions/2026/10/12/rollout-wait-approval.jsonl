@@ -1,0 +1,2 @@
+{"type":"session_meta","payload":{"id":"codex-live-wait-approval","cwd":"/projects/db-migrator","timestamp":"2026-10-12T15:10:00Z"}}
+{"type":"event_msg","payload":{"type":"request_approval"}}

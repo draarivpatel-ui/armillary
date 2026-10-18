@@ -1,0 +1,47 @@
+# Grok Build adapter specification. Coverage: detect only.
+#
+# Primary sources:
+#   - https://github.com/xai-org/grok-build
+#   - Product page: https://x.ai/build
+#   - Docs: https://docs.x.ai/build/overview
+#
+# Secret files under the data folder that this adapter never opens:
+# auth.json, mcp_credentials.json.
+
+id = "grok-build-cli"
+name = "Grok Build"
+vendor = "xAI"
+family = "open-source CLIs"
+kind = "cli"
+coverage = "detect"
+homepage = "https://x.ai/build"
+docs_url = "https://docs.x.ai/build/overview"
+
+[detection]
+binaries = ["grok"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.grok/sessions"
+]
+config_files = [
+    "~/.grok/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.grok/sessions"
+]
+config_files = [
+    "~/.grok/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.grok\\sessions"
+]
+config_files = [
+    "%USERPROFILE%\\.grok\\config.toml"
+]

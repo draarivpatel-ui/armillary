@@ -1,0 +1,35 @@
+# Zero (detection only, A6).
+# Homepage: https://github.com/gitlawb/zero
+# Sources: https://github.com/gitlawb/zero
+# Dependency-light Go agent (no cgo) that reads AGENTS.md and repository
+# guidelines; state lives in ~/.zero.
+id = "zero"
+name = "Zero"
+vendor = "gitlawb"
+family = "open-source CLIs"
+kind = "cli"
+homepage = "https://github.com/gitlawb/zero"
+docs_url = "https://github.com/gitlawb/zero"
+
+[detection]
+binaries = ["zero"]
+generic_binaries = ["zero"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.zero"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.zero"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.zero"
+]
+config_files = []

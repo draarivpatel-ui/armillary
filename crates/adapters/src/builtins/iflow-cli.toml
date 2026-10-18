@@ -1,0 +1,89 @@
+# iFlow CLI adapter specification.
+#
+# Primary sources:
+#   - npm package @iflow-ai/iflow-cli (0.5.19), bundle/iflow.js
+#   - Project home: https://iflow.cn/iflow
+#   - Docs: https://github.com/iflow-ai/iflow-cli
+#
+# Secret files under the data folder that this adapter never opens:
+# settings.json, mcp-oauth-tokens.json, iflow_accounts.json, aone_token.json.
+
+id = "iflow-cli"
+name = "iFlow CLI"
+vendor = "iFlow (Alibaba)"
+family = "open-source CLIs"
+kind = "cli"
+adapter_version = "0.1.0-unverified"
+coverage = "history"
+homepage = "https://iflow.cn/iflow"
+docs_url = "https://github.com/iflow-ai/iflow-cli"
+
+[detection]
+binaries = ["iflow"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.iflow/projects",
+    "~/.iflow/history"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.iflow/projects",
+    "~/.iflow/history"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.iflow\\projects",
+    "%USERPROFILE%\\.iflow\\history"
+]
+config_files = []
+
+[[history_sources]]
+id = "iflow-projects"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = [".iflow/projects/*/*.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.iflow/projects/*/*.jsonl"]
+linux = ["~/.iflow/projects/*/*.jsonl"]
+windows = ["%USERPROFILE%\\.iflow\\projects\\*\\*.jsonl"]
+
+[history_sources.mapping.session]
+id = "/sessionId"
+project_root = "/cwd"
+timestamp = "/timestamp"
+model = "/message/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+native_id_pointer = "/uuid"
+role_pointer = "/message/role"
+text_pointer = "/message/content"
+text_transform = "content_array"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.tool_calls]
+call_id_pointer = "/id"
+content_array_pointer = "/message/content"
+filter_type = "tool_use"
+result_filter_type = "tool_result"
+result_call_id_pointer = "/tool_use_id"
+result_output_pointer = "/content"
+name_pointer = "/name"
+input_pointer = "/input"
+files_pointer = "/input/file_path"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+tokens_in_pointer = "/message/usage/input_tokens"
+tokens_out_pointer = "/message/usage/output_tokens"

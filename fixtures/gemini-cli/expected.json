@@ -1,0 +1,133 @@
+[
+  {
+    "session": {
+      "id": "fde8bce957cc152e590559426491a6369d055a4217aa4383be829913567bfe86",
+      "agent_id": "gemini-cli",
+      "installation_id": null,
+      "native_id": "gemini-sess-alpha-001",
+      "provenance": {
+        "store": {
+          "id": "65934d3ef1b6500f2c1e1694b47b9952a8b31af21cb2fdb15b61a05c421b8f75",
+          "namespace": "gemini-cli",
+          "canonical_root": "fixture://gemini-cli",
+          "profile_id": "synthetic"
+        },
+        "source_id": "gemini-cli-chats",
+        "adapter_id": "gemini-cli",
+        "adapter_version": "0.2.0-unverified",
+        "source_path": "tmp/abc12345/chats/session-2026-10-12T14-10-f1e2d3c4.jsonl",
+        "file_identity": "synthetic:tmp/abc12345/chats/session-2026-10-12T14-10-f1e2d3c4.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 1146,
+          "records": 4,
+          "digest": "e246c11439829fe06a7c4b0bef3695cbd748f8c463ce687d362e75d2e4de802b"
+        }
+      },
+      "project_root": "/Users/developer/code/my-gemini-app",
+      "title": null,
+      "started_at": 1791814200000,
+      "ended_at": null,
+      "model": "gemini-2.5-pro",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 2550,
+        "output_tokens": 205,
+        "observations": [
+          {
+            "event_id": "13cbe042f1cdde489ec4397d24858bef1a3fde6bf98ac0c87d3344b168ca358d",
+            "semantics": "delta",
+            "input_tokens": 1200,
+            "output_tokens": 85,
+            "at": 1791814205000
+          },
+          {
+            "event_id": "6a4b1d138f70ec85a200c94e8060c085ae2feeb15e29563ceacbebe463020864",
+            "semantics": "delta",
+            "input_tokens": 1350,
+            "output_tokens": 120,
+            "at": 1791814215000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "fefc56bcfa19abf6bb62db1a9cd84120f587970caeb8053e55fb1dddd1b29906",
+        "session_id": "fde8bce957cc152e590559426491a6369d055a4217aa4383be829913567bfe86",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": 1791814200000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Inspect Cargo.toml and list the dependencies."
+          }
+        ]
+      },
+      {
+        "id": "7e92dfcebbfd4518b541305690821797b41bfb26138d2358c5a527db248dc541",
+        "session_id": "fde8bce957cc152e590559426491a6369d055a4217aa4383be829913567bfe86",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": 1791814205000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will inspect Cargo.toml for you."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call-read-1",
+            "native_id": "call-read-1",
+            "name": "read_file",
+            "input": {
+              "file_path": "/Users/developer/code/my-gemini-app/Cargo.toml"
+            },
+            "files": [
+              "/Users/developer/code/my-gemini-app/Cargo.toml"
+            ]
+          },
+          {
+            "type": "tool_result",
+            "call_id": "call-read-1",
+            "output": [
+              {
+                "functionResponse": {
+                  "id": "call-read-1",
+                  "name": "read_file",
+                  "response": {
+                    "output": "[package]\nname = \"my-gemini-app\"\n"
+                  }
+                }
+              }
+            ],
+            "is_error": null
+          }
+        ]
+      },
+      {
+        "id": "a8e7041163b18e8a2d9548b8aae7a68d7eab298c13bcde512e7829e01bb162e6",
+        "session_id": "fde8bce957cc152e590559426491a6369d055a4217aa4383be829913567bfe86",
+        "native_id": null,
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791814215000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Cargo.toml defines the project dependencies."
+          }
+        ]
+      }
+    ]
+  }
+]

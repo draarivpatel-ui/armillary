@@ -1,0 +1,124 @@
+[
+  {
+    "session": {
+      "id": "023a54174ebd12520e10b3ac8d9c24125fcd34ec64ce49475e0e6d606d206d13",
+      "agent_id": "factory-droid",
+      "installation_id": null,
+      "native_id": "droid-sess-001",
+      "provenance": {
+        "store": {
+          "id": "88fc8b4bf5cca829044e47aad827600a008b3b462b4b43730b00844b384d6f5d",
+          "namespace": "factory-droid",
+          "canonical_root": "fixture://factory-droid",
+          "profile_id": "synthetic"
+        },
+        "source_id": "factory-droid-sessions",
+        "adapter_id": "factory-droid",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "sessions/-Users-developer-code-api-service/droid-sess-001.jsonl",
+        "file_identity": "synthetic:sessions/-Users-developer-code-api-service/droid-sess-001.jsonl",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 950,
+          "records": 4,
+          "digest": "7ec5b18e1e0d0b83004345a5689643c2c3eefc3d49617b5976c002919de3df7b"
+        }
+      },
+      "project_root": "/Users/developer/code/api-service",
+      "title": null,
+      "started_at": 1791813600000,
+      "ended_at": null,
+      "model": "claude-3-7-sonnet",
+      "status": "unknown",
+      "completion": null,
+      "turns": 1,
+      "usage": {
+        "semantics": "delta",
+        "input_tokens": 3850,
+        "output_tokens": 205,
+        "observations": [
+          {
+            "event_id": "4081adb8de3c31634c5622af71696aa2d1e3064c20fea4908afc66a2983573c7",
+            "semantics": "delta",
+            "input_tokens": 1200,
+            "output_tokens": 0,
+            "at": 1791813605000
+          },
+          {
+            "event_id": "db664847c8129152fac0021d743c3b2c033339e2c9cef76c5d7d619897bec9e5",
+            "semantics": "delta",
+            "input_tokens": 1250,
+            "output_tokens": 85,
+            "at": 1791813610000
+          },
+          {
+            "event_id": "641329c52e9facc0fe82cf7d04981c6fcdd2bed359290ff4234065eaaa5944eb",
+            "semantics": "delta",
+            "input_tokens": 1400,
+            "output_tokens": 120,
+            "at": 1791813620000
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "ad79228688425c8a1aabfdb5c507111004c068cbd2bce71f220a5542980daeaf",
+        "session_id": "023a54174ebd12520e10b3ac8d9c24125fcd34ec64ce49475e0e6d606d206d13",
+        "native_id": null,
+        "seq": 2,
+        "role": "user",
+        "at": 1791813605000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Please update auth.ts to support bearer tokens."
+          }
+        ]
+      },
+      {
+        "id": "7c7a849449dcce20818300af6f674217ffb15a9d229ec01a2dba84a7c0386db0",
+        "session_id": "023a54174ebd12520e10b3ac8d9c24125fcd34ec64ce49475e0e6d606d206d13",
+        "native_id": null,
+        "seq": 3,
+        "role": "assistant",
+        "at": 1791813610000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will check the current auth.ts file."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call-1",
+            "native_id": "call-1",
+            "name": "Read",
+            "input": {
+              "path": "src/auth.ts"
+            },
+            "files": [
+              "src/auth.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1622fc47849bba9c991ae462ebe35cdb61b507f78e9de65dfed1275f5495d0c8",
+        "session_id": "023a54174ebd12520e10b3ac8d9c24125fcd34ec64ce49475e0e6d606d206d13",
+        "native_id": null,
+        "seq": 4,
+        "role": "assistant",
+        "at": 1791813620000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I have updated auth.ts with bearer token support."
+          }
+        ]
+      }
+    ]
+  }
+]

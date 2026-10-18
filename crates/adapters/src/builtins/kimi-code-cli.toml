@@ -1,0 +1,67 @@
+# Kimi Code CLI adapter. Coverage: history (Rust module).
+# Paths verified against:
+#   https://moonshotai.github.io/kimi-code/en/configuration/data-locations.html
+#     (data root ~/.kimi-code on all three OSes, KIMI_CODE_HOME override, sessions layout
+#     sessions/<workDirKey>/<sessionId>/ with state.json and agents/main/wire.jsonl,
+#     session_index.jsonl, user-history/, credentials/; fetched 2026-10-12)
+#   https://moonshotai.github.io/kimi-code/en/guides/sessions.html (session dirs and wire files,
+#     kimi export; fetched 2026-10-12)
+#   https://github.com/MoonshotAI/kimi-code (TypeScript monorepo; the wire journal record union
+#     in apps/vis/server/src/lib/agent-record-types.ts carries 60+ versioned event types with a
+#     migration chain; read 2026-10-12)
+# The dedicated Rust module pairs state.json with wire.jsonl, extracts turns, tool calls,
+# and token counts, and tolerates unknown wire record types.
+# Never open credentials/ (OAuth tokens) or server.token.
+id = "kimi-code-cli"
+name = "Kimi Code CLI"
+vendor = "Moonshot AI"
+family = "Chinese labs"
+kind = "cli"
+adapter_version = "1.0.0"
+store_namespace = "kimi-history"
+coverage = "history"
+homepage = "https://kimi.moonshot.cn/code"
+docs_url = "https://github.com/MoonshotAI/kimi-code"
+
+[detection]
+binaries = ["kimi"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.kimi-code/sessions",
+    "$KIMI_CODE_HOME/sessions"
+]
+config_files = [
+    "~/.kimi-code/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.kimi-code/sessions",
+    "$KIMI_CODE_HOME/sessions"
+]
+config_files = [
+    "~/.kimi-code/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.kimi-code\\sessions",
+    "%KIMI_CODE_HOME%\\sessions"
+]
+config_files = [
+    "%USERPROFILE%\\.kimi-code\\config.toml"
+]
+
+[[history_sources]]
+id = "kimi-sessions"
+module = "kimi-code-cli"
+fixture_paths = ["sessions/*/*/state.json"]
+
+[history_sources.paths]
+macos = ["~/.kimi-code/sessions/*/*/state.json", "$KIMI_CODE_HOME/sessions/*/*/state.json"]
+linux = ["~/.kimi-code/sessions/*/*/state.json", "$KIMI_CODE_HOME/sessions/*/*/state.json"]
+windows = ["%USERPROFILE%\\.kimi-code\\sessions\\*\\*\\state.json", "%KIMI_CODE_HOME%\\sessions\\*\\*\\state.json"]
+

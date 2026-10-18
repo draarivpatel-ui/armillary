@@ -1,0 +1,1567 @@
+{
+  "agents": [
+    {
+      "agent": "claude-code",
+      "displayName": "Claude Code",
+      "vendor": "Anthropic",
+      "servers": [
+        {
+          "agent": "claude-code",
+          "name": "disabled-legacy",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@legacy/server",
+            "--api-key",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": false,
+          "maskedValues": 1,
+          "sourcePath": "~/.claude.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "github",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "docker",
+          "args": [
+            "run",
+            "-i",
+            "--rm",
+            "-e",
+            "GITHUB_PERSONAL_ACCESS_TOKEN",
+            "ghcr.io/github/github-mcp-server"
+          ],
+          "url": null,
+          "envNames": [
+            "GITHUB_PERSONAL_ACCESS_TOKEN"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.claude.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "linear",
+          "scope": "global",
+          "project": null,
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://mcp.linear.app/mcp?access_token=[masked]",
+          "envNames": [],
+          "headerNames": [
+            "Authorization"
+          ],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "~/.claude.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.claude.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "sentry",
+          "scope": "global",
+          "project": null,
+          "transport": "sse",
+          "command": null,
+          "args": [],
+          "url": "https://mcp.sentry.dev/sse",
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.claude.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.mcp.json"
+        },
+        {
+          "agent": "claude-code",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.claude.json#projects/webapp"
+        },
+        {
+          "agent": "claude-code",
+          "name": "stripe",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-stripe",
+            "--secret-key",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [
+            "STRIPE_SECRET_KEY"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "webapp/.mcp.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "claude-code",
+          "scope": "global",
+          "project": null,
+          "path": "~/.claude/CLAUDE.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic global rules for Claude Code\n\nEverything in this file is invented test data for the Switchboard fixtures.\n\n- Pin exact dependency versions.\n- Tests first, then implementation.\n- Never open a credential file.\n\nExport API_TOKEN=[masked] before running the suite.",
+          "truncated": false,
+          "lineCount": 9,
+          "maskedValues": 1
+        },
+        {
+          "agent": "claude-code",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/CLAUDE.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project rules for Claude Code\n\nInvented data for the Switchboard fixtures.\n\n- Tests first, then implementation.\n- Pin exact dependency versions.\n- No em or en dashes in user facing text.",
+          "truncated": false,
+          "lineCount": 7,
+          "maskedValues": 0
+        },
+        {
+          "agent": "claude-code",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.claude/CLAUDE.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic nested Claude project rules\n\n- Prefer the smallest change that fixes the cause.",
+          "truncated": false,
+          "lineCount": 3,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.claude/.credentials.json",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "agent": "codex-cli",
+      "displayName": "Codex CLI",
+      "vendor": "OpenAI",
+      "servers": [
+        {
+          "agent": "codex-cli",
+          "name": "context7",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.codex/config.toml"
+        },
+        {
+          "agent": "codex-cli",
+          "name": "github",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-github"
+          ],
+          "url": null,
+          "envNames": [
+            "GITHUB_TOKEN",
+            "NODE_ENV"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.codex/config.toml"
+        },
+        {
+          "agent": "codex-cli",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.codex/config.toml"
+        },
+        {
+          "agent": "codex-cli",
+          "name": "remote-docs",
+          "scope": "global",
+          "project": null,
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://docs.example.com/mcp",
+          "envNames": [
+            "DOCS_MCP_TOKEN"
+          ],
+          "headerNames": [
+            "X-API-KEY"
+          ],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.codex/config.toml"
+        },
+        {
+          "agent": "codex-cli",
+          "name": "linear",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://mcp.linear.app/mcp",
+          "envNames": [
+            "LINEAR_MCP_TOKEN"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.codex/config.toml"
+        },
+        {
+          "agent": "codex-cli",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.codex/config.toml"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "codex-cli",
+          "scope": "global",
+          "project": null,
+          "path": "~/.codex/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic global AGENTS.md for Codex\n\nInvented data for the Switchboard fixtures.\n\n- Keep the archive private and local.\n- No network calls from product code.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        },
+        {
+          "agent": "codex-cli",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.codex/auth.json",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "agent": "gemini-cli",
+      "displayName": "Gemini CLI",
+      "vendor": "Google",
+      "servers": [
+        {
+          "agent": "gemini-cli",
+          "name": "chrome-devtools",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "chrome-devtools-mcp@1.0.1"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.gemini/settings.json"
+        },
+        {
+          "agent": "gemini-cli",
+          "name": "context7",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.gemini/settings.json"
+        },
+        {
+          "agent": "gemini-cli",
+          "name": "jira",
+          "scope": "global",
+          "project": null,
+          "transport": "sse",
+          "command": null,
+          "args": [],
+          "url": "https://jira.example.com/mcp",
+          "envNames": [],
+          "headerNames": [
+            "Authorization"
+          ],
+          "referencedEnvNames": [
+            "MY_JIRA_TOKEN"
+          ],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.gemini/settings.json"
+        },
+        {
+          "agent": "gemini-cli",
+          "name": "monitoring",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-monitoring",
+            "--token",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [
+            "GOOGLE_API_KEY",
+            "PROJECT_ID"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "~/.gemini/settings.json"
+        },
+        {
+          "agent": "gemini-cli",
+          "name": "jira",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "sse",
+          "command": null,
+          "args": [],
+          "url": "https://jira.example.com/mcp",
+          "envNames": [],
+          "headerNames": [
+            "Authorization"
+          ],
+          "referencedEnvNames": [
+            "MY_JIRA_TOKEN"
+          ],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.gemini/settings.json"
+        },
+        {
+          "agent": "gemini-cli",
+          "name": "puppeteer",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-puppeteer"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.gemini/settings.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "gemini-cli",
+          "scope": "global",
+          "project": null,
+          "path": "~/.gemini/GEMINI.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic global GEMINI.md\n\nInvented data for the Switchboard fixtures.\n\n- Prefer the declarative adapter engine over hand written parsers.\n\nSet GEMINI_API_KEY=[masked] to try a new model.",
+          "truncated": false,
+          "lineCount": 7,
+          "maskedValues": 1
+        },
+        {
+          "agent": "gemini-cli",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/GEMINI.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project GEMINI.md\n\n- Reuse the design tokens instead of hard coded colors.",
+          "truncated": false,
+          "lineCount": 3,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.gemini/oauth_creds.json",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "agent": "cursor",
+      "displayName": "Cursor",
+      "vendor": "Cursor",
+      "servers": [
+        {
+          "agent": "cursor",
+          "name": "context7",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp"
+          ],
+          "url": null,
+          "envNames": [
+            "UPSTASH_API_KEY"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [
+            "UPSTASH_API_KEY"
+          ],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.cursor/mcp.json"
+        },
+        {
+          "agent": "cursor",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.cursor/mcp.json"
+        },
+        {
+          "agent": "cursor",
+          "name": "supabase",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@supabase/mcp-server-supabase",
+            "--access-token",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "~/.cursor/mcp.json"
+        },
+        {
+          "agent": "cursor",
+          "name": "context7",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.cursor/mcp.json"
+        },
+        {
+          "agent": "cursor",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.cursor/mcp.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "cursor",
+          "scope": "global",
+          "project": null,
+          "path": "~/.cursor/rules/010-global-standards.mdc",
+          "format": "mdc",
+          "exists": true,
+          "preview": "---\ndescription: Synthetic Cursor user rules\nglobs:\nalwaysApply: true\n---\n\n# Global Cursor rules (synthetic)\n\n- Match the existing naming style in a file before adding your own.\n- Never log a token, even in debug builds.",
+          "truncated": false,
+          "lineCount": 10,
+          "maskedValues": 0
+        },
+        {
+          "agent": "cursor",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.cursor/rules/branch-naming.mdc",
+          "format": "mdc",
+          "exists": true,
+          "preview": "---\ndescription: Synthetic Cursor project rules\nglobs: \"**/*.ts,**/*.tsx\"\nalwaysApply: false\n---\n\n# Branch and file naming (synthetic fixture)\n\nThis file is intentionally long so the Switchboard preview truncation is exercised by the\nfixture instead of by a hand written string in the test.\n\nRule 01: name branches by intent, not by ticket alone.",
+          "truncated": true,
+          "lineCount": 31,
+          "maskedValues": 0
+        },
+        {
+          "agent": "cursor",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.cursor/state.vscdb",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "agent": "opencode",
+      "displayName": "OpenCode",
+      "vendor": "OpenCode",
+      "servers": [
+        {
+          "agent": "opencode",
+          "name": "context7",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp",
+            "--api-key",
+            "{env:CONTEXT7_API_KEY}"
+          ],
+          "url": null,
+          "envNames": [
+            "CONTEXT7_API_KEY"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [
+            "CONTEXT7_API_KEY"
+          ],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.config/opencode/opencode.json"
+        },
+        {
+          "agent": "opencode",
+          "name": "greptile",
+          "scope": "global",
+          "project": null,
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://api.greptile.com/mcp",
+          "envNames": [],
+          "headerNames": [
+            "Authorization"
+          ],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.config/opencode/opencode.json"
+        },
+        {
+          "agent": "opencode",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.config/opencode/opencode.json"
+        },
+        {
+          "agent": "opencode",
+          "name": "figma",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://mcp.figma.com/mcp",
+          "envNames": [],
+          "headerNames": [
+            "X-Figma-Token"
+          ],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/opencode.json"
+        },
+        {
+          "agent": "opencode",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/opencode.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "opencode",
+          "scope": "global",
+          "project": null,
+          "path": "~/.config/opencode/AGENTS.md",
+          "format": "markdown",
+          "exists": false,
+          "preview": null,
+          "truncated": false,
+          "lineCount": 0,
+          "maskedValues": 0
+        },
+        {
+          "agent": "opencode",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        },
+        {
+          "agent": "opencode",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/CLAUDE.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project rules for Claude Code\n\nInvented data for the Switchboard fixtures.\n\n- Tests first, then implementation.\n- Pin exact dependency versions.\n- No em or en dashes in user facing text.",
+          "truncated": false,
+          "lineCount": 7,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [],
+      "notes": []
+    },
+    {
+      "agent": "copilot-cli",
+      "displayName": "GitHub Copilot CLI",
+      "vendor": "GitHub",
+      "servers": [
+        {
+          "agent": "copilot-cli",
+          "name": "github",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "docker",
+          "args": [
+            "run",
+            "-i",
+            "--rm",
+            "-e",
+            "GITHUB_PERSONAL_ACCESS_TOKEN",
+            "ghcr.io/github/github-mcp-server"
+          ],
+          "url": null,
+          "envNames": [
+            "GITHUB_PERSONAL_ACCESS_TOKEN"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.copilot/mcp-config.json"
+        },
+        {
+          "agent": "copilot-cli",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.copilot/mcp-config.json"
+        },
+        {
+          "agent": "copilot-cli",
+          "name": "sqlite",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "uvx",
+          "args": [
+            "mcp-server-sqlite",
+            "--db-path",
+            "./archive.db"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "webapp/.mcp.json"
+        },
+        {
+          "agent": "copilot-cli",
+          "name": "stripe",
+          "scope": "project",
+          "project": "webapp",
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-stripe",
+            "--secret-key",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [
+            "STRIPE_SECRET_KEY"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "webapp/.mcp.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "copilot-cli",
+          "scope": "global",
+          "project": null,
+          "path": "~/.copilot/copilot-instructions.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic Copilot CLI instructions\n\nInvented data for the Switchboard fixtures.\n\n- Run the narrowest test that covers the change.",
+          "truncated": false,
+          "lineCount": 5,
+          "maskedValues": 0
+        },
+        {
+          "agent": "copilot-cli",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.github/copilot-instructions.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic Copilot project instructions\n\n- Keep commits small and reversible.",
+          "truncated": false,
+          "lineCount": 3,
+          "maskedValues": 0
+        },
+        {
+          "agent": "copilot-cli",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.copilot/config.json",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "agent": "windsurf",
+      "displayName": "Windsurf",
+      "vendor": "Codeium",
+      "servers": [
+        {
+          "agent": "windsurf",
+          "name": "context7",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@upstash/context7-mcp"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.codeium/windsurf/mcp_config.json"
+        },
+        {
+          "agent": "windsurf",
+          "name": "db-inspector",
+          "scope": "global",
+          "project": null,
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://db.example.com/mcp?apiKey=[masked]",
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "~/.codeium/windsurf/mcp_config.json"
+        },
+        {
+          "agent": "windsurf",
+          "name": "exa",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "exa-mcp-server",
+            "--api-key",
+            "[masked]"
+          ],
+          "url": null,
+          "envNames": [
+            "EXA_API_KEY"
+          ],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 1,
+          "sourcePath": "~/.codeium/windsurf/mcp_config.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "windsurf",
+          "scope": "global",
+          "project": null,
+          "path": "~/.codeium/windsurf/global_rules.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic Windsurf global rules\n\nInvented data for the Switchboard fixtures.\n\n- Ask before widening the blast radius of a change.",
+          "truncated": false,
+          "lineCount": 5,
+          "maskedValues": 0
+        },
+        {
+          "agent": "windsurf",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.windsurf/rules/review-style.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "---\ntrigger: always_on\n---\n\n# Synthetic Windsurf project rules\n\n- Mention the file you changed, not the diff.",
+          "truncated": false,
+          "lineCount": 7,
+          "maskedValues": 0
+        },
+        {
+          "agent": "windsurf",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.windsurfrules",
+          "format": "text",
+          "exists": false,
+          "preview": null,
+          "truncated": false,
+          "lineCount": 0,
+          "maskedValues": 0
+        },
+        {
+          "agent": "windsurf",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [],
+      "notes": []
+    },
+    {
+      "agent": "cline",
+      "displayName": "Cline",
+      "vendor": "Cline Bot",
+      "servers": [
+        {
+          "agent": "cline",
+          "name": "dev-browser",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@cline/dev-browser"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.cline/data/settings/cline_mcp_settings.json"
+        },
+        {
+          "agent": "cline",
+          "name": "linear",
+          "scope": "global",
+          "project": null,
+          "transport": "http",
+          "command": null,
+          "args": [],
+          "url": "https://mcp.linear.app/mcp",
+          "envNames": [],
+          "headerNames": [
+            "Authorization"
+          ],
+          "referencedEnvNames": [],
+          "enabled": false,
+          "maskedValues": 0,
+          "sourcePath": "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json"
+        },
+        {
+          "agent": "cline",
+          "name": "playwright",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.35"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/.cline/data/settings/cline_mcp_settings.json"
+        },
+        {
+          "agent": "cline",
+          "name": "seqora",
+          "scope": "global",
+          "project": null,
+          "transport": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "seqora-mcp@0.4.2"
+          ],
+          "url": null,
+          "envNames": [],
+          "headerNames": [],
+          "referencedEnvNames": [],
+          "enabled": true,
+          "maskedValues": 0,
+          "sourcePath": "~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json"
+        }
+      ],
+      "rules": [
+        {
+          "agent": "cline",
+          "scope": "global",
+          "project": null,
+          "path": "~/.cline/data/settings/rules/global-style.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic Cline global rules\n\nInvented data for the Switchboard fixtures.\n\n- One tool call per step when the result decides the next step.",
+          "truncated": false,
+          "lineCount": 5,
+          "maskedValues": 0
+        },
+        {
+          "agent": "cline",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/.clinerules/project-rules.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic Cline project rules\n\n- Verify with the app, not only with the test suite.",
+          "truncated": false,
+          "lineCount": 3,
+          "maskedValues": 0
+        },
+        {
+          "agent": "cline",
+          "scope": "project",
+          "project": "webapp",
+          "path": "webapp/AGENTS.md",
+          "format": "markdown",
+          "exists": true,
+          "preview": "# Synthetic project AGENTS.md\n\nShared instructions for the webapp fixture.\n\n- The archive stays on the machine.\n- Read only, no writes to agent files.",
+          "truncated": false,
+          "lineCount": 6,
+          "maskedValues": 0
+        }
+      ],
+      "skipped": [
+        {
+          "path": "~/.cline/data/settings/providers.json",
+          "reason": "credentialFile"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "serverMatrix": [
+    {
+      "name": "chrome-devtools",
+      "presentIn": [
+        "gemini-cli"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "context7",
+      "presentIn": [
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "windsurf"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "copilot-cli",
+        "cline"
+      ],
+      "definitions": 2,
+      "sharedByAll": false
+    },
+    {
+      "name": "db-inspector",
+      "presentIn": [
+        "windsurf"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "dev-browser",
+      "presentIn": [
+        "cline"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "disabled-legacy",
+      "presentIn": [
+        "claude-code"
+      ],
+      "missingFrom": [
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "exa",
+      "presentIn": [
+        "windsurf"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "figma",
+      "presentIn": [
+        "opencode"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "github",
+      "presentIn": [
+        "claude-code",
+        "codex-cli",
+        "copilot-cli"
+      ],
+      "missingFrom": [
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 2,
+      "sharedByAll": false
+    },
+    {
+      "name": "greptile",
+      "presentIn": [
+        "opencode"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "jira",
+      "presentIn": [
+        "gemini-cli"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "linear",
+      "presentIn": [
+        "claude-code",
+        "codex-cli",
+        "cline"
+      ],
+      "missingFrom": [
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf"
+      ],
+      "definitions": 2,
+      "sharedByAll": false
+    },
+    {
+      "name": "monitoring",
+      "presentIn": [
+        "gemini-cli"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "playwright",
+      "presentIn": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "cline"
+      ],
+      "missingFrom": [
+        "gemini-cli",
+        "windsurf"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "puppeteer",
+      "presentIn": [
+        "gemini-cli"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "remote-docs",
+      "presentIn": [
+        "codex-cli"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "sentry",
+      "presentIn": [
+        "claude-code"
+      ],
+      "missingFrom": [
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "seqora",
+      "presentIn": [
+        "cline"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli",
+        "windsurf"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "sqlite",
+      "presentIn": [
+        "claude-code",
+        "codex-cli",
+        "cursor",
+        "opencode",
+        "copilot-cli"
+      ],
+      "missingFrom": [
+        "gemini-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "stripe",
+      "presentIn": [
+        "claude-code",
+        "copilot-cli"
+      ],
+      "missingFrom": [
+        "codex-cli",
+        "gemini-cli",
+        "cursor",
+        "opencode",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    },
+    {
+      "name": "supabase",
+      "presentIn": [
+        "cursor"
+      ],
+      "missingFrom": [
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "opencode",
+        "copilot-cli",
+        "windsurf",
+        "cline"
+      ],
+      "definitions": 1,
+      "sharedByAll": false
+    }
+  ],
+  "projects": [
+    "webapp"
+  ],
+  "serverCount": 41,
+  "maskedValueCount": 10
+}

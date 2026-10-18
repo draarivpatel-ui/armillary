@@ -1,0 +1,109 @@
+# Verification sources:
+# - Official documentation: https://docs.factory.com/droid-cli/overview
+# - CLI reference: https://docs.factory.com/droid-cli/cli-reference
+# - Settings documentation: https://docs.factory.com/droid-cli/settings
+# - Hooks documentation: https://docs.factory.com/harness/hooks
+# - Published SDK inspection: https://www.npmjs.com/package/@factory/droid-sdk
+#
+# Storage analysis:
+# Factory Droid stores session transcripts as JSONL in ~/.factory/sessions/<cwd-slug>/<session-id>.jsonl
+# and flat ~/.factory/sessions/<session-id>.jsonl.
+# The first line is a session_start record with session id, cwd, and title.
+# Subsequent lines are message records with Anthropic-shaped content arrays (text and tool_use blocks).
+
+id = "factory-droid"
+name = "Factory Droid"
+vendor = "Factory AI"
+family = "other"
+kind = "cli"
+homepage = "https://factory.com"
+docs_url = "https://docs.factory.com"
+
+[detection]
+binaries = ["droid"]
+generic_binaries = ["droid"]
+app_bundles = ["Factory", "Factory App"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.factory/sessions",
+    "~/.factory/projects"
+]
+config_files = [
+    "~/.factory/settings.json",
+    "~/.factory/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.factory/sessions",
+    "~/.factory/projects"
+]
+config_files = [
+    "~/.factory/settings.json",
+    "~/.factory/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.factory\\sessions",
+    "%USERPROFILE%\\.factory\\projects"
+]
+config_files = [
+    "%USERPROFILE%\\.factory\\settings.json",
+    "%USERPROFILE%\\.factory\\mcp.json"
+]
+
+[[history_sources]]
+id = "factory-droid-sessions"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["sessions/*/*.jsonl", "sessions/*.jsonl"]
+
+[history_sources.paths]
+macos = [
+    "~/.factory/sessions/*/*.jsonl",
+    "~/.factory/sessions/*.jsonl"
+]
+linux = [
+    "~/.factory/sessions/*/*.jsonl",
+    "~/.factory/sessions/*.jsonl"
+]
+windows = [
+    "%USERPROFILE%\\.factory\\sessions\\*\\*.jsonl",
+    "%USERPROFILE%\\.factory\\sessions\\*.jsonl"
+]
+
+[history_sources.mapping.session]
+meta_filter_pointer = "/type"
+meta_filter_value = "session_start"
+id = "/id"
+project_root = "/cwd"
+timestamp = "/timestamp"
+model = "/model"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+native_id_pointer = "/uuid"
+match_type = "message"
+role_pointer = "/message/role"
+text_pointer = "/message/content"
+text_transform = "content_array"
+timestamp_pointer = "/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.tool_calls]
+content_array_pointer = "/message/content"
+filter_type = "tool_use"
+name_pointer = "/name"
+input_pointer = "/input"
+files_pointer = "/input/path"
+
+[history_sources.mapping.records.usage]
+semantics = "delta"
+match_type = "message"
+tokens_in_pointer = "/message/usage/input_tokens"
+tokens_out_pointer = "/message/usage/output_tokens"

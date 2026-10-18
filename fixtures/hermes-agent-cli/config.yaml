@@ -1,0 +1,5 @@
+model: "anthropic/claude-sonnet-4"
+provider: "nous"
+toolsets: "web,terminal,skills"
+terminal:
+  backend: "local"

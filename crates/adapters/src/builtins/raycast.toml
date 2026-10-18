@@ -1,0 +1,34 @@
+# Raycast AI (detection only, A6).
+# Homepage: https://raycast.com
+# Sources: https://raycast.com ; https://www.raycast.com/help-and-faqs/custom-instructions
+# Launcher with an AI chat and MCP store extensions. The transcript database is
+# encrypted and its key lives in the macOS Keychain, which Armillary never opens;
+# detection uses the container directory only.
+# no-documented-path: linux: Raycast has no Linux build.
+id = "raycast"
+name = "Raycast AI"
+vendor = "Raycast Technologies Solutions Ltd."
+family = "other"
+kind = "desktop"
+homepage = "https://raycast.com"
+docs_url = "https://manual.raycast.com/ai"
+
+[detection]
+binaries = []
+app_bundles = ["Raycast"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/com.raycast.macos"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = []
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\com.raycast.windows"
+]
+config_files = []

@@ -1,0 +1,47 @@
+# Warp Agent Mode (detection only, A6).
+# Homepage: https://warp.dev
+# Sources: https://warp.dev ; https://docs.warp.dev/agent-mode ; https://docs.warp.dev/mcp
+# Agent mode inside the Warp terminal plus the headless agent CLI. On macOS the
+# stable channel keeps its data in a group container; rules are AGENTS.md and
+# .warp/rules/, MCP is .warp/.mcp.json.
+id = "warp"
+name = "Warp Agent Mode"
+vendor = "Warp Technologies"
+family = "other"
+kind = "terminal"
+homepage = "https://warp.dev"
+docs_url = "https://docs.warp.dev"
+
+[detection]
+binaries = ["warp-agent"]
+app_bundles = ["Warp"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Group Containers/2BBY89MBSN.dev.warp/Library/Application Support/dev.warp.Warp-Stable",
+    "~/.warp/workflows"
+]
+config_files = [
+    "~/.warp/settings.toml",
+    "~/.warp/.mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/warp-terminal",
+    "~/.warp/workflows"
+]
+config_files = [
+    "~/.warp/settings.toml",
+    "~/.warp/.mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%LOCALAPPDATA%\\warp-terminal",
+    "%USERPROFILE%\\.warp\\workflows"
+]
+config_files = [
+    "%USERPROFILE%\\.warp\\settings.toml",
+    "%USERPROFILE%\\.warp\\.mcp.json"
+]

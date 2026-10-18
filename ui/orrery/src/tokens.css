@@ -1,0 +1,54 @@
+@import "@orrery/design/fonts.css";
+
+:root,
+[data-theme="dark"] {
+  --ink-0: #0B1220;
+  --ink-1: #111A2E;
+  --ink-2: #18233B;
+  --line: #2A3756;
+  --gilt: #C9A24A;
+  --gilt-soft: #E2C77E;
+  --vermilion: #D2462E;
+  --verdigris: #3E8E7E;
+  --star: #F4F1E8;
+  --dust: #8E9AB4;
+  --parchment: #F1E8D5;
+  --gilt-text: #C9A24A;
+  --vermilion-text: #F06B52;
+  --verdigris-text: #4EBAA4;
+
+  --agent-anthropic: #D08A5C;
+  --agent-openai: #6FB7A8;
+  --agent-google: #7A9CE0;
+  --agent-github: #9C8ADE;
+  --agent-cursor: #B9B2A6;
+  --agent-open-source: #C9A24A;
+  --agent-chinese: #D46A6A;
+  --agent-other: #8E9AB4;
+}
+
+[data-theme="light"] {
+  --ink-0: #F3EBDA;
+  --ink-1: #EADFC8;
+  --ink-2: #DFD1B4;
+  --line: #C9B78F;
+  --gilt: #8A6A22;
+  --gilt-soft: #A88634;
+  --vermilion: #B83A24;
+  --verdigris: #2F6F62;
+  --star: #1D1A14;
+  --dust: #63594A;
+  --parchment: #FBF6EA;
+  --gilt-text: #5C4410;
+  --vermilion-text: #872210;
+  --verdigris-text: #1E584D;
+
+  --agent-anthropic: #D08A5C;
+  --agent-openai: #6FB7A8;
+  --agent-google: #7A9CE0;
+  --agent-github: #9C8ADE;
+  --agent-cursor: #B9B2A6;
+  --agent-open-source: #C9A24A;
+  --agent-chinese: #D46A6A;
+  --agent-other: #8E9AB4;
+}

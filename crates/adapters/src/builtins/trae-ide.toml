@@ -1,0 +1,46 @@
+# Trae IDE (detection only, A6).
+# Homepage: https://trae.ai
+# Sources: https://trae.ai ; https://docs.trae.ai/ide/set-model ; https://docs.trae.ai/ide/chat-with-ai
+# ByteDance VS Code fork. AI chat history is in an internal SQLite database with
+# a private schema; ~/.trae holds the exported and configured state. The
+# trae-agent CLI is a separate entry.
+id = "trae-ide"
+name = "Trae"
+vendor = "ByteDance Ltd."
+family = "Chinese labs"
+kind = "ide"
+homepage = "https://trae.ai"
+docs_url = "https://docs.trae.ai/ide/chat-with-ai"
+
+[detection]
+binaries = ["trae"]
+app_bundles = ["Trae"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Trae",
+    "~/.trae/memory"
+]
+config_files = [
+    "~/.trae/mcp.json",
+    "~/.trae/hooks.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Trae",
+    "~/.trae/memory"
+]
+config_files = [
+    "~/.trae/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Trae",
+    "%USERPROFILE%\\.trae\\memory"
+]
+config_files = [
+    "%USERPROFILE%\\.trae\\mcp.json"
+]

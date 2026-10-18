@@ -1,0 +1,12 @@
+{
+  "id": "roo-task-4001",
+  "ts": 1791816000000,
+  "task": "Add synthetic linting rule",
+  "tokensIn": 3200,
+  "tokensOut": 450,
+  "cacheWrites": 0,
+  "cacheReads": 1200,
+  "totalCost": 0.015,
+  "workspace": "/workspace/synth-lint",
+  "status": "completed"
+}

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "session_id": "1728740000000_abcde",
+  "source": "vscode",
+  "pid": 43210,
+  "started_at": "2026-10-12T14:30:00.000Z",
+  "ended_at": "2026-10-12T14:32:00.000Z",
+  "status": "completed",
+  "interactive": true,
+  "provider": "anthropic",
+  "model": "claude-3-7-sonnet-20250219",
+  "cwd": "/workspace/synth-app",
+  "workspace_root": "/workspace/synth-app",
+  "prompt": "Create synthetic helper function"
+}

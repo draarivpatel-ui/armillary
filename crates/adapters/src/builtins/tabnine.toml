@@ -1,0 +1,46 @@
+# Tabnine Agent (detection only, A6).
+# Homepage: https://tabnine.com
+# Sources: https://tabnine.com ; https://docs.tabnine.com/main
+# IDE extension plus a local runtime that stores its model and settings under the
+# TabNine support directory; the agent settings and MCP file are in ~/.tabnine.
+id = "tabnine"
+name = "Tabnine Agent"
+vendor = "Tabnine Ltd."
+family = "other"
+kind = "ide_extension"
+homepage = "https://tabnine.com"
+docs_url = "https://docs.tabnine.com/main"
+
+[detection]
+binaries = []
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/TabNine",
+    "~/.tabnine"
+]
+config_files = [
+    "~/.tabnine/agent/settings.json",
+    "~/.tabnine/mcp_servers.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/TabNine",
+    "~/.tabnine"
+]
+config_files = [
+    "~/.tabnine/agent/settings.json",
+    "~/.tabnine/mcp_servers.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\TabNine",
+    "%USERPROFILE%\\.tabnine"
+]
+config_files = [
+    "%USERPROFILE%\\.tabnine\\agent\\settings.json",
+    "%USERPROFILE%\\.tabnine\\mcp_servers.json"
+]

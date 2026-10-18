@@ -1,0 +1,96 @@
+id = "codex-cli"
+name = "OpenAI Codex CLI"
+vendor = "OpenAI"
+family = "OpenAI"
+kind = "cli"
+adapter_version = "1.0.0"
+store_namespace = "codex-history"
+homepage = "https://chatgpt.com/codex"
+docs_url = "https://github.com/openai/codex"
+
+[detection]
+binaries = ["codex"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.codex/sessions",
+    "$CODEX_HOME/sessions"
+]
+config_files = [
+    "~/.codex/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.codex/sessions",
+    "$CODEX_HOME/sessions"
+]
+config_files = [
+    "~/.codex/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.codex\\sessions",
+    "%CODEX_HOME%\\sessions"
+]
+config_files = [
+    "%USERPROFILE%\\.codex\\config.toml"
+]
+
+[[history_sources]]
+id = "codex-sessions"
+format = "jsonl"
+source_unit = "file_per_session"
+fixture_paths = ["sessions/**/rollout-*.jsonl"]
+
+[history_sources.paths]
+macos = ["~/.codex/sessions/**/rollout-*.jsonl"]
+linux = ["~/.codex/sessions/**/rollout-*.jsonl"]
+windows = ["%USERPROFILE%\\.codex\\sessions\\**\\rollout-*.jsonl"]
+
+[history_sources.mapping.session]
+meta_filter_pointer = "/type"
+meta_filter_value = "session_meta"
+id = "/payload/id"
+project_root = "/payload/cwd"
+timestamp = "/payload/timestamp"
+model = "/payload/model"
+completion_filter_pointer = "/payload/type"
+completion_filter_value = "session_completed"
+
+[history_sources.mapping.records]
+type_pointer = "/type"
+
+[history_sources.mapping.records.messages]
+native_id_pointer = "/payload/item/id"
+match_type = "event_msg"
+item_type_pointer = "/payload/item/type"
+text_pointer = "/payload/item/text"
+fallback_text_pointer = "/payload/item/content"
+text_transform = "string_or_content"
+timestamp_pointer = "/payload/timestamp"
+timestamp_format = "iso8601"
+
+[history_sources.mapping.records.messages.role_map]
+user_message = "user"
+agent_message = "assistant"
+
+[history_sources.mapping.records.tool_calls]
+call_id_pointer = "/payload/item/id"
+match_type = "event_msg"
+item_type_pointer = "/payload/item/type"
+tool_types = ["command_execution", "mcp_call", "function_call"]
+name_pointer = "/payload/item/type"
+input_pointer = "/payload/item/command"
+result_pointer = "/payload/item/stdout"
+
+[history_sources.mapping.records.usage]
+semantics = "cumulative"
+match_type = "event_msg"
+usage_filter_pointer = "/payload/type"
+usage_filter_value = "token_count"
+tokens_in_pointer = "/payload/info/total_token_usage/input_tokens"
+tokens_out_pointer = "/payload/info/total_token_usage/output_tokens"

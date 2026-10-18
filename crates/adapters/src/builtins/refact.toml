@@ -1,0 +1,37 @@
+# Refact (detection only, A6).
+# Homepage: https://refact.ai
+# Sources: https://refact.ai ; https://github.com/small-huge-tools/refact-lsp
+# Rust LSP backend for the IDE extensions: index and vector cache under
+# ~/.cache/refact, configuration under ~/.config/refact.
+id = "refact"
+name = "Refact"
+vendor = "Small Huge Software"
+family = "open-source CLIs"
+kind = "server"
+homepage = "https://refact.ai"
+docs_url = "https://refact.ai"
+
+[detection]
+binaries = ["refact-lsp"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.cache/refact",
+    "~/.config/refact"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.cache/refact",
+    "~/.config/refact"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%LOCALAPPDATA%\\refact\\cache",
+    "%APPDATA%\\refact"
+]
+config_files = []

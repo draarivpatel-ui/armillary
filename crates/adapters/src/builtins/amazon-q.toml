@@ -1,0 +1,46 @@
+# Amazon Q Developer (detection only, A6).
+# Homepage: https://aws.amazon.com/q/developer
+# Sources: https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html ; https://github.com/aws/amazon-q-developer-cli
+# Chat history is JSON under ~/.aws/amazonq/history; version reports with
+# "q version". Superseded by the Kiro CLI and kept for existing installs
+# (IDE plugins reach end of support 2027-04-30).
+id = "amazon-q"
+name = "Amazon Q Developer"
+vendor = "Amazon Web Services"
+family = "other"
+kind = "cli"
+homepage = "https://aws.amazon.com/q/developer"
+docs_url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html"
+
+[detection]
+binaries = ["q"]
+generic_binaries = ["q"]
+app_bundles = ["Amazon Q"]
+version_args = ["version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.aws/amazonq/history",
+    "~/Library/Application Support/amazon-q"
+]
+config_files = [
+    "~/.aws/amazonq/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.aws/amazonq/history",
+    "~/.local/share/amazon-q"
+]
+config_files = [
+    "~/.aws/amazonq/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.aws\\amazonq\\history",
+    "%LOCALAPPDATA%\\amazon-q"
+]
+config_files = [
+    "%USERPROFILE%\\.aws\\amazonq\\mcp.json"
+]

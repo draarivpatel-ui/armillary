@@ -1,0 +1,81 @@
+[
+  {
+    "session": {
+      "id": "90378f27892a8adcaaeb89e3d94b5b7ae0db6c53a233363efe24d81f9a74f529",
+      "agent_id": "kilo-code",
+      "installation_id": null,
+      "native_id": "kilo-task-5001",
+      "provenance": {
+        "store": {
+          "id": "c1c41afaf071747fd6de620bb7976c6eab8dbf7ffe46a29b9b4182ec87b7bbc8",
+          "namespace": "kilo-code",
+          "canonical_root": "fixture://kilo-code",
+          "profile_id": "synthetic"
+        },
+        "source_id": "kilo-code-history",
+        "adapter_id": "kilo-code",
+        "adapter_version": "1.0.0",
+        "source_path": "tasks/kilo-task-5001/task_metadata.json",
+        "file_identity": "synthetic:tasks/kilo-task-5001/task_metadata.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 162,
+          "records": 2,
+          "digest": "a517c747dc2fe838aecac9176707580e22a51c0350d2fe1b844ef8d0fb119c82"
+        }
+      },
+      "project_root": "/workspace/synth-kilo",
+      "title": "Synthetic test setup",
+      "started_at": 1791817000000,
+      "ended_at": 1791817025000,
+      "model": null,
+      "status": "completed",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "native completed status",
+        "native_event_id": null,
+        "at": 1791817025000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "unknown",
+        "input_tokens": null,
+        "output_tokens": null,
+        "observations": []
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "89faa134b2af27140d3478680f5f88b1740844140286b94c5e8d3696288715a9",
+        "session_id": "90378f27892a8adcaaeb89e3d94b5b7ae0db6c53a233363efe24d81f9a74f529",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": 1791817000000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Setup unit tests with mock runners."
+          }
+        ]
+      },
+      {
+        "id": "37f309c91b95bfcfd98a0e5e7a9ae7836cb758fd2cd8041214de4f5d14294399",
+        "session_id": "90378f27892a8adcaaeb89e3d94b5b7ae0db6c53a233363efe24d81f9a74f529",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791817025000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Unit tests configured with synthetic runners."
+          }
+        ]
+      }
+    ]
+  }
+]

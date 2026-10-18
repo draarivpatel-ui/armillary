@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reflected_through_message_id": "msg-01hxk5",
+  "total_completed_steps": 4,
+  "reflected_completed_steps": 4,
+  "steps_since_last_successful_reflection": 0,
+  "last_reflection_started_at": "2026-10-13T09:00:13.001Z",
+  "last_reflection_succeeded_at": "2026-10-13T09:00:14.220Z"
+}

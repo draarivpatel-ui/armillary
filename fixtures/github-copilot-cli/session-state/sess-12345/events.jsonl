@@ -1,0 +1,5 @@
+{"type":"session.start","id":"evt-001","timestamp":"2026-10-12T14:00:00Z","payload":{"sessionId":"copilot-sess-beta-001","cwd":"/Users/developer/code/copilot-project","model":"gpt-4o"}}
+{"type":"user.message","id":"evt-002","timestamp":"2026-10-12T14:00:05Z","payload":{"text":"Explain the authentication flow."}}
+{"type":"tool.execution_start","id":"evt-003","timestamp":"2026-10-12T14:00:10Z","payload":{"toolName":"grep_search","command":"grep -rn 'auth' src/","path":"src/auth.ts"}}
+{"type":"assistant.message","id":"evt-004","timestamp":"2026-10-12T14:00:20Z","payload":{"text":"The authentication flow uses JSON Web Tokens."}}
+{"type":"assistant.usage","id":"evt-005","timestamp":"2026-10-12T14:00:21Z","payload":{"inputTokens":1500,"outputTokens":250}}

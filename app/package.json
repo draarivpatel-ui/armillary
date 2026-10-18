@@ -1,0 +1,38 @@
+{
+  "name": "orrery-app",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@orrery/design": "*",
+    "@tauri-apps/api": "2.2.0",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.2.2",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.2.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "axe-core": "4.14.0",
+    "jsdom": "26.0.0",
+    "playwright": "1.50.1",
+    "typescript": "5.7.3",
+    "vite": "6.0.11",
+    "vitest": "3.0.5"
+  }
+}

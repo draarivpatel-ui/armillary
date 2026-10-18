@@ -1,0 +1,40 @@
+# MetaGPT (detection only, A6).
+# Homepage: https://github.com/geekan/MetaGPT
+# Sources: https://github.com/geekan/MetaGPT/blob/main/docs/README.md ; https://docs.deepwisdom.ai
+# Multi-agent framework with a CLI entry point. Global LLM and endpoint settings
+# are config2.yaml in ~/.metagpt; project output lands in ./workspace/<project>.
+id = "metagpt"
+name = "MetaGPT"
+vendor = "DeepWisdom"
+family = "Chinese labs"
+kind = "cli"
+homepage = "https://github.com/geekan/MetaGPT"
+docs_url = "https://docs.deepwisdom.ai"
+
+[detection]
+binaries = ["metagpt"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.metagpt"
+]
+config_files = [
+    "~/.metagpt/config2.yaml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.metagpt"
+]
+config_files = [
+    "~/.metagpt/config2.yaml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.metagpt"
+]
+config_files = [
+    "%USERPROFILE%\\.metagpt\\config2.yaml"
+]

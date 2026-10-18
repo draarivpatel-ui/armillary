@@ -1,0 +1,34 @@
+# Pi-Go (detection only, A6).
+# Homepage: https://github.com/dimetron/pi-go
+# Sources: https://github.com/dimetron/pi-go
+# Go Bubble Tea TUI with an LSP client and a project context layout; settings
+# live in the per-user config directory.
+id = "pi-go"
+name = "Pi-Go"
+vendor = "dimetron"
+family = "open-source CLIs"
+kind = "tui"
+homepage = "https://github.com/dimetron/pi-go"
+docs_url = "https://github.com/dimetron/pi-go"
+
+[detection]
+binaries = ["pi-go"]
+app_bundles = []
+
+[detection.paths.macos]
+data_folders = [
+    "~/.config/pi-go"
+]
+config_files = []
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/pi-go"
+]
+config_files = []
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\pi-go"
+]
+config_files = []

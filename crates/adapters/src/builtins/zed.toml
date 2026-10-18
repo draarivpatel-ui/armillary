@@ -1,0 +1,44 @@
+# Zed Assistant / Agent (detection only, A6).
+# Homepage: https://zed.dev
+# Sources: https://zed.dev ; https://zed.dev/docs/ai/agent.html ; https://github.com/zed-industries/zed
+# Agent threads are stored under the Zed support directory; MCP servers are the
+# "context_servers" block in settings.json.
+id = "zed"
+name = "Zed Assistant"
+vendor = "Zed Industries Inc."
+family = "other"
+kind = "ide"
+homepage = "https://zed.dev"
+docs_url = "https://zed.dev/docs/assistant"
+
+[detection]
+binaries = ["zed"]
+generic_binaries = ["zed"]
+app_bundles = ["Zed"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Zed/threads",
+    "~/Library/Application Support/Zed"
+]
+config_files = [
+    "~/.config/zed/settings.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.local/share/zed/threads",
+    "~/.config/zed"
+]
+config_files = [
+    "~/.config/zed/settings.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Zed\\threads",
+    "%LOCALAPPDATA%\\Zed"
+]
+config_files = [
+    "%APPDATA%\\Zed\\settings.json"
+]

@@ -1,0 +1,43 @@
+# Codex Desktop App (detection only, A6).
+# Homepage: https://openai.com
+# Sources: https://openai.com ; https://digitalapplied.com
+# The desktop client drives the same ~/.codex store as the CLI (CODEX_HOME);
+# threads live in state_5.sqlite, rollouts in sessions/YYYY/MM/DD.
+id = "codex-desktop"
+name = "Codex Desktop App"
+vendor = "OpenAI"
+family = "OpenAI"
+kind = "desktop"
+homepage = "https://openai.com"
+docs_url = "https://developers.openai.com"
+
+[detection]
+binaries = ["codex"]
+app_bundles = ["Codex"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.codex/sessions",
+    "~/Library/Application Support/com.openai.codex"
+]
+config_files = [
+    "~/.codex/config.toml"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.codex/sessions"
+]
+config_files = [
+    "~/.codex/config.toml"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.codex\\sessions",
+    "%APPDATA%\\OpenAI\\Codex"
+]
+config_files = [
+    "%USERPROFILE%\\.codex\\config.toml"
+]

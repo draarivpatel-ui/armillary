@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@1.0.1"],
+      "trust": false
+    },
+    "jira": {
+      "url": "https://jira.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MY_JIRA_TOKEN}"
+      },
+      "trust": true
+    },
+    "monitoring": {
+      "command": "uvx",
+      "args": ["mcp-monitoring", "--token", "ya29.FAKEGEMINIBEARER0123456789abcdefg"],
+      "env": {
+        "GOOGLE_API_KEY": "AIzaFAKEGEMINIKEY0123456789ABCDEFGHIJK",
+        "PROJECT_ID": "synthetic-project"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  },
+  "context": {
+    "fileName": "GEMINI.md"
+  },
+  "telemetry": {
+    "enabled": false
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp", "--api-key", "{env:CONTEXT7_API_KEY}"],
+      "environment": {
+        "CONTEXT7_API_KEY": "upstash_FAKEKEY0123456789upstash_FAKEKEY01"
+      },
+      "enabled": true
+    },
+    "greptile": {
+      "type": "remote",
+      "url": "https://api.greptile.com/mcp",
+      "headers": {
+        "Authorization": "Bearer gpt_FAKEGREPTILE0123456789abcdefghij"
+      }
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp@0.0.35"]
+    }
+  }
+}

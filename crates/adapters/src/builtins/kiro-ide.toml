@@ -1,0 +1,43 @@
+# Kiro IDE (detection only, A6).
+# Homepage: https://kiro.dev
+# Sources: https://kiro.dev ; https://kiro.dev/docs/mcp/
+# AWS agentic IDE (Code OSS fork). The Kiro CLI is a separate entry; both read
+# specs and rules from .kiro/ in the workspace.
+id = "kiro-ide"
+name = "Kiro"
+vendor = "Amazon Web Services"
+family = "other"
+kind = "ide"
+homepage = "https://kiro.dev"
+docs_url = "https://kiro.dev/docs/mcp/"
+
+[detection]
+binaries = ["kiro"]
+app_bundles = ["Kiro"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/Kiro/User/globalStorage",
+    "~/.kiro"
+]
+config_files = [
+    "~/.kiro/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/Kiro/User/globalStorage",
+    "~/.kiro"
+]
+config_files = [
+    "~/.kiro/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\Kiro\\User\\globalStorage",
+    "%USERPROFILE%\\.kiro"
+]
+config_files = [
+    "%USERPROFILE%\\.kiro\\mcp.json"
+]

@@ -1,0 +1,15 @@
+{
+  "projects": [
+    {
+      "id": "proj_8d21f4",
+      "orgId": "org_9f31a7",
+      "name": "webhooks",
+      "path": "/Users/demo/webhooks"
+    }
+  ],
+  "current": {
+    "projectId": "proj_8d21f4",
+    "planId": "plan_4c8e21",
+    "branch": "main"
+  }
+}

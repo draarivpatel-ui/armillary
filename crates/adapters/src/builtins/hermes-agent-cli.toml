@@ -1,0 +1,80 @@
+# Verification sources:
+# - Official documentation: https://hermes-agent.nousresearch.com
+# - CLI guide: https://hermes-agent.nousresearch.com/docs/user-guide/cli
+# - Configuration guide: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+# - Official repository: https://github.com/NousResearch/hermes-agent
+# - State schema: https://github.com/NousResearch/hermes-agent/blob/main/hermes_state_sessions.py
+#
+# Storage analysis:
+# Hermes Agent CLI persists session state into SQLite at ~/.hermes/state.db
+# with relational sessions and messages tables joined on session_id, and tool_calls
+# stored as embedded JSON-encoded strings inside messages.
+# Per SPEC section 5 ("Complex stores (Cursor and VS Code style SQLite key-value blobs, Hermes's database, Warp) get a Rust module"),
+# full multi-table relational reconstruction requires a dedicated Rust module.
+# Coverage is set to detect.
+
+id = "hermes-agent-cli"
+name = "Hermes Agent CLI"
+vendor = "Nous Research"
+family = "open-source-clis"
+kind = "cli"
+homepage = "https://hermes-agent.nousresearch.com"
+docs_url = "https://hermes-agent.nousresearch.com/docs/user-guide/cli"
+coverage = "history"
+
+[[history_sources]]
+id = "hermes-state-db"
+format = "sqlite"
+module = "hermes-agent-cli"
+source_unit = "shared_database"
+fixture_paths = ["state.db"]
+
+[history_sources.paths]
+macos = [
+    "~/.hermes/state.db",
+    "~/.hermes/hermes.db"
+]
+linux = [
+    "~/.hermes/state.db",
+    "~/.hermes/hermes.db"
+]
+windows = [
+    "%USERPROFILE%\\.hermes\\state.db",
+    "%USERPROFILE%\\.hermes\\hermes.db"
+]
+
+[detection]
+binaries = ["hermes"]
+generic_binaries = ["hermes"]
+app_bundles = ["Hermes", "Hermes Desktop"]
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.hermes/sessions",
+    "~/.hermes"
+]
+config_files = [
+    "~/.hermes/config.yaml",
+    "~/.hermes/state.db"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.hermes/sessions",
+    "~/.hermes"
+]
+config_files = [
+    "~/.hermes/config.yaml",
+    "~/.hermes/state.db"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.hermes\\sessions",
+    "%USERPROFILE%\\.hermes"
+]
+config_files = [
+    "%USERPROFILE%\\.hermes\\config.yaml",
+    "%USERPROFILE%\\.hermes\\state.db"
+]

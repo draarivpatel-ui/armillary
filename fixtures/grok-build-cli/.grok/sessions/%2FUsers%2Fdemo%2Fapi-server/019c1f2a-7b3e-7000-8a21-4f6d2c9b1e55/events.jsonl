@@ -1,0 +1,7 @@
+{"type":"turn_started","session_id":"019c1f2a-7b3e-7000-8a21-4f6d2c9b1e55","model_id":"grok-build-fast","turn_number":1,"ts":"2026-10-06T14:22:07.114Z"}
+{"type":"tool_started","tool_name":"bash","tool_call_id":"call_5f19a2c7","turn_number":1,"ts":"2026-10-06T14:22:19.860Z"}
+{"type":"tool_completed","tool_name":"bash","tool_call_id":"call_5f19a2c7","duration_ms":1734,"outcome":"success","turn_number":1,"ts":"2026-10-06T14:22:21.594Z"}
+{"type":"first_token","turn_number":1,"ts":"2026-10-06T14:22:23.007Z"}
+{"type":"permission_requested","tool_name":"write_stdin","tool_call_id":"call_8b2d0e44","turn_number":2,"ts":"2026-10-06T14:31:02.330Z"}
+{"type":"permission_resolved","tool_name":"write_stdin","tool_call_id":"call_8b2d0e44","outcome":"approved","turn_number":2,"ts":"2026-10-06T14:31:44.902Z"}
+{"type":"turn_ended","turn_number":3,"ts":"2026-10-06T14:47:31.008Z"}

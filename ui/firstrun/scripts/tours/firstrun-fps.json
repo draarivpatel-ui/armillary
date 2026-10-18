@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "name": "first run in the real app: play it through for frame times (run with ARMILLARY_FPS_LOG set)",
+  "window": { "width": 1440, "height": 900 },
+  "theme": "dark",
+  "steps": [
+    { "op": "waitFor", "selector": "[data-firstrun-action=\"continue\"]", "timeoutMs": 30000 },
+    { "op": "wait", "ms": 1600 },
+    { "op": "snapshot", "name": "fr-plaque" },
+    { "op": "click", "selector": "[data-firstrun-action=\"continue\"]" },
+    { "op": "wait", "ms": 6000 },
+    { "op": "snapshot", "name": "fr-scan" },
+    { "op": "wait", "ms": 9000 },
+    { "op": "snapshot", "name": "fr-constellations" },
+    { "op": "wait", "ms": 14000 },
+    { "op": "snapshot", "name": "fr-after" },
+    { "op": "quit" }
+  ]
+}

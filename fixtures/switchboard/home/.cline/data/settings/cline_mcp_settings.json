@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dev-browser": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@cline/dev-browser"],
+      "disabled": false
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.35"]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.35"],
+      "env": {}
+    },
+    "github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_FAKEGITHUBTOKENAAAAAAAAAAAAAAAAA"
+      }
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp?access_token=linFAKE0123456789linFAKE0123456789",
+      "headers": {
+        "Authorization": "Bearer ya29.FAKEACCESSTOKENabcdefghijklmnopqrst"
+      }
+    },
+    "sentry": {
+      "type": "sse",
+      "url": "https://mcp.sentry.dev/sse"
+    },
+    "disabled-legacy": {
+      "command": "npx",
+      "args": ["-y", "@legacy/server", "--api-key", "sk-FAKEOPENAIKEY0123456789abcdefghij"],
+      "disabled": true
+    }
+  },
+  "projects": {
+    "/Users/synthetic/webapp": {
+      "mcpServers": {
+        "sqlite": {
+          "command": "uvx",
+          "args": ["mcp-server-sqlite", "--db-path", "./archive.db"]
+        }
+      }
+    }
+  }
+}

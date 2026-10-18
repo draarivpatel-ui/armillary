@@ -1,0 +1,41 @@
+# JetBrains AI Assistant (detection only, A6).
+# Homepage: https://www.jetbrains.com/ai
+# Sources: https://www.jetbrains.com/ai ; https://www.jetbrains.com/help/ai-assistant/
+# Plugin inside each JetBrains IDE; chat state sits in the per-product config
+# directory (IntelliJIdea / PyCharm / WebStorm plus a version suffix, so the
+# parent directory is the stable signal). Junie is a separate entry.
+id = "jetbrains-ai-assistant"
+name = "JetBrains AI Assistant"
+vendor = "JetBrains s.r.o."
+family = "other"
+kind = "ide_extension"
+homepage = "https://www.jetbrains.com/ai"
+docs_url = "https://www.jetbrains.com/help/ai-assistant/"
+
+[detection]
+binaries = []
+app_bundles = ["IntelliJ IDEA", "PyCharm", "WebStorm", "Android Studio"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/Library/Application Support/JetBrains"
+]
+config_files = [
+    "~/.junie/mcp/mcp.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.config/JetBrains"
+]
+config_files = [
+    "~/.junie/mcp/mcp.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%APPDATA%\\JetBrains"
+]
+config_files = [
+    "%USERPROFILE%\\.junie\\mcp\\mcp.json"
+]

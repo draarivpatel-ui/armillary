@@ -1,0 +1,351 @@
+/* The Almanac: day pages on the ground, separated by engraved hairlines. No boxes, no pills.
+   Row, project and day heights below are exact on purpose: layout.ts computes the same numbers
+   (ROW_HEIGHT 60, ROW_FILES_HEIGHT 82, PROJECT_HEAD_HEIGHT 36, PROJECT_GAP 20, DAY_PAD_TOP 32,
+   DAY_PAD_BOTTOM 12) so the virtual list can window the days without measuring them. */
+
+/* The view fills the pane; the head and the filters stay put and the pages scroll under them. */
+.view.almanac {
+  height: 100%;
+  min-height: 0;
+  gap: var(--space-5);
+  padding-bottom: var(--space-6);
+}
+
+/* ---------- Filters: one quiet row, no surrounding box ---------- */
+.almanac-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.almanac-filters__fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.almanac-filter {
+  width: 148px;
+}
+
+.almanac-filter .obs-select__control {
+  text-overflow: ellipsis;
+}
+
+.almanac-status--chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.almanac-clear {
+  margin-left: auto;
+}
+
+/* ---------- The scrolling pages ---------- */
+.almanac-days {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  position: relative;
+}
+
+.almanac-pages {
+  display: block;
+}
+
+.almanac-note {
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-base);
+  color: var(--color-dust);
+}
+
+.almanac-note--error {
+  color: var(--color-vermilion-text);
+}
+
+.almanac-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+}
+
+.almanac-empty__line {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-display-sm);
+  line-height: var(--line-height-tight);
+  color: var(--color-dust);
+}
+
+/* ---------- One day ---------- */
+@keyframes almanac-day-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes almanac-day-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.almanac-day {
+  position: relative;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  column-gap: var(--space-6);
+  box-sizing: border-box;
+  padding: 32px 4px 12px 0;
+  border-top: var(--border-hairline);
+  /* 220 ms, one step of --motion-stagger per day (the view caps the step at 8 and gives days that scroll in none) */
+  animation: almanac-day-in var(--motion-ui) var(--ease-observatory) backwards;
+  animation-delay: calc(var(--almanac-stagger, 0) * var(--motion-stagger));
+}
+
+/* The engraved stretch of gilt at the head of each hairline, as under the view title. */
+.almanac-day::before {
+  content: "";
+  position: absolute;
+  top: -0.75px;
+  left: 0;
+  width: 48px;
+  height: 0.75px;
+  background: var(--color-gilt-hairline);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .almanac-day {
+    animation-name: almanac-day-fade;
+  }
+}
+
+.almanac-day__date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.almanac-day__numeral {
+  font-family: var(--font-display);
+  font-size: var(--text-numeral);
+  font-weight: 600;
+  line-height: 56px;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-star);
+}
+
+.almanac-day__numeral--undated {
+  font-size: var(--text-display-sm);
+  line-height: 40px;
+  font-style: italic;
+}
+
+.almanac-day__weekday {
+  margin-top: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gilt-text);
+}
+
+.almanac-day__month {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-dust);
+}
+
+.almanac-day__sessions {
+  min-width: 0;
+}
+
+/* ---------- Project groups ---------- */
+.almanac-project {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.almanac-project__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  height: 36px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.almanac-project__name {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  font-weight: 600;
+  line-height: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-star);
+}
+
+.almanac-project__path {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-dust);
+}
+
+.almanac-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.almanac-row-item {
+  box-sizing: border-box;
+}
+
+/* ---------- A session: the whole row is the button ---------- */
+.almanac-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  column-gap: var(--space-3);
+  align-items: start;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-star);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--transition-duration) var(--transition-easing);
+}
+
+.almanac-row:hover {
+  background-color: var(--color-ink-1);
+}
+
+.almanac-row:focus-visible {
+  background-color: var(--color-ink-1);
+  box-shadow: var(--focus-ring);
+}
+
+.almanac-row__glyph {
+  display: inline-flex;
+  margin-top: 3px;
+}
+
+.almanac-row__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.almanac-row__title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-star);
+}
+
+.almanac-row__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 20px;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--color-dust);
+}
+
+.almanac-row__meta > span {
+  flex: none;
+}
+
+.almanac-row__meta > .almanac-row__model {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.almanac-row__files {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 20px;
+  color: var(--color-dust);
+}
+
+.almanac-row__file {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.almanac-row__more {
+  flex: none;
+  font-family: var(--font-sans);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.almanac-row__status {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  white-space: nowrap;
+}
+
+/* The clear control and chip rows should not crowd the pages on a small window. */
+@media (max-width: 1180px) {
+  .almanac-filter {
+    width: 132px;
+  }
+}

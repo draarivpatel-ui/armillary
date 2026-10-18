@@ -1,0 +1,93 @@
+[
+  {
+    "session": {
+      "id": "2838293d1a57341d88374dfdde6b7987f5c2b6fd5c3e2e8edb081eac9af64b26",
+      "agent_id": "cursor-cli",
+      "installation_id": null,
+      "native_id": "d3f4a5b6-7c8d-4e9f-a0b1-c2d3e4f5a6b7",
+      "provenance": {
+        "store": {
+          "id": "6dd767d7075d146d11103cb3d2cb4aaacca09b802d612c722b2d69eef9225666",
+          "namespace": "cursor-cli",
+          "canonical_root": "fixture://cursor-cli",
+          "profile_id": "synthetic"
+        },
+        "source_id": "cursor-cli-history",
+        "adapter_id": "cursor-cli",
+        "adapter_version": "1.0.0",
+        "source_path": "chats/4e8a2b1c/d3f4a5b6-7c8d-4e9f-a0b1-c2d3e4f5a6b7/meta.json",
+        "file_identity": "synthetic:chats/4e8a2b1c/d3f4a5b6-7c8d-4e9f-a0b1-c2d3e4f5a6b7/meta.json",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 226,
+          "records": 2,
+          "digest": "a12ab32d7a3c736f8e4c67f39d70a2fb7df76b014d79392bab1583741ec08a7d"
+        }
+      },
+      "project_root": "/Users/developer/code/frontend-app",
+      "title": "Add dark mode toggle",
+      "started_at": 1791814000000,
+      "ended_at": 1791814000000,
+      "model": "claude-3-7-sonnet",
+      "status": "completed",
+      "completion": {
+        "kind": "native_completion",
+        "detail": "native completed status",
+        "native_event_id": null,
+        "at": 1791814000000
+      },
+      "turns": 1,
+      "usage": {
+        "semantics": "unknown",
+        "input_tokens": null,
+        "output_tokens": null,
+        "observations": []
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": [
+      {
+        "id": "d860767c864bec93eea5f633d05f1bce7f3953593f830d4044e169a9f89864c4",
+        "session_id": "2838293d1a57341d88374dfdde6b7987f5c2b6fd5c3e2e8edb081eac9af64b26",
+        "native_id": null,
+        "seq": 1,
+        "role": "user",
+        "at": 1791814000000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Add dark mode toggle to navigation bar."
+          }
+        ]
+      },
+      {
+        "id": "ea3b48058238c3d42ac2dbf687653cb85029679c60d3d3c01e3a0646884d8be5",
+        "session_id": "2838293d1a57341d88374dfdde6b7987f5c2b6fd5c3e2e8edb081eac9af64b26",
+        "native_id": null,
+        "seq": 2,
+        "role": "assistant",
+        "at": 1791814000000,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "I will add the theme switcher to Navbar.tsx."
+          },
+          {
+            "type": "tool_call",
+            "call_id": "call_1",
+            "native_id": "call_1",
+            "name": "Write",
+            "input": {
+              "path": "src/Navbar.tsx"
+            },
+            "files": [
+              "src/Navbar.tsx"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

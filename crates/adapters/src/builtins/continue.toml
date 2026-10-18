@@ -1,0 +1,81 @@
+# Continue adapter specification
+# Sources:
+# - Official website: https://continue.dev
+# - Official repository: https://github.com/continuedev/continue
+# - Extension ID: continue.continue
+# - Storage paths and config: https://github.com/continuedev/continue/blob/main/core/util/paths.ts
+# - Session types and models: https://github.com/continuedev/continue/blob/main/core/index.d.ts
+
+id = "continue"
+name = "Continue"
+vendor = "Continue Dev Inc."
+family = "open-source CLIs"
+kind = "extension"
+adapter_version = "1.0.0"
+homepage = "https://continue.dev"
+docs_url = "https://docs.continue.dev"
+coverage = "history"
+
+[detection]
+binaries = ["continue"]
+generic_binaries = ["continue"]
+app_bundles = []
+version_args = ["--version"]
+
+[detection.paths.macos]
+data_folders = [
+    "~/.continue/sessions",
+    "~/Library/Application Support/Code/User/globalStorage/continue.continue",
+    "~/Library/Application Support/Cursor/User/globalStorage/continue.continue",
+    "~/Library/Application Support/Windsurf/User/globalStorage/continue.continue",
+    "~/Library/Application Support/VSCodium/User/globalStorage/continue.continue"
+]
+config_files = [
+    "~/.continue/config.yaml",
+    "~/.continue/config.json"
+]
+
+[detection.paths.linux]
+data_folders = [
+    "~/.continue/sessions",
+    "~/.config/Code/User/globalStorage/continue.continue",
+    "~/.config/Cursor/User/globalStorage/continue.continue",
+    "~/.config/Windsurf/User/globalStorage/continue.continue",
+    "~/.config/VSCodium/User/globalStorage/continue.continue"
+]
+config_files = [
+    "~/.continue/config.yaml",
+    "~/.continue/config.json"
+]
+
+[detection.paths.windows]
+data_folders = [
+    "%USERPROFILE%\\.continue\\sessions",
+    "%APPDATA%\\Code\\User\\globalStorage\\continue.continue",
+    "%APPDATA%\\Cursor\\User\\globalStorage\\continue.continue",
+    "%APPDATA%\\Windsurf\\User\\globalStorage\\continue.continue",
+    "%APPDATA%\\VSCodium\\User\\globalStorage\\continue.continue"
+]
+config_files = [
+    "%USERPROFILE%\\.continue\\config.yaml",
+    "%USERPROFILE%\\.continue\\config.json"
+]
+
+[[history_sources]]
+id = "continue-history"
+format = "json"
+module = "continue"
+
+[history_sources.paths]
+macos = [
+    "~/.continue/sessions/*.json",
+    "~/Library/Application Support/Code/User/globalStorage/continue.continue/sessions/*.json"
+]
+linux = [
+    "~/.continue/sessions/*.json",
+    "~/.config/Code/User/globalStorage/continue.continue/sessions/*.json"
+]
+windows = [
+    "%USERPROFILE%\\.continue\\sessions\\*.json",
+    "%APPDATA%\\Code\\User\\globalStorage\\continue.continue\\sessions\\*.json"
+]

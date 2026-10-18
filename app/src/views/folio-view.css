@@ -1,0 +1,69 @@
+/* The Folio in the app: full bleed, filling the stage; the reader brings its own head and rail. */
+.folio-view {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.folio-view > .folio-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  background-color: transparent;
+}
+
+.folio-view__mode {
+  position: absolute;
+  top: var(--space-8);
+  right: var(--space-10);
+  z-index: 1;
+}
+
+.folio-view__progress {
+  position: absolute;
+  bottom: 52px;
+  right: var(--space-10);
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-dust);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.folio-view__note {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-10);
+  text-align: center;
+}
+
+.folio-view__note-mark {
+  color: var(--color-gilt);
+  opacity: 0.7;
+  margin-bottom: var(--space-3);
+}
+
+.folio-view__note-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  font-style: italic;
+  color: var(--color-star);
+}
+
+.folio-view__note-body {
+  margin: 0;
+  max-width: 48ch;
+  font-size: var(--text-sm);
+  color: var(--color-dust);
+}
+
+/* Inside the app the contents sit on the ground, so they read apart from the app's own rail. */
+.folio-view .folio-rail {
+  background: transparent;
+}
