@@ -282,6 +282,25 @@ fn test_r2_kimi_synthetic_store() {
 }
 
 #[test]
+fn test_r2_kimi_two_sessions_each_keep_their_own_provenance() {
+    let adapter = get_builtin_adapter("kimi-code-cli").unwrap();
+    let dir = tempdir().unwrap();
+    for id in ["ses_one", "ses_two"] {
+        let sess_dir = dir.path().join("sessions/wd_test").join(id);
+        fs::create_dir_all(&sess_dir).unwrap();
+        let state = format!(r#"{{"id":"{id}","createdAt":"2026-10-12T08:00:00.000Z"}}"#);
+        fs::write(sess_dir.join("state.json"), state).unwrap();
+    }
+    let batches = AdapterEngine::fixture_batches(&adapter, dir.path()).unwrap();
+    assert_eq!(batches.len(), 2);
+    // The archive rejects a batch whose sessions carry another file's provenance.
+    for batch in &batches {
+        assert_eq!(batch.sessions.len(), 1);
+        assert_eq!(batch.sessions[0].session.provenance, batch.source);
+    }
+}
+
+#[test]
 fn test_r2_antigravity_synthetic_store() {
     let adapter = get_builtin_adapter("antigravity-cli").expect("antigravity-cli builtin must exist");
     let dir = tempdir().unwrap();

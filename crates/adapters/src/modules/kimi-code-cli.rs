@@ -20,15 +20,16 @@ use std::collections::HashMap;
 use std::path::Path;
 use walkdir::WalkDir;
 
+/// One batch per `state.json`: each session carries its own file's provenance, and the archive
+/// accepts a batch only when every session in it shares the batch's provenance.
 pub fn process(
     adapter: &AdapterDef,
     source: &HistorySourceDef,
     context: &SourceContext,
     boundary: &ReadBoundary,
     root: &Path,
-) -> Result<ImportBatch, Box<dyn std::error::Error>> {
-    let mut sessions = Vec::new();
-    let mut primary_provenance: Option<SourceProvenance> = None;
+) -> Result<Vec<ImportBatch>, Box<dyn std::error::Error>> {
+    let mut batches = Vec::new();
 
     for entry in WalkDir::new(root).follow_links(false).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -99,19 +100,25 @@ pub fn process(
                 };
 
                 if let Some(sess) = parse_kimi_session(adapter, &provenance, &state_doc, wire_content.as_deref()) {
-                    sessions.push(sess);
+                    batches.push(ImportBatch {
+                        source: provenance,
+                        mode: ImportMode::Snapshot,
+                        read_status: ReadStatus::Complete,
+                        sessions: vec![sess],
+                        diagnostics: vec![],
+                        live_updates: vec![],
+                    });
                 }
-            }
-
-            if primary_provenance.is_none() {
-                primary_provenance = Some(provenance);
             }
         }
     }
 
-    sessions.sort_by(|a, b| a.session.id.cmp(&b.session.id));
+    if !batches.is_empty() {
+        batches.sort_by(|a, b| a.source.source_path.cmp(&b.source.source_path));
+        return Ok(batches);
+    }
 
-    let batch_provenance = primary_provenance.unwrap_or_else(|| SourceProvenance {
+    let batch_provenance = SourceProvenance {
         store: context.store.clone(),
         source_id: source.id.clone().unwrap_or_else(|| "kimi-sessions".into()),
         adapter_id: adapter.id.clone(),
@@ -128,16 +135,16 @@ pub fn process(
             // rejects and that would hide the skip notice after it (R-6, r2 fix round 2).
             digest: "0".repeat(64),
         },
-    });
+    };
 
-    Ok(ImportBatch {
+    Ok(vec![ImportBatch {
         source: batch_provenance,
         mode: ImportMode::Snapshot,
         read_status: ReadStatus::Complete,
-        sessions,
+        sessions: vec![],
         diagnostics: vec![],
         live_updates: vec![],
-    })
+    }])
 }
 
 fn parse_kimi_session(

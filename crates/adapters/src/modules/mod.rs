@@ -207,7 +207,6 @@ pub fn process_module(
     root: &Path,
 ) -> Result<ImportBatch, Box<dyn std::error::Error>> {
     match module {
-        "kimi-code-cli" | "kimi_code_cli" => kimi_code_cli::process(adapter, source, context, boundary, root),
         "antigravity-cli" | "antigravity_cli" => antigravity_cli::process(adapter, source, context, boundary, root),
         _ => Err(format!("Unknown adapter module '{}'", module).into()),
     }
@@ -461,10 +460,8 @@ fn dispatch_module_batches_unchecked(
         "amp" => amp::parse_batches(adapter, source, context, boundary, root),
 
         // R2 modules
-        "kimi-code-cli"
-        | "kimi_code_cli"
-        | "antigravity-cli"
-        | "antigravity_cli" => {
+        "kimi-code-cli" | "kimi_code_cli" => kimi_code_cli::process(adapter, source, context, boundary, root),
+        "antigravity-cli" | "antigravity_cli" => {
             Ok(vec![process_module(module_name, adapter, source, context, boundary, root)?])
         }
 
