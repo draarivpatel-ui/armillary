@@ -653,6 +653,11 @@ fn is_auth_scheme(word: &str) -> bool {
     matches!(word.to_ascii_lowercase().as_str(), "bearer" | "basic" | "token")
 }
 
+/// A header whose value may start with one scheme word before the credential.
+fn is_authorization_key(key: &str) -> bool {
+    matches!(key.trim_matches(['"', '\'', '`', '*']).to_ascii_lowercase().as_str(), "authorization" | "proxy-authorization")
+}
+
 /// Mask one argument value: word by word when it holds spaces (a shell string or a header),
 /// otherwise as a single word.
 fn mask_arg_value(value: &str) -> (String, usize) {
@@ -664,6 +669,8 @@ fn mask_arg_value(value: &str) -> (String, usize) {
     }
     let mut masked = 0usize;
     let mut mask_next = false;
+    // Set after "Authorization:": one scheme word ("Bearer") may come before the credential.
+    let mut scheme_allowed = false;
     let mut mask_rest = false;
     let mut words: Vec<String> = Vec::new();
     for word in value.split_whitespace() {
@@ -680,11 +687,12 @@ fn mask_arg_value(value: &str) -> (String, usize) {
                 continue;
             }
         }
-        if is_auth_scheme(word) {
+        if mask_next && std::mem::take(&mut scheme_allowed) && is_auth_scheme(word) {
             words.push(word.to_string());
-            mask_next = true;
             continue;
         }
+        // The word after a secret key or a scheme is the secret, whatever it looks like
+        // ("--password basic", "Authorization: Bearer token").
         if mask_next && !is_env_reference(word) {
             masked += 1;
             words.push(MASKED.to_string());
@@ -692,11 +700,17 @@ fn mask_arg_value(value: &str) -> (String, usize) {
             continue;
         }
         mask_next = false;
+        if is_auth_scheme(word) {
+            words.push(word.to_string());
+            mask_next = true;
+            continue;
+        }
         // "Authorization:" or "X-Api-Key:" names the next word as the secret.
         if let Some(key) = word.strip_suffix(':') {
             if secret_key_name(key) {
                 words.push(word.to_string());
                 mask_next = true;
+                scheme_allowed = is_authorization_key(key);
                 continue;
             }
         }
@@ -918,18 +932,24 @@ pub fn mask_preview(text: &str) -> (String, usize) {
         .map(|line| {
             let mut mask_next = false;
             let mut after_secret_key = false;
+            // Set after an Authorization key: one scheme word may come before the credential.
+            let mut scheme_allowed = false;
+            let mut auth_key = false;
             line.split_whitespace()
                 .map(|token| {
                     if std::mem::take(&mut mask_next) && !is_env_reference(token) {
                         after_secret_key = false;
-                        // "Authorization: Bearer x": the scheme stays, the word after it is the secret.
-                        if is_auth_scheme(token) {
+                        // "Authorization: Bearer x": the scheme stays, the word after it is the
+                        // secret. Only one scheme, and only in an Authorization header: the word
+                        // after it, or after any other secret key ("password: basic"), is masked.
+                        if std::mem::take(&mut scheme_allowed) && is_auth_scheme(token) {
                             mask_next = true;
                             return token.to_string();
                         }
                         masked += 1;
                         return MASKED.to_string();
                     }
+                    scheme_allowed = false;
                     let tail = token.trim_end_matches(['*', '`']);
                     let bare = tail.trim_end_matches([':', '=']);
                     let key = bare.trim_matches(['"', '\'', '`', '*']);
@@ -939,11 +959,13 @@ pub fn mask_preview(text: &str) -> (String, usize) {
                     let secret_key = standalone && !key.is_empty() && secret_key_name(key);
                     let separator = bare.len() < tail.len();
                     if (separator && secret_key) || (bare.is_empty() && after_secret_key) {
+                        scheme_allowed = if separator && secret_key { is_authorization_key(key) } else { auth_key };
                         after_secret_key = false;
                         mask_next = true;
                         return token.to_string();
                     }
                     after_secret_key = secret_key && !separator;
+                    auth_key = after_secret_key && is_authorization_key(key);
                     let (token, count) = mask_word(token);
                     masked += count;
                     token
@@ -3340,6 +3362,26 @@ mod mask_shapes {
         // References and ordinary values stay as written.
         for kept in ["Authorization: Bearer ${TOKEN}", "DATA=dGVzdA=="] {
             assert_eq!(mask_preview(kept), (kept.to_string(), 0));
+        }
+        // sol-loop N6: one scheme word, only in an Authorization header; the credential after
+        // it, or after any other secret key, is masked however it is spelled.
+        for (text, kept) in [
+            ("Authorization: Bearer token", "Authorization: Bearer"),
+            ("Authorization: Basic basic", "Authorization: Basic"),
+            ("**Authorization:** Token Bearer", "**Authorization:** Token"),
+            ("Authorization : bearer token", "Authorization : bearer"),
+            ("password: basic", "password:"),
+            ("api_key = Bearer", "api_key ="),
+        ] {
+            assert_eq!(mask_preview(text), (format!("{kept} {MASKED}"), 1), "{text}");
+        }
+        // The same rule for a header or shell string inside a server argument.
+        for (arg, kept) in [
+            ("Authorization: Bearer token", "Authorization: Bearer"),
+            ("--password basic", "--password"),
+            ("X-Api-Key: token", "X-Api-Key:"),
+        ] {
+            assert_eq!(mask_arg_value(arg), (format!("{kept} {MASKED}"), 1), "{arg}");
         }
     }
 
