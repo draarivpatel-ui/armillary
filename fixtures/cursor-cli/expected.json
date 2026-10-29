@@ -28,15 +28,10 @@
       "project_root": "/Users/developer/code/frontend-app",
       "title": "Add dark mode toggle",
       "started_at": 1791814000000,
-      "ended_at": 1791814000000,
+      "ended_at": null,
       "model": "claude-3-7-sonnet",
-      "status": "completed",
-      "completion": {
-        "kind": "native_completion",
-        "detail": "native completed status",
-        "native_event_id": null,
-        "at": 1791814000000
-      },
+      "status": "unknown",
+      "completion": null,
       "turns": 1,
       "usage": {
         "semantics": "unknown",

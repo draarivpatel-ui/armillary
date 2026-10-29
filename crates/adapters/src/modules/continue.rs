@@ -220,9 +220,10 @@ fn parse_continue_session_file(
         project_root,
         title,
         started_at,
-        started_at,
+        // A Continue session file has no end time or end status: both stay unknown (CONTRACT.md).
+        None,
         model,
-        "completed".to_string(),
+        "unknown".to_string(),
         tokens_in,
         tokens_out,
         messages,

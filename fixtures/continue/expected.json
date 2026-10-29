@@ -30,13 +30,8 @@
       "started_at": null,
       "ended_at": null,
       "model": null,
-      "status": "completed",
-      "completion": {
-        "kind": "native_completion",
-        "detail": "native completed status",
-        "native_event_id": null,
-        "at": null
-      },
+      "status": "unknown",
+      "completion": null,
       "turns": 1,
       "usage": {
         "semantics": "unknown",
