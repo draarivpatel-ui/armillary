@@ -35,7 +35,7 @@ fn times_are_unix_milliseconds() {
 #[test]
 fn migrations_create_schema_and_are_versioned() {
     let a = archive();
-    assert_eq!(a.schema_version().unwrap(), 2);
+    assert_eq!(a.schema_version().unwrap(), 3);
     assert_eq!(a.stats().unwrap().messages, 0);
 }
 #[test]
@@ -49,7 +49,7 @@ fn migrations_are_idempotent_and_data_persists_across_reopen() {
         a.import_batch(&b).unwrap();
     }
     let a = Archive::open(&p).unwrap();
-    assert_eq!(a.schema_version().unwrap(), 2);
+    assert_eq!(a.schema_version().unwrap(), 3);
     assert_eq!(a.stats().unwrap().messages, 4);
     assert!(!a.import_batch(&b).unwrap().applied);
     assert_eq!(a.stats().unwrap().search_rows, 4);

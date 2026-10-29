@@ -4,7 +4,7 @@
 use rusqlite::Transaction;
 
 /// Current schema version. Bump and append a migration when the shape changes.
-pub const LATEST_VERSION: u32 = 2;
+pub const LATEST_VERSION: u32 = 3;
 
 pub fn current_version(tx: &Transaction<'_>) -> rusqlite::Result<u32> {
     tx.query_row("PRAGMA user_version", [], |r| r.get(0))
@@ -19,6 +19,7 @@ pub fn migrate(tx: &Transaction<'_>, v: u32) -> rusqlite::Result<()> {
     match v {
         1 => tx.execute_batch(SCHEMA_V1),
         2 => tx.execute_batch(SCHEMA_V2),
+        3 => tx.execute_batch(SCHEMA_V3),
         _ => panic!("no migration for version {v}"),
     }
 }
@@ -152,4 +153,19 @@ CREATE INDEX idx_cf_sessions_project ON sessions(project_root);
 CREATE INDEX idx_cf_messages_source ON messages(source_key);
 CREATE INDEX idx_cf_search_session ON search_rows(session_id);
 CREATE INDEX idx_cf_diagnostics_source ON import_diagnostics(source_key);
+"#;
+
+/// The SQLite stores read by a history module (OpenCode, Crush, Goose, Hermes) once used the total
+/// message count as checkpoint offset and records; they now use the database's byte length and one
+/// record. Next to an old count, one record looked like a truncation and started a new generation,
+/// which merged two copies of the same usage summary. The old checkpoints are rebased here: records
+/// become 1, the offset (a message count, never more than the file's byte length) stays, and the
+/// generation is kept, so the next read is a new revision of the same file.
+const SCHEMA_V3: &str = r#"
+UPDATE sources SET provenance = json_set(provenance, '$.checkpoint.records', 1)
+WHERE json_extract(provenance, '$.adapter_id') IN ('opencode', 'crush', 'goose', 'hermes-agent-cli')
+  AND json_extract(provenance, '$.checkpoint.records') > 1;
+UPDATE sessions SET payload = json_set(payload, '$.provenance.checkpoint.records', 1)
+WHERE json_extract(payload, '$.provenance.adapter_id') IN ('opencode', 'crush', 'goose', 'hermes-agent-cli')
+  AND json_extract(payload, '$.provenance.checkpoint.records') > 1;
 "#;

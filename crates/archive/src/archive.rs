@@ -151,8 +151,11 @@ impl Archive {
             let tx = conn.transaction()?;
             for v in version + 1..=schema::LATEST_VERSION {
                 schema::migrate(&tx, v)?;
+                // The v1 tables are moved aside by migration 2 and copied over once, right after it.
+                if v == 2 {
+                    migrate_legacy(&tx)?;
+                }
             }
-            migrate_legacy(&tx)?;
             schema::set_version(&tx, schema::LATEST_VERSION)?;
             tx.commit()?;
         }

@@ -191,7 +191,7 @@ fn v1_migration_preserves_content_and_marks_unresolved_identity() {
         tx.commit().unwrap();
     }
     let a = Archive::open(&p).unwrap();
-    assert_eq!(a.schema_version().unwrap(), 2);
+    assert_eq!(a.schema_version().unwrap(), 3);
     let s = a
         .sessions_query(&SessionFilter::default())
         .unwrap()
