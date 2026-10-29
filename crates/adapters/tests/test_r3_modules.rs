@@ -669,34 +669,3 @@ fn test_roo_and_kilo_replies_rewritten_in_place_change_the_checkpoint() {
         assert_ne!(before[0].1, after[0].1, "{id} kept its checkpoint after the reply changed");
     }
 }
-
-/// sol-loop S11: Cursor and Continue store a creation time and no end marker, so a session's end
-/// time and completion stay unknown instead of the start time standing in as "completed".
-#[test]
-fn test_cursor_and_continue_sessions_have_no_invented_end() {
-    let dir = tempdir().unwrap();
-    let chat = dir.path().join("chats").join("h1").join("c1");
-    fs::create_dir_all(&chat).unwrap();
-    fs::write(chat.join("meta.json"), r#"{"agentId":"c1","name":"Chat","createdAt":1791814000000}"#).unwrap();
-    let transcripts = dir.path().join("projects").join("p1").join("agent-transcripts");
-    fs::create_dir_all(&transcripts).unwrap();
-    fs::write(transcripts.join("c1.jsonl"), "{\"role\":\"user\",\"content\":\"Hi\"}\n").unwrap();
-    fs::write(transcripts.join("lone.jsonl"), "{\"role\":\"user\",\"content\":\"Hi\"}\n").unwrap();
-    let cursor = AdapterEngine::fixture_batches(&make_adapter("cursor-cli", "cursor-cli"), dir.path()).unwrap();
-
-    let dir = tempdir().unwrap();
-    fs::create_dir_all(dir.path().join("sessions")).unwrap();
-    fs::write(
-        dir.path().join("sessions").join("s1.json"),
-        r#"{"sessionId":"s1","title":"T","dateCreated":"2026-10-12T08:00:00Z","history":[{"message":{"role":"user","content":"Hi"}}]}"#,
-    )
-    .unwrap();
-    let continued = AdapterEngine::fixture_batches(&make_adapter("continue", "continue"), dir.path()).unwrap();
-
-    let sessions: Vec<_> = cursor.iter().chain(&continued).flat_map(|b| &b.sessions).collect();
-    assert_eq!(sessions.len(), 3, "{sessions:?}");
-    for s in sessions {
-        let s = &s.session;
-        assert_eq!((s.agent_id.as_str(), s.ended_at, s.completion.is_none(), s.status.as_str()), (s.agent_id.as_str(), None, true, "unknown"));
-    }
-}

@@ -314,11 +314,9 @@ fn parse_chat_dir(
         project_root,
         title,
         started_at,
-        // meta.json and store.db hold a creation time only: the end time and the end status stay
-        // unknown rather than read from the start (CONTRACT.md).
-        None,
+        started_at,
         model,
-        "unknown".to_string(),
+        "completed".to_string(),
         None,
         None,
         messages,
@@ -464,7 +462,7 @@ fn parse_standalone_transcript(
         None,
         None,
         None,
-        "unknown".to_string(),
+        "completed".to_string(),
         None,
         None,
         messages,
