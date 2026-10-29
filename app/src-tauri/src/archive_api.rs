@@ -998,13 +998,6 @@ pub fn truncate_trace_line(line: &str) -> String {
     line.chars().take(TRACE_LINE_MAX).collect()
 }
 
-/// Fill `state` with `discover()` only when it has no targets yet.
-pub fn ensure_targets_with(state: &CoreState, discover: impl FnOnce() -> Vec<ImportTarget>) {
-    if state.targets_snapshot().is_empty() {
-        state.set_targets(discover());
-    }
-}
-
 // ---------- Tauri command handlers ----------
 
 /// Trace one command outcome: name, ok/err code and counts only, never content, titles or paths.
@@ -1036,8 +1029,9 @@ pub fn import_now_in(
 ) -> Result<ImportSummary, ApiError> {
     consent::require(data_dir)?;
     let importer = Importer::new(state.archive.clone());
-    // After consent discovery may never have run (it is no longer part of launch).
-    ensure_targets_with(state, discover);
+    // Discover on every Import now: an agent installed, or a history folder created, since launch
+    // is imported without a restart (and after consent discovery may never have run at all).
+    state.set_targets(discover());
     import_now_core_with_importer(state, importer, agent_id, emit)
 }
 
@@ -1136,7 +1130,7 @@ mod tests {
         let data = tmp();
         let home = tmp();
         let staged = staged_targets(home.path());
-        let state = CoreState::new(Arc::new(Archive::in_memory().unwrap()), staged);
+        let state = CoreState::new(Arc::new(Archive::in_memory().unwrap()), staged.clone());
         for declined in [false, true] {
             if declined {
                 write_declined(data.path());
@@ -1153,8 +1147,31 @@ mod tests {
         }
         // Control: with consent the same call imports the fake HOME.
         write_consented(data.path());
-        let summary = import_now_in(data.path(), &state, Vec::new, None, &|_| {}).unwrap();
+        let summary = import_now_in(data.path(), &state, || staged.clone(), None, &|_| {}).unwrap();
         assert!(summary.sessions > 0);
+    }
+
+    /// An agent found after launch is imported by Import now, without a restart.
+    #[test]
+    fn import_now_rediscovers_targets_found_after_launch() {
+        use crate::archive_api::testkit::{tmp, write_consented};
+        let data = tmp();
+        let home = tmp();
+        let staged = staged_targets(home.path());
+        assert!(staged.len() > 1);
+        let state = CoreState::new(Arc::new(Archive::in_memory().unwrap()), staged[..1].to_vec());
+        write_consented(data.path());
+        import_now_in(data.path(), &state, || staged.clone(), None, &|_| {}).unwrap();
+        assert_eq!(state.targets_snapshot().len(), staged.len());
+        let agents: std::collections::BTreeSet<String> = state
+            .archive
+            .sessions_query(&Default::default())
+            .unwrap()
+            .items
+            .into_iter()
+            .map(|s| s.agent_id)
+            .collect();
+        assert!(agents.len() > 1, "{agents:?}");
     }
 
     /// R2-REV-3: Delete archive and reset removes the archive content, firstrun.json and leftover

@@ -11,11 +11,11 @@ use std::sync::{Arc, Mutex};
 
 use crate::archive_api::{ApiError, CoreState};
 
-// The trace helpers and `ensure_targets_with` live in `archive_api` (which has no launch
+// The trace helpers live in `archive_api` (which has no launch
 // dependency) because several integration tests include `archive_api.rs` on its own as a
 // module; they are re-exported here as this module's public API.
 pub use crate::archive_api::{
-    ensure_targets_with, trace, trace_enabled, trace_enabled_from, truncate_trace_line,
+    trace, trace_enabled, trace_enabled_from, truncate_trace_line,
     TRACE_LINE_MAX,
 };
 
@@ -425,24 +425,5 @@ mod tests {
             ctx.home_canonical.map(std::path::PathBuf::from),
             Some(std::fs::canonicalize(tmp.path()).unwrap())
         );
-    }
-
-    #[test]
-    fn ensure_targets_discovers_only_when_empty() {
-        let tmp = tempfile::tempdir().unwrap();
-        let staged = staged_targets(tmp.path());
-        assert!(!staged.is_empty());
-        let state = CoreState::new(Arc::new(Archive::in_memory().unwrap()), Vec::new());
-        let mut calls = 0;
-        ensure_targets_with(&state, || {
-            calls += 1;
-            staged.clone()
-        });
-        assert_eq!(calls, 1);
-        assert_eq!(state.targets_snapshot().len(), staged.len());
-
-        // Already populated: discovery must not run again or replace the targets.
-        ensure_targets_with(&state, || panic!("discovery must not run when targets exist"));
-        assert_eq!(state.targets_snapshot().len(), staged.len());
     }
 }
