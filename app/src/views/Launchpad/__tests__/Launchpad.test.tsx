@@ -418,6 +418,34 @@ describe("Launchpad View", () => {
     );
   });
 
+  it("shows what a program prints before its terminal tab mounts (sol-loop S13)", async () => {
+    let dataListener: ((event: { payload: { id: string; data: string } }) => void) | null = null;
+    mockListen.mockImplementation((event: string, cb: (e: { payload: { id: string; data: string } }) => void) => {
+      if (event === "pty:data") dataListener = cb;
+      return Promise.resolve(unlistenFn);
+    });
+    const base = mockInvoke.getMockImplementation()!;
+    mockInvoke.mockImplementation((cmd: string, args?: unknown) => {
+      if (cmd === "pty_open") {
+        // The backend starts streaming as soon as the process runs; only a listener that is
+        // already registered receives it.
+        dataListener?.({ payload: { id: "pty-session-1", data: "early prompt$ " } });
+      }
+      return base(cmd, args);
+    });
+
+    render(<Launchpad />);
+    await launch();
+    await screen.findByTestId("xterm-terminal-container");
+    expect(dataListener).not.toBeNull();
+    expect(terminals).toHaveLength(1);
+    const write = (terminals[0] as unknown as { write: ReturnType<typeof vi.fn> }).write;
+    expect(write).toHaveBeenCalledWith("early prompt$ ");
+    // Later output goes straight to the mounted terminal, once.
+    dataListener!({ payload: { id: "pty-session-1", data: "more" } });
+    expect(write.mock.calls).toEqual([["early prompt$ "], ["more"]]);
+  });
+
   it("lists recent launches simply (glyph, agent, project in mono, time ago from appNow) and has no help card", async () => {
     const now = 1_800_000_000_000;
     (window as any).__ARMILLARY_NOW__ = now;

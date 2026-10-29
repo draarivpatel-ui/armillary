@@ -3,17 +3,19 @@ import type { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
-import { TerminalSession, PtyDataEvent } from "./types";
+import { TerminalSession } from "./types";
+import type { PtyOutputHub } from "./ptyOutput";
 import { createSecureTerminal, installPasteGuard } from "./terminalSecurity";
 import { currentTerminalTheme, watchTheme } from "./terminalTheme";
 
 interface TerminalTabProps {
   session: TerminalSession;
+  /** The Launchpad's output hub: it holds what the session printed before this tab mounted. */
+  output: PtyOutputHub;
   isActive: boolean;
 }
 
-export const TerminalTab: React.FC<TerminalTabProps> = ({ session, isActive }) => {
+export const TerminalTab: React.FC<TerminalTabProps> = ({ session, output, isActive }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
@@ -58,15 +60,8 @@ export const TerminalTab: React.FC<TerminalTabProps> = ({ session, isActive }) =
       }).catch(() => {});
     }
 
-    // Listen for incoming PTY output from Rust backend
-    let unlisten: (() => void) | undefined;
-    listen<PtyDataEvent>("pty:data", (event) => {
-      if (event.payload.id === session.id) {
-        term.write(event.payload.data);
-      }
-    }).then((dispose) => {
-      unlisten = dispose;
-    });
+    // PTY output from the Rust backend, starting with anything printed before this tab mounted
+    const unsubscribe = output.subscribe(session.id, (data) => term.write(data));
 
     // Resize observer (guarded for environments without ResizeObserver like jsdom)
     let resizeObserver: ResizeObserver | null = null;
@@ -96,7 +91,7 @@ export const TerminalTab: React.FC<TerminalTabProps> = ({ session, isActive }) =
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      if (unlisten) unlisten();
+      unsubscribe();
       term.dispose();
       terminalRef.current = null;
       fitAddonRef.current = null;

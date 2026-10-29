@@ -7,6 +7,7 @@ import { useProjectRoots } from "../../api/hooks";
 import { useDisplayPath } from "../../api/paths";
 import { AgentSelector } from "./AgentSelector";
 import { TerminalTab } from "./TerminalTab";
+import { createPtyOutputHub, type PtyOutputHub } from "./ptyOutput";
 import "./launchpad.css";
 
 /**
@@ -28,6 +29,10 @@ export const Launchpad: React.FC = () => {
   const titleId = useId();
   const displayPath = useDisplayPath();
   const launchCounts = useRef<Record<string, number>>({});
+  // One output listener for all terminals, started before a PTY opens (see ptyOutput.ts).
+  const outputHub = useRef<PtyOutputHub | null>(null);
+  outputHub.current ??= createPtyOutputHub();
+  useEffect(() => () => outputHub.current?.dispose(), []);
   const [agentsLoaded, setAgentsLoaded] = useState<boolean>(false);
   const [hasCore] = useState<boolean>(() => isCoreAvailable());
   const [agents, setAgents] = useState<CliAgentInfo[]>([]);
@@ -118,6 +123,8 @@ export const Launchpad: React.FC = () => {
 
     try {
       let sessionId = `pty-${sessions.length + 1}`;
+      // Listen first: what the program prints before its tab mounts waits in the hub.
+      await outputHub.current?.ready().catch(() => {});
       try {
         const result = await call<{ id: string; agent_id?: string; cwd?: string }>(
           "pty_open",
@@ -192,6 +199,7 @@ export const Launchpad: React.FC = () => {
     } catch {
       // Ignored
     }
+    outputHub.current?.forget(sessionId);
 
     setSessions((prev) => {
       const next = prev.filter((s) => s.id !== sessionId);
@@ -331,7 +339,12 @@ export const Launchpad: React.FC = () => {
             )}
           </div>
           {sessions.map((session) => (
-            <TerminalTab key={session.id} session={session} isActive={session.id === activeSessionId && !showConfig} />
+            <TerminalTab
+              key={session.id}
+              session={session}
+              output={outputHub.current!}
+              isActive={session.id === activeSessionId && !showConfig}
+            />
           ))}
         </div>
       )}
