@@ -9,7 +9,7 @@ export interface PtyOutputHub {
   ready(): Promise<void>;
   /** Sends a session's output to `sink`, starting with what arrived before it subscribed. */
   subscribe(id: string, sink: (data: string) => void): () => void;
-  /** Drops a closed session's sink and anything still waiting for it. */
+  /** Drops a closed session's sink and anything still waiting for it, and ignores its later output. */
   forget(id: string): void;
   dispose(): void;
 }
@@ -22,9 +22,14 @@ export interface PtyOutputHub {
 export function createPtyOutputHub(): PtyOutputHub {
   const sinks = new Map<string, (data: string) => void>();
   const pending = new Map<string, string[]>();
+  // Closed sessions. Their reader thread is not joined, so output (its last bytes at EOF) can
+  // still arrive after `pty_close`; it would otherwise wait forever for a tab that is gone.
+  // Session ids are never reused while the app runs.
+  const closed = new Set<string>();
   let listening: Promise<() => void> | null = null;
 
   const deliver = ({ id, data }: PtyDataEvent) => {
+    if (closed.has(id)) return;
     const sink = sinks.get(id);
     // Output that waits for a subscriber is delivered first, so later output queues behind it.
     if (sink && !pending.has(id)) {
@@ -60,7 +65,7 @@ export function createPtyOutputHub(): PtyOutputHub {
           if (sinks.get(id) !== sink) return;
           const queued = pending.get(id);
           pending.delete(id);
-          queued?.forEach(sink);
+          queued?.forEach((chunk) => sink(chunk));
         });
       }
       return () => {
@@ -68,6 +73,7 @@ export function createPtyOutputHub(): PtyOutputHub {
       };
     },
     forget(id) {
+      closed.add(id);
       sinks.delete(id);
       pending.delete(id);
     },
