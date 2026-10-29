@@ -147,3 +147,39 @@ files_pointers = ["input.path"]
 "#;
     assert!(AdapterDef::from_toml(toml).is_err(), "a pointer without a leading slash must be refused");
 }
+
+#[test]
+fn claude_code_thinking_and_image_blocks_do_not_fail_the_transcript() {
+    let adapter = get_builtin_adapter("claude-code").expect("builtin claude-code");
+    let thinking = assistant_line(
+        "a1",
+        json!([
+            {"type": "thinking", "thinking": "plan the change", "signature": "c2lnbmF0dXJl"},
+            {"type": "redacted_thinking", "data": "ZW5jcnlwdGVk"},
+            {"type": "text", "text": "Done."},
+        ]),
+    );
+    let image = json!({
+        "type": "user", "uuid": "u1", "sessionId": "adp-sess-1",
+        "timestamp": "2026-10-12T14:10:00.000Z", "cwd": "/Users/developer/code/app",
+        "message": {"role": "user", "content": [
+            {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "iVBORw0KGgoCANARY"}},
+            {"type": "text", "text": "What is wrong here?"},
+        ]}
+    })
+    .to_string();
+    let dir = tempdir().unwrap();
+    let proj = dir.path().join("projects/app");
+    std::fs::create_dir_all(&proj).unwrap();
+    std::fs::write(proj.join("s.jsonl"), format!("{image}\n{thinking}\n")).unwrap();
+    let sessions = AdapterEngine::process_fixture_dir(&adapter, dir.path()).unwrap();
+    assert_eq!(sessions.len(), 1);
+    let blocks: Vec<&ContentBlock> = sessions[0].messages.iter().flat_map(|m| &m.blocks).collect();
+    assert!(matches!(
+        blocks[0],
+        ContentBlock::Attachment { mime_type: Some(m), .. } if m == "image/png"
+    ), "{blocks:?}");
+    assert_eq!(blocks.len(), 3, "{blocks:?}");
+    let all = format!("{blocks:?}");
+    assert!(!all.contains("CANARY") && !all.contains("plan the change"), "{all}");
+}

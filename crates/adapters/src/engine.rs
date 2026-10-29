@@ -817,6 +817,22 @@ fn content_blocks(
                             push_tool(&mut blocks, b, v, tc);
                         }
                     }
+                    // Claude extended thinking is not part of the reply, and a redacted block holds
+                    // only encrypted data: neither becomes a transcript block.
+                    "thinking" | "redacted_thinking" => {}
+                    // An image keeps a reference only; its inline base64 data is never stored.
+                    "image" => blocks.push(ContentBlock::Attachment {
+                        reference: v
+                            .pointer("/source/url")
+                            .and_then(Value::as_str)
+                            .unwrap_or("inline image")
+                            .into(),
+                        mime_type: v
+                            .pointer("/source/media_type")
+                            .and_then(Value::as_str)
+                            .map(str::to_owned),
+                        label: Some("image".into()),
+                    }),
                     "code" | "edit" | "checklist" | "error" | "attachment" => {
                         blocks.push(
                             serde_json::from_value(v.clone()).map_err(|e| {
