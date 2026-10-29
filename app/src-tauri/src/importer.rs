@@ -1996,6 +1996,52 @@ mod tests {
             read_error.message
         );
     }
+
+    /// sol-loop S7: Cline rewrites its JSON files whole, so a reply that comes back shorter makes a
+    /// file smaller. That is a new revision of the same session, not a truncation that would start a
+    /// new generation and collide with the messages already accepted (`conflicting_sequence`).
+    #[test]
+    fn a_cline_reply_rewritten_shorter_reimports_in_place() {
+        let tmp = tempfile::tempdir().unwrap();
+        let home = tmp.path().canonicalize().unwrap();
+        let cli = home.join(".cline/data");
+        let ext = home.join(match TargetOs::current() {
+            TargetOs::Macos => "Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev",
+            _ => ".config/Code/User/globalStorage/saoudrizwan.claude-dev",
+        });
+        let session = cli.join("sessions/s1");
+        let task = ext.join("tasks/t1");
+        std::fs::create_dir_all(&session).unwrap();
+        std::fs::create_dir_all(&task).unwrap();
+        std::fs::write(session.join("s1.json"), r#"{"session_id":"s1","prompt":"Hi"}"#).unwrap();
+        let write_reply = |reply: &str| {
+            let cli_messages = format!(
+                r#"{{"messages":[{{"role":"user","content":"Hi"}},{{"role":"assistant","content":"{reply}"}}]}}"#
+            );
+            std::fs::write(session.join("s1.messages.json"), cli_messages).unwrap();
+            // A task folder without task_metadata.json: its message files are the only inputs.
+            let api = format!(
+                r#"[{{"role":"user","content":"Hi","ts":1791816000000}},{{"role":"assistant","content":"{reply}","ts":1791816001000}}]"#
+            );
+            std::fs::write(task.join("api_conversation_history.json"), api).unwrap();
+        };
+        let adapter = builtin_adapters().into_iter().find(|a| a.id == "cline").unwrap();
+        let targets = vec![ImportTarget { adapter, data_dirs: vec![cli, ext] }];
+        let archive = Arc::new(Archive::in_memory().unwrap());
+        let importer = Importer::new(archive.clone());
+        let env = scoped_env(&home);
+
+        write_reply("a long first answer about quillfern and more words after it");
+        let first = importer.run_with_env(&targets, None, &env, &|_| {}).unwrap();
+        assert_eq!(first.sessions, 2);
+        write_reply("zephyrwick");
+        importer.run_with_env(&targets, None, &env, &|_| {}).unwrap();
+
+        let codes: Vec<String> = archive.recent_diagnostics(100).unwrap().into_iter().map(|d| d.code).collect();
+        assert!(codes.is_empty(), "{codes:?}");
+        assert_eq!(archive.search("zephyrwick", &SearchFilter::default()).unwrap().len(), 2);
+        assert!(archive.search("quillfern", &SearchFilter::default()).unwrap().is_empty());
+    }
 }
 
 /// PRIV-1 / V-REG-9 (r2 fix round 1): a watcher thread that is waiting out its debounce when

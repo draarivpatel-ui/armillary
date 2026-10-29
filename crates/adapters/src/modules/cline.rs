@@ -7,7 +7,7 @@
 // - Extension ID: saoudrizwan.claude-dev
 
 use super::shared::{
-    build_session, extract_files_from_value, extract_text_from_content, make_batch,
+    build_session, extract_files_from_value, extract_text_from_content, fold_digest, make_batch,
     make_provenance, open_sqlite_snapshot, parse_timestamp_val, read_json_file,
 };
 use crate::adapter_spec::{AdapterDef, HistorySourceDef};
@@ -146,7 +146,7 @@ fn parse_cli_session(
     manifest_path: &Path,
     messages_path: &Path,
 ) -> Option<ImportBatch> {
-    let (manifest_val, mut offset, mut digest) = read_json_file(boundary, manifest_path)?;
+    let (manifest_val, offset, mut digest) = read_json_file(boundary, manifest_path)?;
     let raw_id = manifest_val
         .get("session_id")
         .and_then(|v| v.as_str())
@@ -181,8 +181,8 @@ fn parse_cli_session(
     let mut tokens_out: u64 = 0;
     let mut record_count = 1;
 
-    if let Some((msg_val, msg_offset, msg_digest)) = read_json_file(boundary, messages_path) {
-        fold_checkpoint(&mut offset, &mut digest, msg_offset, msg_digest);
+    if let Some((msg_val, _, msg_digest)) = read_json_file(boundary, messages_path) {
+        fold_digest(&mut digest, &msg_digest);
         if let Some(msg_arr) = msg_val.get("messages").and_then(|v| v.as_array()) {
             record_count += msg_arr.len() as u64;
             for m in msg_arr {
@@ -311,17 +311,6 @@ fn parse_cli_session(
     Some(make_batch(session))
 }
 
-/// Adds one more file that feeds a session to its checkpoint: a change to any of them (a reply
-/// rewritten in place, with the message count unchanged) is a new checkpoint, not a replay.
-fn fold_checkpoint(offset: &mut u64, digest: &mut String, file_offset: u64, file_digest: String) {
-    *offset += file_offset;
-    *digest = if digest.is_empty() {
-        file_digest
-    } else {
-        crate::boundary::digest(format!("{digest}{file_digest}").as_bytes())
-    };
-}
-
 fn parse_task_dir(
     adapter: &AdapterDef,
     source: &HistorySourceDef,
@@ -344,13 +333,16 @@ fn parse_task_dir(
     let mut ended_at = None;
     let mut tokens_in = None;
     let mut tokens_out = None;
+    // Every file is rewritten whole, so none of their lengths is an extent that only grows: the
+    // offset is the metadata file's length (0 without one) and the digest covers every file read.
     let mut primary_offset = 0;
     let mut primary_digest = String::new();
     let mut primary_file = None;
 
     if meta_path.exists() && !is_credential_file(meta_path) {
         if let Some((meta_val, offset, digest)) = read_json_file(boundary, meta_path) {
-            fold_checkpoint(&mut primary_offset, &mut primary_digest, offset, digest);
+            primary_offset = offset;
+            fold_digest(&mut primary_digest, &digest);
             primary_file = Some(meta_path);
             if let Some(tid) = meta_val.get("taskId").and_then(|v| v.as_str()) {
                 raw_id = tid.to_string();
@@ -377,8 +369,8 @@ fn parse_task_dir(
 
     // Prefer api_conversation_history.json
     if api_path.exists() && !is_credential_file(api_path) {
-        if let Some((api_val, offset, digest)) = read_json_file(boundary, api_path) {
-            fold_checkpoint(&mut primary_offset, &mut primary_digest, offset, digest);
+        if let Some((api_val, _, digest)) = read_json_file(boundary, api_path) {
+            fold_digest(&mut primary_digest, &digest);
             if primary_file.is_none() {
                 primary_file = Some(api_path);
             }
@@ -445,8 +437,8 @@ fn parse_task_dir(
     }
 
     if ui_path.exists() && !is_credential_file(ui_path) {
-        if let Some((ui_val, offset, digest)) = read_json_file(boundary, ui_path) {
-            fold_checkpoint(&mut primary_offset, &mut primary_digest, offset, digest);
+        if let Some((ui_val, _, digest)) = read_json_file(boundary, ui_path) {
+            fold_digest(&mut primary_digest, &digest);
             if primary_file.is_none() {
                 primary_file = Some(ui_path);
             }

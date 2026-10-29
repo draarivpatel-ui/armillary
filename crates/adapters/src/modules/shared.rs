@@ -151,6 +151,18 @@ pub fn open_sqlite_snapshot(
 }
 
 /// Builds SourceProvenance conforming to CONTRACT.md.
+/// Adds one more file that feeds a session to its checkpoint digest, so a change to any of them (a
+/// reply rewritten in place, with the message count unchanged) is a new revision, not a replay.
+/// Only the digest takes it in: a file rewritten whole may come back shorter, and a smaller offset
+/// would read as a truncation and start a new generation over the messages already accepted.
+pub fn fold_digest(digest: &mut String, file_digest: &str) {
+    *digest = if digest.is_empty() {
+        file_digest.to_string()
+    } else {
+        crate::boundary::digest(format!("{digest}{file_digest}").as_bytes())
+    };
+}
+
 pub fn make_provenance(
     context: &SourceContext,
     adapter: &AdapterDef,
