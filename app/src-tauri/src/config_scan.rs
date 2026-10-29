@@ -351,8 +351,9 @@ pub fn is_env_reference(value: &str) -> bool {
 }
 
 fn render_reference_shape(value: &str, names: &[String]) -> bool {
-    // `${A}`, `{env:A}`, `$A`, `%A%` and `${A:-default}` are references; anything else that
-    // merely contains a reference (a url with a query string, say) is not a pure one.
+    // `${A}`, `{env:A}`, `$A`, `%A%` and `${A:-}` are references; anything else that merely
+    // contains a reference (a url with a query string, or `${A:-literal}` with a fallback that
+    // can itself be a secret) is not a pure one.
     let single = names.len() == 1;
     if !single {
         return false;
@@ -366,11 +367,7 @@ fn render_reference_shape(value: &str, names: &[String]) -> bool {
         format!("{{env:{name}}}"),
         format!("${{env:{name}}}"),
     ];
-    if candidates.iter().any(|shape| shape == value) {
-        return true;
-    }
-    // `${NAME:-fallback}` keeps a default value, which is still not a secret.
-    value.starts_with(&format!("${{{name}:-")) && value.ends_with('}')
+    candidates.iter().any(|shape| shape == value)
 }
 
 /// True when a bare string has the shape of a key or token.
@@ -730,6 +727,18 @@ fn mask_word(word: &str) -> (String, usize) {
     if is_env_reference(word) {
         return (word.to_string(), 0);
     }
+    // `${NAME:-fallback}`: the name stays; the fallback is a literal and is masked like one.
+    if let Some((name, fallback)) = word
+        .strip_prefix("${")
+        .and_then(|rest| rest.strip_suffix('}'))
+        .and_then(|inner| inner.split_once(":-"))
+    {
+        if secret_key_name(name) {
+            return (format!("${{{name}:-{MASKED}}}"), 1);
+        }
+        let (fallback, count) = mask_word(fallback);
+        return (format!("${{{name}:-{fallback}}}"), count);
+    }
     // A URL starts with its scheme; "KEY=postgres://..." is an assignment holding one.
     if let Some(scheme_end) = word.find("://") {
         if !word[..scheme_end].contains('=') {
@@ -867,7 +876,9 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                     for name in referenced {
                         push_unique(names, name);
                     }
-                    return format!("{key}={}", value.unwrap_or_default());
+                    if value.as_deref().is_some_and(is_env_reference) {
+                        return format!("{key}={}", value.unwrap_or_default());
+                    }
                 }
                 let is_secret = secret_key_name(&key)
                     || value.as_deref().map(|v| looks_like_secret_value(v)).unwrap_or(false);
@@ -3269,6 +3280,26 @@ mod mask_shapes {
         // A plain user name with a password keeps the name.
         let (kept, _, _) = mask_url("https://deploy:CANARYPW@host.example/x");
         assert!(kept.contains("deploy") && !kept.contains("CANARYPW"), "{kept}");
+    }
+
+    #[test]
+    fn a_literal_fallback_in_a_variable_reference_is_masked() {
+        let (out, refs, n) = mask_args(&["--password".to_string(), "${DB_PW:-canarypw}".to_string()]);
+        assert!(!out.join(" ").contains("canarypw"), "{out:?}");
+        assert_eq!(refs, vec!["DB_PW".to_string()]);
+        assert_eq!(n, 1);
+        let (out, refs, _) = mask_args(&["${API_KEY:-CANARYFALLBACK0123}".to_string()]);
+        assert_eq!(out, vec![format!("${{API_KEY:-{MASKED}}}")]);
+        assert_eq!(refs, vec!["API_KEY".to_string()]);
+        let (out, _, _) = mask_args(&["${DB_URL:-postgres://app:canarypw@db.example/x}".to_string()]);
+        assert!(!out[0].contains("canarypw") && out[0].contains("db.example"), "{out:?}");
+        let (out, refs, _) = mask_url("https://h.example/sse?token=${T:-canarytok}");
+        assert!(!out.contains("canarytok"), "{out}");
+        assert_eq!(refs, vec!["T".to_string()]);
+        // Pure references and harmless fallbacks stay as written.
+        let (out, _, n) = mask_args(&["${PORT:-3000}".to_string(), "${TOKEN:-}".to_string()]);
+        assert_eq!(out, vec!["${PORT:-3000}".to_string(), "${TOKEN:-}".to_string()]);
+        assert_eq!(n, 0);
     }
 
     #[test]
