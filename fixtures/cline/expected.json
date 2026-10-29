@@ -20,9 +20,9 @@
         "generation": 1,
         "checkpoint": {
           "revision": 1,
-          "offset": 423,
+          "offset": 1255,
           "records": 3,
-          "digest": "02dd302b3336116880164e2b7479dfc4f176f65959b68d78cc0e0c85ac5217ab"
+          "digest": "a93e20b109c2d51d3e157390ae73325af864cbba52f666aad8797a9041eb2759"
         }
       },
       "project_root": "/workspace/synth-app",

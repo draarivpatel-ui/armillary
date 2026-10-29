@@ -551,3 +551,40 @@ fn test_cursor_cli_malformed_transcript_line_fails_the_file() {
     assert!(batches[0].sessions.is_empty());
     assert_eq!(batches[0].diagnostics[0].code, "parse");
 }
+
+#[test]
+fn test_cline_reply_rewritten_in_place_changes_the_checkpoint() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    let sess_dir = root.join("sessions").join("s1");
+    fs::create_dir_all(&sess_dir).unwrap();
+    fs::write(sess_dir.join("s1.json"), r#"{"session_id":"s1","prompt":"Hi"}"#).unwrap();
+    let task_dir = root.join("tasks").join("t1");
+    fs::create_dir_all(&task_dir).unwrap();
+    fs::write(task_dir.join("task_metadata.json"), r#"{"taskId":"t1"}"#).unwrap();
+    let write_replies = |reply: &str| {
+        let cli = format!(r#"{{"messages":[{{"role":"user","content":"Hi"}},{{"role":"assistant","content":"{reply}"}}]}}"#);
+        fs::write(sess_dir.join("s1.messages.json"), cli).unwrap();
+        let ui = format!(r#"[{{"ts":1791816000000,"type":"say","say":"text","text":"{reply}"}}]"#);
+        fs::write(task_dir.join("ui_messages.json"), ui).unwrap();
+    };
+    let adapter = make_adapter("cline", "cline");
+    let checkpoints = || {
+        let mut out: Vec<_> = AdapterEngine::fixture_batches(&adapter, root)
+            .unwrap()
+            .into_iter()
+            .map(|b| (b.source.source_path.clone(), b.source.checkpoint.digest.clone()))
+            .collect();
+        out.sort();
+        out
+    };
+    write_replies("Partial repl");
+    let before = checkpoints();
+    write_replies("Partial reply, now finished");
+    let after = checkpoints();
+    assert_eq!(before.len(), 2, "{before:?}");
+    for (b, a) in before.iter().zip(&after) {
+        assert_eq!(b.0, a.0);
+        assert_ne!(b.1, a.1, "{} kept its checkpoint after the reply changed", b.0);
+    }
+}
