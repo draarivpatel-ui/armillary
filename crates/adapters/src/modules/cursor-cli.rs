@@ -94,7 +94,8 @@ pub fn parse_batches(
         if let Some(batch) =
             parse_standalone_transcript(adapter, source, context, boundary, root, path, stem)
         {
-            if seen_ids.insert(batch.sessions[0].session.id.clone()) {
+            let fresh = batch.sessions.first().map(|s| seen_ids.insert(s.session.id.clone())).unwrap_or(true);
+            if fresh {
                 batches.push(batch);
             }
         }
@@ -249,7 +250,12 @@ fn parse_chat_dir(
     let mut used_transcript = None;
     if messages.is_empty() {
         if let Some(t_path) = transcript_files.get(&raw_id) {
-            if let Some((rows, offset, digest)) = read_jsonl_file(boundary, t_path) {
+            let read = read_jsonl_file(boundary, t_path);
+            if let Err(e) = &read {
+                let rel = t_path.strip_prefix(root).ok()?.to_string_lossy().replace('\\', "/");
+                return Some((super::shared::failed_file_batch(adapter, source, context, &rel, e), Some(raw_id)));
+            }
+            if let Ok(Some((rows, offset, digest))) = read {
                 if primary_file.is_none() {
                     primary_offset = offset;
                     primary_digest = digest;
@@ -400,7 +406,15 @@ fn parse_standalone_transcript(
     path: &Path,
     raw_id: &str,
 ) -> Option<ImportBatch> {
-    let (rows, offset, digest) = read_jsonl_file(boundary, path)?;
+    let rel_path = path
+        .strip_prefix(root)
+        .ok()?
+        .to_string_lossy()
+        .replace('\\', "/");
+    let (rows, offset, digest) = match read_jsonl_file(boundary, path) {
+        Ok(read) => read?,
+        Err(e) => return Some(super::shared::failed_file_batch(adapter, source, context, &rel_path, &e)),
+    };
     if rows.is_empty() {
         return None;
     }
@@ -423,12 +437,6 @@ fn parse_standalone_transcript(
             }
         })
     });
-
-    let rel_path = path
-        .strip_prefix(root)
-        .ok()?
-        .to_string_lossy()
-        .replace('\\', "/");
 
     let provenance = make_provenance(
         context,

@@ -534,3 +534,20 @@ fn test_modules_skip_credentials() {
         assert_eq!(res.len(), 0);
     }
 }
+
+#[test]
+fn test_cursor_cli_malformed_transcript_line_fails_the_file() {
+    let dir = tempdir().unwrap();
+    let transcripts_dir = dir.path().join("projects").join("p1").join("agent-transcripts");
+    fs::create_dir_all(&transcripts_dir).unwrap();
+    let lines = "{\"role\":\"user\",\"content\":\"First\"}\n{\"role\":\"assistant\",\"content\n{\"role\":\"user\",\"content\":\"Third\"}\n";
+    fs::write(transcripts_dir.join("t1.jsonl"), lines).unwrap();
+
+    let adapter = make_adapter("cursor-cli", "cursor-cli");
+    let batches = AdapterEngine::fixture_batches(&adapter, dir.path()).unwrap();
+    assert_eq!(batches.len(), 1);
+    // Never a Complete snapshot that quietly lacks the broken record.
+    assert_eq!(batches[0].read_status, orrery_adapters::model::ReadStatus::Failed);
+    assert!(batches[0].sessions.is_empty());
+    assert_eq!(batches[0].diagnostics[0].code, "parse");
+}

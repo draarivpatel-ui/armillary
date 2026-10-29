@@ -102,26 +102,21 @@ pub fn read_json_file(boundary: &ReadBoundary, path: &Path) -> Option<(Value, u6
     Some((val, offset, checksum))
 }
 
-/// Reads lines from a JSONL file safely using the filesystem boundary.
-pub fn read_jsonl_file(boundary: &ReadBoundary, path: &Path) -> Option<(Vec<Value>, u64, String)> {
+/// Reads a JSONL file through the filesystem boundary with the strict reader: a malformed
+/// record fails the whole file, so a snapshot never silently drops a record it accepted before.
+/// A credential file is skipped (`Ok(None)`).
+pub fn read_jsonl_file(
+    boundary: &ReadBoundary,
+    path: &Path,
+) -> Result<Option<(Vec<Value>, u64, String)>, crate::readers::jsonl::ReaderError> {
     if is_credential_file(path) {
-        return None;
+        return Ok(None);
     }
-    let source_bytes = boundary.read(path).ok()?;
+    let source_bytes = boundary.read(path)?;
     let offset = source_bytes.bytes.len() as u64;
     let checksum = digest(&source_bytes.bytes);
-    let s = std::str::from_utf8(&source_bytes.bytes).ok()?;
-    let mut rows = Vec::new();
-    for line in s.lines() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
-        if let Ok(v) = serde_json::from_str::<Value>(trimmed) {
-            rows.push(v);
-        }
-    }
-    Some((rows, offset, checksum))
+    let rows = crate::readers::jsonl::parse_jsonl(&source_bytes.bytes[..])?;
+    Ok(Some((rows, offset, checksum)))
 }
 
 /// A read-only SQLite snapshot in a private temporary folder. Fields drop in order: the
