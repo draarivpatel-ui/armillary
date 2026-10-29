@@ -20,8 +20,8 @@
         "generation": 1,
         "checkpoint": {
           "revision": 1,
-          "offset": 6,
-          "records": 6,
+          "offset": 20480,
+          "records": 1,
           "digest": "07740c5948d0dd41837f6acebd75694f9ad7a477ecafbd7c0189db85b6f33de0"
         }
       },
@@ -102,8 +102,8 @@
         "generation": 1,
         "checkpoint": {
           "revision": 1,
-          "offset": 6,
-          "records": 6,
+          "offset": 20480,
+          "records": 1,
           "digest": "07740c5948d0dd41837f6acebd75694f9ad7a477ecafbd7c0189db85b6f33de0"
         }
       },

@@ -633,3 +633,34 @@ fn test_modules_block_credential_files() {
         assert!(res.is_err() || res.unwrap().is_empty(), "Module {} must block or ignore credential files", module);
     }
 }
+
+#[test]
+fn test_pruning_a_shared_database_does_not_shrink_its_checkpoint() {
+    let dir = tempdir().unwrap();
+    let crush_dir = dir.path().join(".crush");
+    std::fs::create_dir_all(&crush_dir).unwrap();
+    let db_path = crush_dir.join("crush.db");
+    let conn = Connection::open(&db_path).unwrap();
+    conn.execute_batch(
+        r#"
+        CREATE TABLE sessions (id TEXT PRIMARY KEY, parent_session_id TEXT, title TEXT,
+            message_count INTEGER, prompt_tokens INTEGER, completion_tokens INTEGER, cost REAL,
+            updated_at INTEGER, created_at INTEGER, summary_message_id TEXT, todos TEXT, channel TEXT);
+        CREATE TABLE messages (id TEXT PRIMARY KEY, session_id TEXT, role TEXT, parts TEXT DEFAULT '[]',
+            model TEXT, created_at INTEGER, updated_at INTEGER, finished_at INTEGER, provider TEXT);
+        INSERT INTO sessions VALUES ('s1', NULL, 'One', 1, 10, 5, 0, 1791810000, 1791810000, NULL, NULL, 'default');
+        INSERT INTO sessions VALUES ('s2', NULL, 'Two', 1, 10, 5, 0, 1791810000, 1791810000, NULL, NULL, 'default');
+        INSERT INTO messages VALUES ('m1', 's1', 'user', '[{"type": "text", "data": {"text": "first"}}]', NULL, 1791810000, 1791810000, NULL, NULL);
+        INSERT INTO messages VALUES ('m2', 's2', 'user', '[{"type": "text", "data": {"text": "second"}}]', NULL, 1791810000, 1791810000, NULL, NULL);
+        "#,
+    )
+    .unwrap();
+    let (adapter, source) = make_dummy_adapter("crush");
+    let checkpoint = || dispatch("crush", &adapter, &source, dir.path()).unwrap()[0].session.provenance.checkpoint.clone();
+    let before = checkpoint();
+    conn.execute_batch("DELETE FROM messages WHERE session_id = 's2'; DELETE FROM sessions WHERE id = 's2';").unwrap();
+    let after = checkpoint();
+    // A smaller extent reads as a rotated file: a new generation that merges old and new usage.
+    assert_ne!(before.digest, after.digest);
+    assert!(after.offset >= before.offset && after.records >= before.records, "{before:?} -> {after:?}");
+}

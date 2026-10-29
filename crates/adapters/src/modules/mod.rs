@@ -51,9 +51,12 @@ pub fn read_source_module(
         other => return Err(ReaderError::Parse(format!("Unknown history module: {}", other))),
     };
 
-    let total_records: u64 = sessions.iter().map(|s| s.messages.len() as u64).sum();
-    provenance.checkpoint.records = total_records;
-    provenance.checkpoint.offset = total_records;
+    // A shared database loses rows when its app prunes a session, but it is still the same file:
+    // the extents are the database's byte length (SQLite keeps freed pages) and one record, as for
+    // the Cursor and Cline stores, so pruning is a new revision and not a rotation that would merge
+    // old and new usage summaries.
+    provenance.checkpoint.records = 1;
+    provenance.checkpoint.offset = snapshot.main_len;
 
     // Ensure all sessions have the updated provenance and correct session id
     for s in &mut sessions {

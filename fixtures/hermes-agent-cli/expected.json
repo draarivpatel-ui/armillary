@@ -20,8 +20,8 @@
         "generation": 1,
         "checkpoint": {
           "revision": 1,
-          "offset": 2,
-          "records": 2,
+          "offset": 16384,
+          "records": 1,
           "digest": "60dd90c11a6e9a928a0852e3012fc2e08975a788be94443ef4569e8c34a2edb0"
         }
       },
