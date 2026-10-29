@@ -915,13 +915,21 @@ pub fn mask_preview(text: &str) -> (String, usize) {
                 .map(|token| {
                     if std::mem::take(&mut mask_next) && !is_env_reference(token) {
                         after_secret_key = false;
+                        // "Authorization: Bearer x": the scheme stays, the word after it is the secret.
+                        if is_auth_scheme(token) {
+                            mask_next = true;
+                            return token.to_string();
+                        }
                         masked += 1;
                         return MASKED.to_string();
                     }
                     let tail = token.trim_end_matches(['*', '`']);
                     let bare = tail.trim_end_matches([':', '=']);
                     let key = bare.trim_matches(['"', '\'', '`', '*']);
-                    let secret_key = !key.is_empty() && secret_key_name(key);
+                    // Only a bare key word names the next word as its value; "TOKEN=dGVzdA==" (a
+                    // padded value) and URLs are assignments the word masker handles itself.
+                    let standalone = !key.contains(['=', ':', '/', '@']);
+                    let secret_key = standalone && !key.is_empty() && secret_key_name(key);
                     let separator = bare.len() < tail.len();
                     if (separator && secret_key) || (bare.is_empty() && after_secret_key) {
                         after_secret_key = false;
@@ -3307,6 +3315,25 @@ mod mask_shapes {
         // Ordinary prose and pure references are left as they are.
         let prose = "Run the tests before you push. Use ${GITHUB_TOKEN} from the env.";
         assert_eq!(mask_preview(prose), (prose.to_string(), 0));
+    }
+
+    #[test]
+    fn rules_previews_mask_header_credentials_and_padded_values() {
+        let (out, n) = mask_preview("Authorization: Bearer canarypw1");
+        assert_eq!(out, format!("Authorization: Bearer {MASKED}"));
+        assert_eq!(n, 1);
+        let (out, n) = mask_preview("TOKEN=dGVzdA==");
+        assert_eq!(out, format!("TOKEN={MASKED}"));
+        assert_eq!(n, 1);
+        let (out, n) = mask_preview("set API_KEY=Y2FuYXJ5cHc= first");
+        assert_eq!(out, format!("set API_KEY={MASKED} first"));
+        assert_eq!(n, 1);
+        let (out, _) = mask_preview("see https://app:canarypw2@db.example/token: for it");
+        assert!(!out.contains("canarypw2") && out.contains("for it"), "{out}");
+        // References and ordinary values stay as written.
+        for kept in ["Authorization: Bearer ${TOKEN}", "DATA=dGVzdA=="] {
+            assert_eq!(mask_preview(kept), (kept.to_string(), 0));
+        }
     }
 
     #[test]
