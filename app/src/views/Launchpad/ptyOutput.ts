@@ -26,7 +26,8 @@ export function createPtyOutputHub(): PtyOutputHub {
 
   const deliver = ({ id, data }: PtyDataEvent) => {
     const sink = sinks.get(id);
-    if (sink) {
+    // Output that waits for a subscriber is delivered first, so later output queues behind it.
+    if (sink && !pending.has(id)) {
       sink(data);
       return;
     }
@@ -51,10 +52,17 @@ export function createPtyOutputHub(): PtyOutputHub {
       return listening.then(() => undefined);
     },
     subscribe(id, sink) {
-      const queued = pending.get(id);
-      pending.delete(id);
-      queued?.forEach(sink);
       sinks.set(id, sink);
+      // StrictMode runs a tab's effect, its cleanup (disposing that terminal) and the effect again
+      // in one go. The queue is handed over only after that, to the subscription that stayed.
+      if (pending.has(id)) {
+        queueMicrotask(() => {
+          if (sinks.get(id) !== sink) return;
+          const queued = pending.get(id);
+          pending.delete(id);
+          queued?.forEach(sink);
+        });
+      }
       return () => {
         if (sinks.get(id) === sink) sinks.delete(id);
       };

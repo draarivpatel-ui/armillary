@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -440,10 +441,36 @@ describe("Launchpad View", () => {
     expect(dataListener).not.toBeNull();
     expect(terminals).toHaveLength(1);
     const write = (terminals[0] as unknown as { write: ReturnType<typeof vi.fn> }).write;
-    expect(write).toHaveBeenCalledWith("early prompt$ ");
+    await waitFor(() => expect(write).toHaveBeenCalledWith("early prompt$ "));
     // Later output goes straight to the mounted terminal, once.
     dataListener!({ payload: { id: "pty-session-1", data: "more" } });
     expect(write.mock.calls).toEqual([["early prompt$ "], ["more"]]);
+  });
+
+  it("keeps early output for the terminal that stays under StrictMode (sol-loop N7)", async () => {
+    let dataListener: ((event: { payload: { id: string; data: string } }) => void) | null = null;
+    mockListen.mockImplementation((event: string, cb: (e: { payload: { id: string; data: string } }) => void) => {
+      if (event === "pty:data") dataListener = cb;
+      return Promise.resolve(unlistenFn);
+    });
+    const base = mockInvoke.getMockImplementation()!;
+    mockInvoke.mockImplementation((cmd: string, args?: unknown) => {
+      if (cmd === "pty_open") dataListener?.({ payload: { id: "pty-session-1", data: "early prompt$ " } });
+      return base(cmd, args);
+    });
+
+    // The dev entry point renders inside StrictMode: the tab's effect runs, is cleaned up (its
+    // terminal disposed) and runs again with a new terminal.
+    render(<StrictMode><Launchpad /></StrictMode>);
+    await launch();
+    await screen.findByTestId("xterm-terminal-container");
+    expect(terminals.length).toBeGreaterThan(1);
+    const writeOf = (t: unknown) => (t as { write: ReturnType<typeof vi.fn> }).write;
+    const kept = writeOf(terminals[terminals.length - 1]);
+    await waitFor(() => expect(kept).toHaveBeenCalledWith("early prompt$ "));
+    for (const gone of terminals.slice(0, -1)) expect(writeOf(gone)).not.toHaveBeenCalled();
+    dataListener!({ payload: { id: "pty-session-1", data: "more" } });
+    expect(kept.mock.calls).toEqual([["early prompt$ "], ["more"]]);
   });
 
   it("lists recent launches simply (glyph, agent, project in mono, time ago from appNow) and has no help card", async () => {
