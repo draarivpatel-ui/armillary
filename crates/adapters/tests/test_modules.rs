@@ -536,8 +536,10 @@ fn test_goose_module_reads_synthetic_sqlite() {
     let (adapter, source) = make_dummy_adapter("goose");
     let sessions = dispatch("goose", &adapter, &source, dir.path()).unwrap();
 
-    assert_eq!(sessions.len(), 1, "Archived sessions should be filtered out; 1 active expected");
-    let s = &sessions[0];
+    // A session archived in Goose is still history (it has no messages in this fixture).
+    assert_eq!(sessions.len(), 2, "the archived session is imported too");
+    assert!(sessions.iter().any(|s| s.session.native_id.as_deref() == Some("20261009_2")));
+    let s = sessions.iter().find(|s| s.session.native_id.as_deref() == Some("20261012_3")).unwrap();
     let expected_session_id = normalized_session_id(
         &s.session.provenance.store.id,
         Some("20261012_3"),

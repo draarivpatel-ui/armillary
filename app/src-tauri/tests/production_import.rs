@@ -288,7 +288,7 @@ const ALL_22_HISTORY_ADAPTERS: &[(&str, u32, usize)] = &[
     ("factory-droid", 1, 3),
     ("gemini-cli", 1, 3),
     ("github-copilot-cli", 1, 3),
-    ("goose", 2, 6),
+    ("goose", 3, 6),
     ("hermes-agent-cli", 1, 2),
     ("iflow-cli", 2, 9),
     ("kilo-code", 1, 2),
@@ -490,11 +490,11 @@ fn test_real_layout_all_22_history_adapters_together() {
         .expect("importer run should succeed for all 22 adapters");
 
     assert_eq!(summary.adapters, 22, "all 22 adapters must report import completion");
-    assert_eq!(summary.sessions, 26, "total sessions must equal 26 (sum of all fixtures)");
+    assert_eq!(summary.sessions, 27, "total sessions must equal 27 (sum of all fixtures)");
     assert_eq!(summary.messages, 80, "total messages must equal 80 (sum of all fixtures)");
 
     let page = archive.sessions_query(&SessionFilter::default()).unwrap();
-    assert_eq!(page.total, 26, "archive must contain all 26 sessions");
+    assert_eq!(page.total, 27, "archive must contain all 27 sessions");
 
     for session in &page.items {
         let store = &session.provenance.store;
@@ -529,7 +529,7 @@ fn test_real_layout_all_22_history_adapters_together() {
         .expect("second import run should succeed");
     let page2 = archive.sessions_query(&SessionFilter::default()).unwrap();
     assert_eq!(
-        page2.total, 26,
+        page2.total, 27,
         "idempotent import must not duplicate sessions"
     );
     assert_eq!(
@@ -656,7 +656,7 @@ fn test_real_layout_simulated_linux() {
         .expect("Linux simulation import should succeed");
 
     assert_eq!(summary.adapters, 22);
-    assert_eq!(summary.sessions, 26);
+    assert_eq!(summary.sessions, 27);
     assert_eq!(summary.messages, 80);
 }
 

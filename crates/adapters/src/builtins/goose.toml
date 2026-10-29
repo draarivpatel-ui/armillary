@@ -9,7 +9,7 @@
 #     (DB_NAME "sessions.db", SESSIONS_FOLDER "sessions", schema v17 with accumulated_* counters)
 #   https://goose-docs.ai/docs/guides/logs (legacy macOS ~/.local/share/goose/sessions variant)
 # The declarative sqlite source imports session rows only; the query renames the real
-# columns to the normalized keys the engine expects and skips archived sessions.
+# columns to the normalized keys the engine expects; sessions archived in Goose are still history.
 # NOTE: sessions are stored in one shared database (source_unit "shared_database"),
 # one session per row, unlike the file_per_session jsonl adapters.
 id = "goose"
@@ -61,7 +61,7 @@ format = "sqlite"
 module = "goose"
 source_unit = "shared_database"
 fixture_paths = ["sessions/sessions.sqlite"]
-query = "SELECT id, working_dir AS cwd, COALESCE(NULLIF(user_set_name, ''), NULLIF(name, ''), description) AS title, strftime('%Y-%m-%dT%H:%M:%SZ', created_at) AS created_at, strftime('%Y-%m-%dT%H:%M:%SZ', updated_at) AS updated_at, json_extract(model_config_json, '$.model') AS model, accumulated_output_tokens AS tokens_used FROM sessions WHERE archived_at IS NULL AND COALESCE(session_type, 'user') = 'user' ORDER BY updated_at DESC"
+query = "SELECT id, working_dir AS cwd, COALESCE(NULLIF(user_set_name, ''), NULLIF(name, ''), description) AS title, strftime('%Y-%m-%dT%H:%M:%SZ', created_at) AS created_at, strftime('%Y-%m-%dT%H:%M:%SZ', updated_at) AS updated_at, json_extract(model_config_json, '$.model') AS model, accumulated_output_tokens AS tokens_used FROM sessions WHERE COALESCE(session_type, 'user') = 'user' ORDER BY updated_at DESC"
 
 [history_sources.paths]
 macos = [

@@ -175,7 +175,7 @@ pub fn read_from_snapshot(
             name,
             user_set_name,
             description,
-            archived_at,
+            _archived_at,
             session_type,
             parent_session_id,
             native_status,
@@ -184,12 +184,8 @@ pub fn read_from_snapshot(
             Err(_) => continue,
         };
 
-        // Filter out archived or non-user sessions
-        if let Some(arch) = &archived_at {
-            if !arch.trim().is_empty() {
-                continue;
-            }
-        }
+        // Skip non-user sessions. A session archived in Goose keeps its messages and is still
+        // history, so it is imported like any other.
         if let Some(stype) = &session_type {
             if !stype.trim().is_empty() && stype != "user" {
                 continue;

@@ -83,6 +83,59 @@
   },
   {
     "session": {
+      "id": "416a592c07f55f65f348c2e7a33ad5a74dea79558c86710b4c30fbbaf527711b",
+      "agent_id": "goose",
+      "installation_id": null,
+      "native_id": "20261009_2",
+      "provenance": {
+        "store": {
+          "id": "94013c89d2f8bd3edf018a78d0b085a9fb3040e5a39e9cfca9e4fcf7689cffd2",
+          "namespace": "goose",
+          "canonical_root": "fixture://goose",
+          "profile_id": "synthetic"
+        },
+        "source_id": "goose-sessions-db",
+        "adapter_id": "goose",
+        "adapter_version": "0.1.0-unverified",
+        "source_path": "sessions/sessions.sqlite",
+        "file_identity": "synthetic:sessions/sessions.sqlite",
+        "generation": 1,
+        "checkpoint": {
+          "revision": 1,
+          "offset": 20480,
+          "records": 1,
+          "digest": "07740c5948d0dd41837f6acebd75694f9ad7a477ecafbd7c0189db85b6f33de0"
+        }
+      },
+      "project_root": "/Users/developer/code/payments-api",
+      "title": "Old migration notes",
+      "started_at": null,
+      "ended_at": null,
+      "model": "claude-haiku-4-5",
+      "status": "unknown",
+      "completion": null,
+      "turns": 0,
+      "usage": {
+        "semantics": "cumulative",
+        "input_tokens": 30100,
+        "output_tokens": 1500,
+        "observations": [
+          {
+            "event_id": "182e45efa565ca8887e6f0e98b8c1d1d0d5803fef8561810a756be792717dab6",
+            "semantics": "cumulative",
+            "input_tokens": 30100,
+            "output_tokens": 1500,
+            "at": null
+          }
+        ]
+      },
+      "parent_id": null,
+      "native_parent_id": null
+    },
+    "messages": []
+  },
+  {
+    "session": {
       "id": "965d503692a84dab5c0d295902609cf1edcc60e70667c99d5a9c2bb633dfda2e",
       "agent_id": "goose",
       "installation_id": null,
