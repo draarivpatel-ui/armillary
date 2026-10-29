@@ -785,9 +785,11 @@ fn mask_word(word: &str) -> (String, usize) {
             if secret_key_name(key) || looks_like_secret_value(value) {
                 return (format!("{key}={MASKED}"), 1);
             }
-            if value.contains("://") {
-                let (url, _, count) = mask_url(value);
-                return (format!("{key}={url}"), count);
+            // The value is masked like a word of its own: a URL, `user:password@host` or a
+            // `${NAME:-literal}` fallback inside an assignment.
+            let (value, count) = mask_word(value);
+            if count > 0 {
+                return (format!("{key}={value}"), count);
             }
         }
         return (word.to_string(), 0);
@@ -890,7 +892,12 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                     }
                 } else {
                     match value {
-                        Some(v) => format!("{key}={v}"),
+                        // `?value=${TOKEN:-literal}`: the fallback is masked like any word.
+                        Some(v) => {
+                            let (v, count) = mask_word(&v);
+                            *masked += count;
+                            format!("{key}={v}")
+                        }
                         None => key,
                     }
                 }
@@ -3350,7 +3357,19 @@ mod mask_shapes {
         let (out, refs, _) = mask_url("https://h.example/sse?token=${T:-canarytok}");
         assert!(!out.contains("canarytok"), "{out}");
         assert_eq!(refs, vec!["T".to_string()]);
+        // Inside an assignment or an ordinary query value, the fallback is still masked.
+        let (out, _, n) = mask_args(&["X=${TOKEN:-canaryfb1}".to_string()]);
+        assert_eq!(out, vec![format!("X=${{TOKEN:-{MASKED}}}")]);
+        assert_eq!(n, 1);
+        let (out, refs, n) = mask_url("https://h.example/sse?value=${TOKEN:-canaryfb2}");
+        assert_eq!(out, format!("https://h.example/sse?value=${{TOKEN:-{MASKED}}}"));
+        assert_eq!((refs, n), (vec!["TOKEN".to_string()], 1));
+        let (out, n) = mask_preview("export X=${TOKEN:-canaryfb3}");
+        assert!(!out.contains("canaryfb3") && n == 1, "{out}");
         // Pure references and harmless fallbacks stay as written.
+        let (out, _, n) = mask_args(&["X=${PORT:-3000}".to_string(), "https://h.example/?page=${P:-2}".to_string()]);
+        assert_eq!(out, vec!["X=${PORT:-3000}".to_string(), "https://h.example/?page=${P:-2}".to_string()]);
+        assert_eq!(n, 0);
         let (out, _, n) = mask_args(&["${PORT:-3000}".to_string(), "${TOKEN:-}".to_string()]);
         assert_eq!(out, vec!["${PORT:-3000}".to_string(), "${TOKEN:-}".to_string()]);
         assert_eq!(n, 0);
