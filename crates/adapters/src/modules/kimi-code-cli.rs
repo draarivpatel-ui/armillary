@@ -69,6 +69,17 @@ pub fn process(
                 source_bytes.file_identity.clone()
             };
 
+            // The messages are in agents/main/wire.jsonl; its digest joins state.json's, so a
+            // session that grows or changes there without touching state.json is a new revision.
+            let wire = path
+                .parent()
+                .map(|p| p.join("agents/main/wire.jsonl"))
+                .and_then(|wp| boundary.read(&wp).ok());
+            let mut digest = crate::boundary::digest(&source_bytes.bytes);
+            if let Some(wire) = &wire {
+                super::shared::fold_digest(&mut digest, &crate::boundary::digest(&wire.bytes));
+            }
+
             let provenance = SourceProvenance {
                 store: context.store.clone(),
                 source_id: source.id.clone().unwrap_or_else(|| "kimi-sessions".into()),
@@ -81,23 +92,12 @@ pub fn process(
                     revision: context.revision,
                     offset: source_bytes.bytes.len() as u64,
                     records: 0,
-                    digest: crate::boundary::digest(&source_bytes.bytes),
+                    digest,
                 },
             };
 
             if let Ok(state_doc) = serde_json::from_slice::<Value>(&source_bytes.bytes) {
-                // Check if paired wire.jsonl exists in agents/main/
-                let wire_path = path
-                    .parent()
-                    .map(|p| p.join("agents/main/wire.jsonl"));
-
-                let wire_content = if let Some(wp) = wire_path {
-                    boundary.read(&wp).ok().and_then(|b| {
-                        String::from_utf8(b.bytes).ok()
-                    })
-                } else {
-                    None
-                };
+                let wire_content = wire.and_then(|b| String::from_utf8(b.bytes).ok());
 
                 if let Some(sess) = parse_kimi_session(adapter, &provenance, &state_doc, wire_content.as_deref()) {
                     batches.push(ImportBatch {

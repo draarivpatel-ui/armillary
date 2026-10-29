@@ -7,7 +7,7 @@
 // - Storage paths: https://vibe-replay.com/blog/cursor-local-storage/
 
 use super::shared::{
-    build_session, extract_files_from_value, extract_text_from_content, make_batch,
+    build_session, extract_files_from_value, extract_text_from_content, fold_digest, make_batch,
     make_provenance, open_sqlite_snapshot, parse_timestamp_val, read_json_file,
     read_jsonl_file,
 };
@@ -171,6 +171,9 @@ fn parse_chat_dir(
                 primary_offset = safe_db.offset;
                 primary_digest = safe_db.digest.clone();
                 primary_file = Some(dp);
+            } else {
+                // The messages live here, not in meta.json: a reply changed in place is a new revision.
+                fold_digest(&mut primary_digest, &safe_db.digest);
             }
 
             // Check meta table
@@ -260,6 +263,8 @@ fn parse_chat_dir(
                     primary_offset = offset;
                     primary_digest = digest;
                     primary_file = Some(t_path);
+                } else {
+                    fold_digest(&mut primary_digest, &digest);
                 }
                 for rec in &rows {
                     parse_cursor_message_item(rec, &mut messages, started_at);

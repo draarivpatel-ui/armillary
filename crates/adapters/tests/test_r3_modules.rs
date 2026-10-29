@@ -588,3 +588,60 @@ fn test_cline_reply_rewritten_in_place_changes_the_checkpoint() {
         assert_ne!(b.1, a.1, "{} kept its checkpoint after the reply changed", b.0);
     }
 }
+
+/// sol-loop S7: the checkpoint digest of a Cursor chat or a Kimi session covers the file that
+/// holds its messages, not only the metadata file that names the source. Otherwise a reply changed
+/// there reads as a replay of the accepted checkpoint, which the archive refuses for the run.
+fn digests(adapter: &AdapterDef, root: &std::path::Path) -> Vec<(String, String)> {
+    let mut out: Vec<_> = AdapterEngine::fixture_batches(adapter, root)
+        .unwrap()
+        .into_iter()
+        .map(|b| (b.source.source_path.clone(), b.source.checkpoint.digest.clone()))
+        .collect();
+    out.sort();
+    out
+}
+
+#[test]
+fn test_cursor_and_kimi_message_files_feed_the_checkpoint() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    let chat = root.join("chats").join("h1").join("c1");
+    fs::create_dir_all(&chat).unwrap();
+    fs::write(chat.join("meta.json"), r#"{"agentId":"c1","name":"Chat"}"#).unwrap();
+    let transcripts = root.join("projects").join("p1").join("agent-transcripts");
+    fs::create_dir_all(&transcripts).unwrap();
+    let cursor = make_adapter("cursor-cli", "cursor-cli");
+    let write_cursor = |reply: &str| {
+        let lines = format!("{{\"role\":\"user\",\"content\":\"Hi\"}}\n{{\"role\":\"assistant\",\"content\":\"{reply}\"}}\n");
+        fs::write(transcripts.join("c1.jsonl"), lines).unwrap();
+    };
+    write_cursor("A long first reply");
+    let before = digests(&cursor, root);
+    write_cursor("Short");
+    let after = digests(&cursor, root);
+    assert_eq!(before.len(), 1, "{before:?}");
+    assert_eq!(before[0].0, after[0].0);
+    assert_ne!(before[0].1, after[0].1, "Cursor kept its checkpoint after the reply changed");
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    let session = root.join("sessions").join("wd_x").join("ses_1");
+    fs::create_dir_all(session.join("agents/main")).unwrap();
+    fs::write(session.join("state.json"), r#"{"id":"ses_1","title":"T"}"#).unwrap();
+    let kimi = make_adapter("kimi-code-cli", "kimi-code-cli");
+    let write_kimi = |reply: &str| {
+        let wire = format!(
+            "{{\"type\":\"context.append_message\",\"message\":{{\"role\":\"user\",\"content\":[{{\"type\":\"text\",\"text\":\"Hi\"}}]}}}}\n\
+             {{\"type\":\"context.append_message\",\"message\":{{\"role\":\"assistant\",\"content\":[{{\"type\":\"text\",\"text\":\"{reply}\"}}]}}}}\n"
+        );
+        fs::write(session.join("agents/main/wire.jsonl"), wire).unwrap();
+    };
+    write_kimi("A long first reply");
+    let before = digests(&kimi, root);
+    write_kimi("Short");
+    let after = digests(&kimi, root);
+    assert_eq!(before.len(), 1, "{before:?}");
+    assert_eq!(before[0].0, after[0].0);
+    assert_ne!(before[0].1, after[0].1, "Kimi kept its checkpoint after the reply changed");
+}
