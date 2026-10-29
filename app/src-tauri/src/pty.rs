@@ -533,26 +533,12 @@ impl PtySessionManager {
         // Spawn background thread to stream output
         let thread_session_id = session_id;
         std::thread::spawn(move || {
-            let mut buf = [0u8; 4096];
-            // Bytes of a character split across two reads wait for the rest of it.
-            let mut pending: Vec<u8> = Vec::new();
-            loop {
-                match reader.read(&mut buf) {
-                    Ok(0) => break, // EOF reached
-                    Ok(n) => {
-                        pending.extend_from_slice(&buf[..n]);
-                        let text = take_complete_utf8(&mut pending);
-                        if text.is_empty() {
-                            continue;
-                        }
-                        on_data(PtyDataPayload {
-                            id: thread_session_id.clone(),
-                            data: text,
-                        });
-                    }
-                    Err(_) => break, // Process exited or terminal closed
-                }
-            }
+            stream_output(&mut reader, |text| {
+                on_data(PtyDataPayload {
+                    id: thread_session_id.clone(),
+                    data: text,
+                })
+            });
         });
 
         Ok(info)
@@ -632,6 +618,29 @@ pub struct PtyState {
 
 /// Decode `pending` up to an incomplete character at its end, which stays in `pending` for the
 /// next read; invalid bytes elsewhere become U+FFFD as before.
+/// Reads terminal output until EOF or an error (the process exited or the terminal closed) and
+/// hands it on as text. Bytes of a character split across two reads wait for the rest of it; bytes
+/// still waiting when the output ends are decoded once, with a replacement character.
+fn stream_output(reader: &mut dyn Read, mut emit: impl FnMut(String)) {
+    let mut buf = [0u8; 4096];
+    let mut pending: Vec<u8> = Vec::new();
+    loop {
+        match reader.read(&mut buf) {
+            Ok(0) | Err(_) => break,
+            Ok(n) => {
+                pending.extend_from_slice(&buf[..n]);
+                let text = take_complete_utf8(&mut pending);
+                if !text.is_empty() {
+                    emit(text);
+                }
+            }
+        }
+    }
+    if !pending.is_empty() {
+        emit(String::from_utf8_lossy(&pending).into_owned());
+    }
+}
+
 fn take_complete_utf8(pending: &mut Vec<u8>) -> String {
     let mut tail = 0;
     for back in 1..=pending.len().min(3) {
@@ -728,6 +737,30 @@ mod tests {
         // Invalid bytes are still replaced, not held back.
         let mut pending = vec![b'x', 0xFF, b'y'];
         assert_eq!(super::take_complete_utf8(&mut pending), "x\u{FFFD}y");
+    }
+
+    /// Output that ends inside a character still shows its tail once, at EOF or on an error.
+    #[test]
+    fn output_ending_in_a_partial_character_is_not_dropped() {
+        struct Failing(Option<Vec<u8>>);
+        impl std::io::Read for Failing {
+            fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+                match self.0.take() {
+                    Some(bytes) => {
+                        buf[..bytes.len()].copy_from_slice(&bytes);
+                        Ok(bytes.len())
+                    }
+                    None => Err(std::io::Error::from_raw_os_error(5)),
+                }
+            }
+        }
+        let bytes = [b'o', b'k', 0xF0, 0x9F];
+        let mut out = Vec::new();
+        super::stream_output(&mut &bytes[..], |t| out.push(t));
+        assert_eq!(out, vec!["ok".to_string(), "\u{FFFD}".to_string()]);
+        let mut out = Vec::new();
+        super::stream_output(&mut Failing(Some(bytes.to_vec())), |t| out.push(t));
+        assert_eq!(out.concat(), "ok\u{FFFD}");
     }
 
     use super::*;
