@@ -174,3 +174,76 @@ fn an_archive_with_an_old_cline_task_offset_takes_a_shorter_reply() {
     assert_eq!((accepted.generation, accepted.checkpoint.revision), (1, 2));
     assert_eq!(a.search("zephyrwick", &SearchFilter::default()).unwrap().len(), 1);
 }
+
+/// sol-loop N4: every Cline layout as the two earlier builds stored it. The public release (7da3bce)
+/// stored the manifest's or metadata file's length, or the message file's for a task folder without
+/// metadata; c75fece stored the sum of every file read. After the upgrade, unchanged input must
+/// stay in generation 1: a new generation renames messages without native ids, which then collide
+/// with the accepted ones.
+#[test]
+fn an_archive_from_an_earlier_build_reimports_every_unchanged_cline_layout() {
+    for build in ["7da3bce", "c75fece"] {
+        let d = tempfile::tempdir().unwrap();
+        let store = d.path().join("cline");
+        let cli = store.join("sessions").join("s1");
+        let with_meta = store.join("tasks").join("t1");
+        let without_meta = store.join("tasks").join("t2");
+        for dir in [&cli, &with_meta, &without_meta] {
+            std::fs::create_dir_all(dir).unwrap();
+        }
+        std::fs::write(cli.join("s1.json"), r#"{"session_id":"s1","prompt":"Hi"}"#).unwrap();
+        std::fs::write(cli.join("s1.messages.json"), r#"{"messages":[{"role":"user","content":"Hi"},{"role":"assistant","content":"quillfern"}]}"#).unwrap();
+        let api = r#"[{"role":"user","content":"Hi","ts":1791816000000},{"role":"assistant","content":"quillfern","ts":1791816001000}]"#;
+        let ui = r#"[{"type":"say","say":"text","text":"Hi","ts":1791816000000}]"#;
+        std::fs::write(with_meta.join("task_metadata.json"), r#"{"taskId":"t1"}"#).unwrap();
+        for dir in [&with_meta, &without_meta] {
+            std::fs::write(dir.join("api_conversation_history.json"), api).unwrap();
+            std::fs::write(dir.join("ui_messages.json"), ui).unwrap();
+        }
+        let def = get_builtin_adapter("cline").unwrap();
+        let read = |a: &Archive| {
+            let mut batches = AdapterEngine::fixture_batches(&def, &store).unwrap();
+            let outcomes = batches.iter_mut().map(|b| { align(a, b); a.import_batch(b).unwrap() }).collect::<Vec<_>>();
+            (batches, outcomes)
+        };
+        let path = d.path().join("archive.db");
+        let first = {
+            let a = Archive::open(&path).unwrap();
+            a.register_agent(&agent("cline")).unwrap();
+            let (batches, outcomes) = read(&a);
+            assert!(outcomes.iter().all(|o| o.applied), "{build}: {outcomes:?}");
+            batches
+        };
+        assert_eq!(first.len(), 3, "{build}: one batch per layout");
+        let len = |p: &Path| std::fs::metadata(p).unwrap().len();
+        {
+            let conn = rusqlite::Connection::open(&path).unwrap();
+            for b in &first {
+                let primary = store.join(&b.source.source_path);
+                let dir = primary.parent().unwrap();
+                let files: Vec<_> = std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()).collect();
+                let offset: i64 = match build {
+                    "7da3bce" => len(&primary) as i64,
+                    _ => files.iter().map(|f| len(f) as i64).sum(),
+                };
+                // 7da3bce's digest covered the primary file only; c75fece's already folded every file.
+                let digest = match build {
+                    "7da3bce" => orrery_adapters::boundary::digest(&std::fs::read(&primary).unwrap()),
+                    _ => b.source.checkpoint.digest.clone(),
+                };
+                let source_path = &b.source.source_path;
+                conn.execute("UPDATE sources SET provenance=json_set(provenance,'$.checkpoint.offset',?1,'$.checkpoint.digest',?2) WHERE source_path=?3", rusqlite::params![offset, digest, source_path]).unwrap();
+                conn.execute("UPDATE sessions SET payload=json_set(payload,'$.provenance.checkpoint.offset',?1,'$.provenance.checkpoint.digest',?2) WHERE json_extract(payload,'$.provenance.source_path')=?3", rusqlite::params![offset, digest, source_path]).unwrap();
+            }
+            conn.execute_batch("PRAGMA user_version = 2").unwrap();
+        }
+        let a = Archive::open(&path).unwrap();
+        let (again, outcomes) = read(&a);
+        for (b, o) in again.iter().zip(&outcomes) {
+            // A replay is an unchanged checkpoint: nothing to write, and not an error.
+            assert!(o.applied || o.reason.as_deref() == Some("replay"), "{build} {}: {:?}", b.source.source_path, o.reason);
+            assert_eq!(b.source.generation, 1, "{build} {}: unchanged input keeps its generation", b.source.source_path);
+        }
+        assert_eq!(a.search("quillfern", &SearchFilter::default()).unwrap().len(), 3, "{build}");
+    }
+}

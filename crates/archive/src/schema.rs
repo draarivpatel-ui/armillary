@@ -162,9 +162,13 @@ CREATE INDEX idx_cf_diagnostics_source ON import_diagnostics(source_key);
 /// become 1, the offset (a message count, never more than the file's byte length) stays, and the
 /// generation is kept, so the next read is a new revision of the same file.
 ///
-/// A Cline, Roo Code or Kilo Code task folder without its metadata file is named by its message
-/// file, and its offset was that file's length. The files are rewritten whole, so the offset is
-/// now 0 there (a shorter reply is not a truncation); the stored offset is rebased to 0 to match.
+/// Cline, Roo Code and Kilo Code rewrite their JSON files whole, and earlier builds stored file
+/// lengths as the offset: the message file's for a task folder without metadata (7da3bce), or the
+/// sum of every file read for a CLI session or a metadata-backed task (c75fece). The offset is now
+/// the manifest's or metadata file's length, or 0, so a stored one can be larger than any new read
+/// and look like a truncation, which starts a new generation even for unchanged input. Every
+/// stored offset of these JSON sources is rebased to 0, so any later read is a new revision of the
+/// same generation. Their `sessions.db` keeps its byte-length offset.
 const SCHEMA_V3: &str = r#"
 UPDATE sources SET provenance = json_set(provenance, '$.checkpoint.records', 1)
 WHERE json_extract(provenance, '$.adapter_id') IN ('opencode', 'crush', 'goose', 'hermes-agent-cli')
@@ -174,10 +178,8 @@ WHERE json_extract(payload, '$.provenance.adapter_id') IN ('opencode', 'crush', 
   AND json_extract(payload, '$.provenance.checkpoint.records') > 1;
 UPDATE sources SET provenance = json_set(provenance, '$.checkpoint.offset', 0)
 WHERE json_extract(provenance, '$.adapter_id') IN ('cline', 'roo-code', 'kilo-code')
-  AND (json_extract(provenance, '$.source_path') LIKE '%/api_conversation_history.json'
-    OR json_extract(provenance, '$.source_path') LIKE '%/ui_messages.json');
+  AND json_extract(provenance, '$.source_path') LIKE '%.json';
 UPDATE sessions SET payload = json_set(payload, '$.provenance.checkpoint.offset', 0)
 WHERE json_extract(payload, '$.provenance.adapter_id') IN ('cline', 'roo-code', 'kilo-code')
-  AND (json_extract(payload, '$.provenance.source_path') LIKE '%/api_conversation_history.json'
-    OR json_extract(payload, '$.provenance.source_path') LIKE '%/ui_messages.json');
+  AND json_extract(payload, '$.provenance.source_path') LIKE '%.json';
 "#;
