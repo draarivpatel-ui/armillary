@@ -317,6 +317,11 @@ export const App: React.FC<AppProps> = ({ onReplayFirstRun, sampleData, accessGr
   };
 
   const layers: ViewKey[] = leaving && leaving !== active ? [leaving, active] : [active];
+  // The Launchpad stays mounted, hidden, once it has been opened: its terminals hold running
+  // agents, and unmounting would drop their screens (the PTYs themselves keep running).
+  const launchpadOpened = useRef(false);
+  if (active === "launchpad") launchpadOpened.current = true;
+  const keepLaunchpad = launchpadOpened.current && !layers.includes("launchpad");
 
   return (
     <div className="app-shell">
@@ -407,7 +412,14 @@ export const App: React.FC<AppProps> = ({ onReplayFirstRun, sampleData, accessGr
             <Gallery theme={theme} onThemeChange={setTheme} showThemeSwitcher={true} />
           </div>
         ) : (
-          layers.map((key) => {
+          (keepLaunchpad ? (["launchpad", ...layers] as ViewKey[]) : layers).map((key) => {
+            if (keepLaunchpad && key === "launchpad") {
+              return (
+                <div key={key} className="view-layer" data-view={key} aria-hidden={true} inert={true} style={{ display: "none" }}>
+                  {renderView(key)}
+                </div>
+              );
+            }
             const isLeaving = key !== active;
             return (
               <div
