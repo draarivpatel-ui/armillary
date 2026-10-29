@@ -645,3 +645,27 @@ fn test_cursor_and_kimi_message_files_feed_the_checkpoint() {
     assert_eq!(before[0].0, after[0].0);
     assert_ne!(before[0].1, after[0].1, "Kimi kept its checkpoint after the reply changed");
 }
+
+#[test]
+fn test_roo_and_kilo_replies_rewritten_in_place_change_the_checkpoint() {
+    for (id, meta_name) in [("roo-code", "history_item.json"), ("kilo-code", "task_metadata.json")] {
+        let dir = tempdir().unwrap();
+        let task = dir.path().join("tasks").join("t1");
+        fs::create_dir_all(&task).unwrap();
+        fs::write(task.join(meta_name), r#"{"id":"t1","taskId":"t1","task":"Hi"}"#).unwrap();
+        let write_reply = |reply: &str| {
+            let api = format!(r#"[{{"role":"user","content":"Hi"}},{{"role":"assistant","content":"{reply}"}}]"#);
+            fs::write(task.join("api_conversation_history.json"), api).unwrap();
+            let ui = format!(r#"[{{"ts":1791816000000,"type":"say","say":"text","text":"{reply}"}}]"#);
+            fs::write(task.join("ui_messages.json"), ui).unwrap();
+        };
+        let adapter = make_adapter(id, id);
+        write_reply("A long first reply");
+        let before = digests(&adapter, dir.path());
+        write_reply("Short");
+        let after = digests(&adapter, dir.path());
+        assert_eq!(before.len(), 1, "{id}: {before:?}");
+        assert_eq!(before[0].0, after[0].0);
+        assert_ne!(before[0].1, after[0].1, "{id} kept its checkpoint after the reply changed");
+    }
+}

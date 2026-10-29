@@ -6,7 +6,7 @@
 // - Extension ID: kilocode.kilo-code
 
 use super::shared::{
-    build_session, extract_files_from_value, extract_text_from_content, make_batch,
+    build_session, extract_files_from_value, extract_text_from_content, fold_digest, make_batch,
     make_provenance, parse_timestamp_val, read_json_file,
 };
 use crate::adapter_spec::{AdapterDef, HistorySourceDef};
@@ -110,10 +110,10 @@ fn parse_kilo_task_dir(
     let mut messages = Vec::new();
 
     if api_path.exists() && !is_credential_file(api_path) {
-        if let Some((api_val, offset, digest)) = read_json_file(boundary, api_path) {
+        if let Some((api_val, _, digest)) = read_json_file(boundary, api_path) {
+            // Every file is rewritten whole, so only the digest takes this one in (see fold_digest).
+            fold_digest(&mut primary_digest, &digest);
             if primary_file.is_none() {
-                primary_offset = offset;
-                primary_digest = digest;
                 primary_file = Some(api_path);
             }
             if let Some(arr) = api_val.as_array() {
@@ -179,10 +179,10 @@ fn parse_kilo_task_dir(
     }
 
     if ui_path.exists() && !is_credential_file(ui_path) {
-        if let Some((ui_val, offset, digest)) = read_json_file(boundary, ui_path) {
+        if let Some((ui_val, _, digest)) = read_json_file(boundary, ui_path) {
+            // Every file is rewritten whole, so only the digest takes this one in (see fold_digest).
+            fold_digest(&mut primary_digest, &digest);
             if primary_file.is_none() {
-                primary_offset = offset;
-                primary_digest = digest;
                 primary_file = Some(ui_path);
             }
             if let Some(arr) = ui_val.as_array() {
