@@ -534,11 +534,17 @@ impl PtySessionManager {
         let thread_session_id = session_id;
         std::thread::spawn(move || {
             let mut buf = [0u8; 4096];
+            // Bytes of a character split across two reads wait for the rest of it.
+            let mut pending: Vec<u8> = Vec::new();
             loop {
                 match reader.read(&mut buf) {
                     Ok(0) => break, // EOF reached
                     Ok(n) => {
-                        let text = String::from_utf8_lossy(&buf[..n]).to_string();
+                        pending.extend_from_slice(&buf[..n]);
+                        let text = take_complete_utf8(&mut pending);
+                        if text.is_empty() {
+                            continue;
+                        }
                         on_data(PtyDataPayload {
                             id: thread_session_id.clone(),
                             data: text,
@@ -624,6 +630,32 @@ pub struct PtyState {
     pub manager: PtySessionManager,
 }
 
+/// Decode `pending` up to an incomplete character at its end, which stays in `pending` for the
+/// next read; invalid bytes elsewhere become U+FFFD as before.
+fn take_complete_utf8(pending: &mut Vec<u8>) -> String {
+    let mut tail = 0;
+    for back in 1..=pending.len().min(3) {
+        let byte = pending[pending.len() - back];
+        if byte & 0xC0 == 0x80 {
+            continue; // a continuation byte: keep looking for the lead byte
+        }
+        let needed = match byte {
+            0xF0..=0xF7 => 4,
+            0xE0..=0xEF => 3,
+            0xC0..=0xDF => 2,
+            _ => 1,
+        };
+        if needed > back {
+            tail = back;
+        }
+        break;
+    }
+    let complete = pending.len() - tail;
+    let text = String::from_utf8_lossy(&pending[..complete]).into_owned();
+    pending.drain(..complete);
+    text
+}
+
 #[tauri::command]
 pub fn pty_open(
     state: tauri::State<PtyState>,
@@ -682,6 +714,22 @@ pub fn pty_close(state: tauri::State<PtyState>, id: String) -> Result<(), PtyErr
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_character_split_across_reads_is_not_corrupted() {
+        let bytes = "a\u{e9}\u{1F600}b".as_bytes();
+        for split in 0..=bytes.len() {
+            let mut pending = bytes[..split].to_vec();
+            let mut text = super::take_complete_utf8(&mut pending);
+            pending.extend_from_slice(&bytes[split..]);
+            text.push_str(&super::take_complete_utf8(&mut pending));
+            assert_eq!(text, "a\u{e9}\u{1F600}b", "split at {split}");
+            assert!(pending.is_empty());
+        }
+        // Invalid bytes are still replaced, not held back.
+        let mut pending = vec![b'x', 0xFF, b'y'];
+        assert_eq!(super::take_complete_utf8(&mut pending), "x\u{FFFD}y");
+    }
+
     use super::*;
     use orrery_adapters::{MockEnvironment, MockFileSystem};
     use std::sync::mpsc;
