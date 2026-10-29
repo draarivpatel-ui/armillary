@@ -900,29 +900,38 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
     }
 }
 
-/// Mask a rules preview: assignments whose key looks secret keep the name only, and bare
-/// token shaped words are replaced. Nothing else in the text is touched.
+/// Mask a rules preview word by word with the rules used for server arguments (`mask_word`:
+/// assignments, URLs and `user:password@host` credentials, bare token shaped words), and mask
+/// the word after a secret key written with a separator: `password: x`, `password = x`,
+/// `"token": "x"`, `**Password:** x`.
 pub fn mask_preview(text: &str) -> (String, usize) {
     let mut masked = 0usize;
     let lines: Vec<String> = text
         .lines()
         .map(|line| {
+            let mut mask_next = false;
+            let mut after_secret_key = false;
             line.split_whitespace()
                 .map(|token| {
-                    if extract_var_names(token).is_some() {
-                        return token.to_string();
-                    }
-                    if let Some((key, value)) = token.split_once('=') {
-                        if secret_key_name(key) || looks_like_secret_value(value) {
-                            masked += 1;
-                            return format!("{key}={MASKED}");
-                        }
-                    }
-                    if looks_like_secret_value(token) {
+                    if std::mem::take(&mut mask_next) && !is_env_reference(token) {
+                        after_secret_key = false;
                         masked += 1;
                         return MASKED.to_string();
                     }
-                    token.to_string()
+                    let tail = token.trim_end_matches(['*', '`']);
+                    let bare = tail.trim_end_matches([':', '=']);
+                    let key = bare.trim_matches(['"', '\'', '`', '*']);
+                    let secret_key = !key.is_empty() && secret_key_name(key);
+                    let separator = bare.len() < tail.len();
+                    if (separator && secret_key) || (bare.is_empty() && after_secret_key) {
+                        after_secret_key = false;
+                        mask_next = true;
+                        return token.to_string();
+                    }
+                    after_secret_key = secret_key && !separator;
+                    let (token, count) = mask_word(token);
+                    masked += count;
+                    token
                 })
                 .collect::<Vec<_>>()
                 .join(" ")
@@ -3280,6 +3289,24 @@ mod mask_shapes {
         // A plain user name with a password keeps the name.
         let (kept, _, _) = mask_url("https://deploy:CANARYPW@host.example/x");
         assert!(kept.contains("deploy") && !kept.contains("CANARYPW"), "{kept}");
+    }
+
+    #[test]
+    fn rules_previews_mask_spaced_assignments_and_connection_credentials() {
+        let text = "password: canarypw1\n\
+                    db_password = canarypw2\n\
+                    \"api_key\": \"canarypw3\"\n\
+                    **Token:** canarypw4\n\
+                    DATABASE_URL=postgres://app:canarypw5@db.example/x\n\
+                    connect to app:canarypw6@db.example.com\n\
+                    TOKEN=${T:-canarypw7}";
+        let (out, n) = mask_preview(text);
+        assert!(!out.contains("canarypw"), "{out}");
+        assert_eq!(n, 7, "{out}");
+        assert!(out.contains("db.example") && out.contains("DATABASE_URL"), "{out}");
+        // Ordinary prose and pure references are left as they are.
+        let prose = "Run the tests before you push. Use ${GITHUB_TOKEN} from the env.";
+        assert_eq!(mask_preview(prose), (prose.to_string(), 0));
     }
 
     #[test]
