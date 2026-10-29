@@ -331,12 +331,17 @@ export const Almanac: React.FC<AlmanacProps> = ({ onOpenSession, virtualized = f
     if (selectedProject) filter.project = selectedProject;
     if (serverStatus) filter.status = serverStatus;
     if (selectedModel) filter.model = selectedModel;
+    // The picker's YYYY-MM-DD days are local calendar days, like the day groups: local midnight
+    // to the next local midnight (`new Date("YYYY-MM-DD")` would be UTC midnight).
+    const localMidnight = (iso: string, addDays = 0) => {
+      const [y, m, d] = iso.split("-").map(Number);
+      return new Date(y, m - 1, d + addDays).getTime();
+    };
     if (fromDate) {
-      filter.from = new Date(fromDate).getTime();
+      filter.from = localMidnight(fromDate);
     }
     if (toDate) {
-      // Set to end of the day
-      filter.to = new Date(toDate).getTime() + 86400000 - 1;
+      filter.to = localMidnight(toDate, 1) - 1;
     }
 
     sessionsQueryAll(filter, ALMANAC_MAX_SESSIONS)

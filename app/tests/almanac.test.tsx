@@ -609,6 +609,24 @@ describe("Almanac view", () => {
     });
   });
 
+  describe("date filter", () => {
+    it("queries a picked day from local midnight to the next local midnight", async () => {
+      (window as unknown as Record<string, unknown>).__ARMILLARY_NOW__ = T;
+      const client = createMockArchiveClient(fixture());
+      const spy = vi.spyOn(client, "sessions_query");
+      setArchiveClient(client);
+      render(<AlmanacView />);
+      await loaded();
+
+      await userEvent.click(screen.getByRole("button", { name: /Date range/i }));
+      await userEvent.click(screen.getByRole("button", { name: "Today" }));
+      await waitFor(() => expect(spy.mock.calls.some(([f]) => f?.from !== undefined)).toBe(true));
+      const sent = spy.mock.calls.map(([f]) => f).filter((f) => f?.from !== undefined).at(-1);
+      expect(sent?.from).toBe(new Date(2026, 9, 7).getTime());
+      expect(sent?.to).toBe(new Date(2026, 9, 8).getTime() - 1);
+    });
+  });
+
   describe("empty and large", () => {
     it("says so in one italic line, with Clear filters, when nothing matches", async () => {
       (window as unknown as Record<string, unknown>).__ARMILLARY_NOW__ = new Date(2031, 2, 15, 12, 0).getTime();
