@@ -161,6 +161,10 @@ CREATE INDEX idx_cf_diagnostics_source ON import_diagnostics(source_key);
 /// which merged two copies of the same usage summary. The old checkpoints are rebased here: records
 /// become 1, the offset (a message count, never more than the file's byte length) stays, and the
 /// generation is kept, so the next read is a new revision of the same file.
+///
+/// A Cline, Roo Code or Kilo Code task folder without its metadata file is named by its message
+/// file, and its offset was that file's length. The files are rewritten whole, so the offset is
+/// now 0 there (a shorter reply is not a truncation); the stored offset is rebased to 0 to match.
 const SCHEMA_V3: &str = r#"
 UPDATE sources SET provenance = json_set(provenance, '$.checkpoint.records', 1)
 WHERE json_extract(provenance, '$.adapter_id') IN ('opencode', 'crush', 'goose', 'hermes-agent-cli')
@@ -168,4 +172,12 @@ WHERE json_extract(provenance, '$.adapter_id') IN ('opencode', 'crush', 'goose',
 UPDATE sessions SET payload = json_set(payload, '$.provenance.checkpoint.records', 1)
 WHERE json_extract(payload, '$.provenance.adapter_id') IN ('opencode', 'crush', 'goose', 'hermes-agent-cli')
   AND json_extract(payload, '$.provenance.checkpoint.records') > 1;
+UPDATE sources SET provenance = json_set(provenance, '$.checkpoint.offset', 0)
+WHERE json_extract(provenance, '$.adapter_id') IN ('cline', 'roo-code', 'kilo-code')
+  AND (json_extract(provenance, '$.source_path') LIKE '%/api_conversation_history.json'
+    OR json_extract(provenance, '$.source_path') LIKE '%/ui_messages.json');
+UPDATE sessions SET payload = json_set(payload, '$.provenance.checkpoint.offset', 0)
+WHERE json_extract(payload, '$.provenance.adapter_id') IN ('cline', 'roo-code', 'kilo-code')
+  AND (json_extract(payload, '$.provenance.source_path') LIKE '%/api_conversation_history.json'
+    OR json_extract(payload, '$.provenance.source_path') LIKE '%/ui_messages.json');
 "#;

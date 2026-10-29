@@ -130,3 +130,47 @@ fn a_schema_2_archive_with_migrated_v1_content_opens_at_schema_3() {
     assert_eq!(a.stats().unwrap().sessions, 1);
     assert_eq!(a.search("migrationcanary", &SearchFilter::default()).unwrap().len(), 1);
 }
+
+/// sol-loop S7 with N2: a Cline task folder without task_metadata.json was named by its message file,
+/// and the previous build stored that file's length as the offset. The offset is now 0 there, so
+/// the stored one is rebased, and a reply that comes back shorter after the upgrade is a new
+/// revision, not a truncation whose new generation collides with the accepted messages.
+#[test]
+fn an_archive_with_an_old_cline_task_offset_takes_a_shorter_reply() {
+    let d = tempfile::tempdir().unwrap();
+    let store = d.path().join("cline");
+    let task = store.join("tasks").join("t1");
+    std::fs::create_dir_all(&task).unwrap();
+    let write_reply = |reply: &str| {
+        let api = format!(r#"[{{"role":"user","content":"Hi","ts":1791816000000}},{{"role":"assistant","content":"{reply}","ts":1791816001000}}]"#);
+        std::fs::write(task.join("api_conversation_history.json"), api).unwrap();
+    };
+    let def = get_builtin_adapter("cline").unwrap();
+    let read = |a: &Archive| {
+        let mut batches = AdapterEngine::fixture_batches(&def, &store).unwrap();
+        batches.iter_mut().map(|b| { align(a, b); a.import_batch(b).unwrap() }).collect::<Vec<_>>()
+    };
+    let path = d.path().join("archive.db");
+    write_reply("a long first answer about quillfern and more words after it");
+    {
+        let a = Archive::open(&path).unwrap();
+        a.register_agent(&agent("cline")).unwrap();
+        assert!(read(&a).iter().all(|o| o.applied));
+    }
+    let length = std::fs::metadata(task.join("api_conversation_history.json")).unwrap().len();
+    {
+        let conn = rusqlite::Connection::open(&path).unwrap();
+        conn.execute(&format!("UPDATE sources SET provenance=json_set(provenance,'$.checkpoint.offset',{length})"), []).unwrap();
+        conn.execute(&format!("UPDATE sessions SET payload=json_set(payload,'$.provenance.checkpoint.offset',{length})"), []).unwrap();
+        conn.execute_batch("PRAGMA user_version = 2").unwrap();
+    }
+    write_reply("zephyrwick");
+    let a = Archive::open(&path).unwrap();
+    let outcomes = read(&a);
+    assert_eq!(outcomes.len(), 1);
+    assert!(outcomes[0].applied, "{:?}", outcomes[0].reason);
+    let key = AdapterEngine::fixture_batches(&def, &store).unwrap()[0].source.key();
+    let accepted = a.source_checkpoint(&key).unwrap().unwrap();
+    assert_eq!((accepted.generation, accepted.checkpoint.revision), (1, 2));
+    assert_eq!(a.search("zephyrwick", &SearchFilter::default()).unwrap().len(), 1);
+}
