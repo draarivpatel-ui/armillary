@@ -553,8 +553,10 @@ fn push_unique(list: &mut Vec<String>, value: String) {
 /// secret key in it is masked, to the end of the argument, over every line of a shell string
 /// (sol-loop N24/N25). A bare secret flag (`--password`, `--api-key`, `-Token`) or an argument that ends
 /// in a secret key with nothing after it (`Authorization:`) masks the whole next argument
-/// (sol-loop S1/N14/N19); so does curl's `-u` / `--user` (sol-loop N27). A variable reference
-/// anywhere in an argument is still listed by name.
+/// (sol-loop S1/N14/N19); so does a curl credential flag, `--user`, `--proxy-user` or a short
+/// cluster ending in `u` or `U` (`-u`, `-U`, `-sSu`; sol-loop N27/N32). An attached credential
+/// (`-uapp:pw`, `-sSuapp:pw`, `--user=app:pw`) is masked to the end of the argument by the text
+/// rule. A variable reference anywhere in an argument is still listed by name.
 pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     let mut out: Vec<String> = Vec::with_capacity(args.len());
     let mut names: Vec<String> = Vec::new();
@@ -616,7 +618,7 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
         // `--password`, `--api-key`, `-Token`: a bare secret flag; its value is the next
         // argument. Only a whole flag name counts: `-Token:value` and `--password=value` carry
         // their value and go through the line rule (sol-loop N19).
-        if bare_flag(arg) && (secret_key_name(arg) || user_flag(arg)) {
+        if bare_flag(arg) && (secret_key_name(arg) || bare_credential_flag(arg)) {
             secret_flag_follows = true;
             out.push(arg.clone());
             continue;
@@ -630,9 +632,35 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     (out, names, masked)
 }
 
-/// curl's credential flags, whose value is `user:password` (sol-loop N27).
-fn user_flag(word: &str) -> bool {
-    matches!(word, "-u" | "--user" | "--proxy-user")
+/// curl's long credential flags, whose value is `user:password` (sol-loop N27).
+fn long_credential_flag(name: &str) -> bool {
+    name.eq_ignore_ascii_case("--user") || name.eq_ignore_ascii_case("--proxy-user")
+}
+
+/// The letters and digits of a short option cluster (`-sSu` gives `sSu`, `-uapp` gives `uapp`):
+/// one dash, then a letter or digit.
+fn short_cluster(name: &str) -> Option<&str> {
+    let rest = name.strip_prefix('-').filter(|rest| !rest.starts_with('-'))?;
+    let len = rest.bytes().take_while(u8::is_ascii_alphanumeric).count();
+    (len > 0).then(|| &rest[..len])
+}
+
+/// Where a curl credential flag's value starts in a name read by `find_key`, if the name is one
+/// (sol-loop N27/N29-N32): the end of `--user` / `--proxy-user`, or the byte after the first `u`
+/// or `U` of a short cluster (`-u`, `-U`, `-sSu`, `-sSuapp`, `-1u`), where curl starts the value.
+/// Any cluster holding `u` or `U` counts, so `git push -u` and `pip install -U` are masked too.
+fn credential_flag_value(name: &str) -> Option<usize> {
+    if long_credential_flag(name) {
+        return Some(name.len());
+    }
+    short_cluster(name)?.find(['u', 'U']).map(|at| at + 2)
+}
+
+/// An argument that is a credential flag with no value attached, so the next argument is the
+/// value: `--user`, `--proxy-user`, or a short cluster ending in `u` or `U` (`-u`, `-sSU`).
+fn bare_credential_flag(arg: &str) -> bool {
+    long_credential_flag(arg)
+        || short_cluster(arg).is_some_and(|cluster| cluster.len() + 1 == arg.len() && cluster.ends_with(['u', 'U']))
 }
 
 /// `-x`, `--name`, `-Name`: a dash and a flag name of letters, digits, `-` and `_` only.
@@ -673,12 +701,11 @@ struct Masked {
 /// - URLs first (`mask_urls`): a URL's whole userinfo and secret-named query parameters are
 ///   masked over the whole text before any key is searched for, so a key word inside a URL
 ///   cannot split it.
-/// - Then curl's credential flags (`mask_user_flags`): the whole value after `-u`, `--user` or
-///   `--proxy-user` is one `[masked]`, to the end of its quotes (sol-loop N27).
 /// - At the first secret key (`password`, `"api_key"`, `X-Api-Key`, `DB_PASSWORD`, `--password`,
-///   `Authorization`, inside any quotes or punctuation) the text is kept up to the key and the
-///   separator after it (`:` `=` `=>` `:=` `:-`, with the spaces around), and one scheme word
-///   after Authorization or Proxy-Authorization (`Bearer`, `Basic`, `Token`). Everything after
+///   `Authorization`, or a curl credential flag such as `-u`, `-sSU`, `--user`; inside any quotes
+///   or punctuation) the text is kept up to the key and the separator after it (`:` `=` `=>`
+///   `:=` `:-`, with the spaces around), and one scheme word after Authorization or
+///   Proxy-Authorization (`Bearer`, `Basic`, `Token`). Everything after
 ///   that, to the end of the text, becomes one `[masked]`, whatever it holds: no blank line,
 ///   indentation, quote or bracket ends the masking (sol-loop N18/N20/N24/N25). When the key
 ///   ends its line, the line stays as written and the `[masked]` goes on the next line.
@@ -689,7 +716,8 @@ struct Masked {
 ///
 /// The count is the number of `[masked]` marks the text gained.
 fn mask_text(text: &str, kind: Words) -> Masked {
-    let (urls, mut value_follows) = mask_user_flags(&mask_urls(text));
+    let urls = mask_urls(text);
+    let mut value_follows = false;
     let mut out: Vec<String> = Vec::new();
     let blank = |line: &str| line.trim().is_empty();
     let mut start = 0usize;
@@ -780,70 +808,6 @@ fn mask_urls(text: &str) -> String {
     out
 }
 
-/// Mask the value of every curl credential flag in a text (sol-loop N27): `-u app:pw`,
-/// `--user "app:a b"`, `-uapp:pw`, `-u"app:pw"`, `--user=app:pw`, `--proxy-user app:pw`, and in
-/// JSON `"-u", "app:pw"`. The value, user name included, runs from its first character to the
-/// first whitespace outside quotes (`"`, `'`, `` ` ``; a backslash before a space or line break
-/// joins them) and becomes one `[masked]`; a quote with no closing quote masks the rest of the
-/// text. Only a pure variable reference stays. Returns true when the text ends in a flag whose
-/// value has not come yet (in an argument list, the next argument). Linear in the text.
-fn mask_user_flags(text: &str) -> (String, bool) {
-    if !text.contains("-u") {
-        return (text.to_string(), false);
-    }
-    let bytes = text.as_bytes();
-    let space_from = |at: usize| text[at..].find(|c: char| c.is_ascii_whitespace()).map_or(text.len(), |p| at + p);
-    let word_from = |at: usize| text[at..].find(|c: char| !c.is_ascii_whitespace()).map_or(text.len(), |p| at + p);
-    let mut out = String::with_capacity(text.len());
-    let mut copied = 0usize;
-    let mut i = word_from(0);
-    while i < text.len() {
-        let word_end = space_from(i);
-        let word = &text[i..word_end];
-        let lead = word.len() - word.trim_start_matches(['"', '\'', '`', '[', '(']).len();
-        let core = &word[lead..];
-        let attached = if user_flag(core.trim_end_matches(['"', '\'', '`', ',', ']', ')'])) {
-            Some(word.len())
-        } else if let Some(at) = ["--user=", "--proxy-user="].iter().find(|flag| core.starts_with(*flag)) {
-            Some(lead + at.len())
-        } else {
-            core.strip_prefix("-u")
-                .filter(|rest| !rest.is_empty() && !core.starts_with("--"))
-                .filter(|rest| !rest.chars().all(|c| c.is_ascii_lowercase() || c == '-'))
-                .map(|_| lead + 2)
-        };
-        let Some(offset) = attached else {
-            i = word_from(word_end);
-            continue;
-        };
-        let start = if offset == word.len() { word_from(word_end) } else { i + offset };
-        if start == text.len() {
-            out.push_str(&text[copied..]);
-            return (out, true);
-        }
-        let mut end = start;
-        while end < text.len() {
-            match bytes[end] {
-                quote @ (b'"' | b'\'' | b'`') => match text[end + 1..].find(quote as char) {
-                    Some(p) => end += p + 2,
-                    None => end = text.len(),
-                },
-                b'\\' if bytes.get(end + 1).is_some_and(u8::is_ascii_whitespace) => end += 2,
-                b if b.is_ascii_whitespace() => break,
-                _ => end += 1,
-            }
-        }
-        if !is_env_reference(&text[start..end]) {
-            out.push_str(&text[copied..start]);
-            out.push_str(MASKED);
-            copied = end;
-        }
-        i = word_from(end);
-    }
-    out.push_str(&text[copied..]);
-    (out, false)
-}
-
 /// Where the first secret key on a line is (`find_key`).
 struct KeyHit {
     /// Byte where the key name starts.
@@ -866,7 +830,9 @@ const MAX_REFERENCE: usize = 256;
 /// The first secret key on a line, read as a run of name characters (`secret_key_name`), so
 /// the quotes, braces, brackets and markdown around it do not hide it. A name inside a pure
 /// variable reference (`${GITHUB_TOKEN}`, `$TOKEN`, `{env:API_KEY}`, `%TOKEN%`) is a reference,
-/// not a key; `${TOKEN:-fallback}` is a key whose value is the fallback. Linear in the line.
+/// not a key; `${TOKEN:-fallback}` is a key whose value is the fallback. A curl credential flag
+/// is a key too (`credential_flag_value`); with a value attached (`-uapp:pw`) the masking starts
+/// right after its `u`. Linear in the line.
 fn find_key(line: &str, kind: Words) -> Option<KeyHit> {
     let bytes = line.as_bytes();
     let mut i = 0usize;
@@ -887,6 +853,12 @@ fn find_key(line: &str, kind: Words) -> Option<KeyHit> {
             end += 1;
         }
         let name = &line[i..end];
+        if let Some(value) = credential_flag_value(name) {
+            if i + value < end {
+                return Some(KeyHit { start: i, kept: i + value, separator: false });
+            }
+            return Some(key_hit(line, i, end, false));
+        }
         let key = may_name_secret(name)
             && (secret_key_name(name) || (kind == Words::Argument && name.eq_ignore_ascii_case("basic")));
         if key {
@@ -1016,8 +988,7 @@ fn reference_tail(tail: &str) -> bool {
 }
 
 /// Mask a line with no secret key word by word, keeping its spacing: every word the word masker
-/// finds (URLs, `user:password@host`, connection strings, token shaped words). curl's `-u` values
-/// are masked before, over the whole text (`mask_user_flags`).
+/// finds (URLs, `user:password@host`, connection strings, token shaped words).
 fn mask_plain(text: &str) -> (String, usize) {
     let mut out = String::with_capacity(text.len());
     let mut masked = 0usize;
@@ -4160,8 +4131,9 @@ mod masking_round_5 {
             assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..40]);
         }
         let (out, n) = mask_arg_value("curl --user=admin:canarypw https://api.example");
-        // sol-loop round 10 (N27): the whole `--user` value is masked, user name included.
-        assert_eq!((out, n), (format!("curl --user={MASKED} https://api.example"), 1));
+        // sol-loop round 10 (N27): the whole `--user` value is masked, user name included; round
+        // 11 (N29-N32): `--user` is a secret key, so the rest of the text goes too.
+        assert_eq!((out, n), (format!("curl --user={MASKED}"), 1));
     }
 
     #[test]
@@ -4976,24 +4948,28 @@ mod masking_round_10 {
 
     #[test]
     fn the_round_10_findings_are_masked() {
-        // N27: the whole `-u` / `--user` value, to the end of its quotes; the text after stays.
+        // N27: the whole `-u` / `--user` value is masked; since round 11 (N29-N32) the flag is a
+        // secret key, so everything after it, to the end of the text, goes.
         let cases = [
-            ("curl -u \"app:head hunter2\" https://h.example", format!("curl -u {MASKED} https://h.example")),
-            ("curl -uapp:pw x", format!("curl -u{MASKED} x")),
-            ("curl -u\"app:a b\" x", format!("curl -u{MASKED} x")),
-            ("curl --user=app:pw x", format!("curl --user={MASKED} x")),
-            ("curl --proxy-user 'app:a b' x", format!("curl --proxy-user {MASKED} x")),
-            ("curl -u app:a\\ b x", format!("curl -u {MASKED} x")),
-            // A quote with no closing quote masks the rest of the text.
+            ("curl -u \"app:head hunter2\" https://h.example", format!("curl -u {MASKED}")),
+            ("curl -uapp:pw x", format!("curl -u{MASKED}")),
+            ("curl -u\"app:a b\" x", format!("curl -u\"{MASKED}")),
+            ("curl --user=app:pw x", format!("curl --user={MASKED}")),
+            ("curl --proxy-user 'app:a b' x", format!("curl --proxy-user {MASKED}")),
+            ("curl -u app:a\\ b x", format!("curl -u {MASKED}")),
             ("curl -u \"app:a\n\nb c", format!("curl -u {MASKED}")),
             // Over-masking: git's `-u` is read as curl's.
-            ("git push -u origin main", format!("git push -u {MASKED} main")),
+            ("git push -u origin main", format!("git push -u {MASKED}")),
+            // Round 11: these were kept as word flags or a reference with text after it.
+            ("curl -u $CREDS x", format!("curl -u {MASKED}")),
+            ("-update", format!("-u{MASKED}")),
+            ("curl -uroot x", format!("curl -u{MASKED}")),
         ];
         for (text, expected) in cases {
             assert_eq!(mask_preview(text), (expected.clone(), 1), "preview {text:?}");
             assert_eq!(mask_arg_value(text), (expected, 1), "arg {text:?}");
         }
-        for kept in ["curl -u $CREDS x", "-update", "--user-agent x", "curl -uroot x"] {
+        for kept in ["curl -u $CREDS", "curl --user=${CREDS}", "--user-agent x"] {
             assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept:?}");
         }
         let run = |list: &[&str]| mask_args(&list.iter().map(|s| s.to_string()).collect::<Vec<_>>()).0;
@@ -5055,6 +5031,176 @@ mod masking_round_10 {
     fn round_10_canary_sweep_shows_no_secret() {
         let (cases, leaked, leaks) = sweep();
         println!("round 10 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+#[cfg(test)]
+mod masking_round_11 {
+    use super::*;
+
+    /// Texts run through `mask_preview`, `mask_arg_value` and `mask_args` with the text as one
+    /// argument.
+    const CANARY_TEXTS: &[&str] = &[
+        // N29: a quoted `--user=` value.
+        "curl \"--user=app:head canarypw-224\" https://h.example",
+        "curl '--user=app:head canarypw-225' https://h.example",
+        "curl \"--proxy-user=app:head canarypw-226\" x",
+        "[\"--user=app:head canarypw-227\"]",
+        // N30: an escaped quote inside the value.
+        "curl -u \"app:head\\\" canarypw-228\" https://h.example",
+        "curl --user \"a\\\"b\\\" canarypw-229\" x",
+        "curl -u 'app:a\\' canarypw-230' x",
+        // N31: compact JSON.
+        "{\"args\":[\"-u\",\"app:head canarypw-231\"]}",
+        "{\"args\":[\"--user\",\"app:head canarypw-232\"]}",
+        "{\"args\":[\"-sSu\",\"app:head canarypw-233\"]}",
+        "{\"args\":[\"-U\",\"proxy:head canarypw-234\"]}",
+        "{\"args\":[\"-uapp:head canarypw-235\"]}",
+        "{\"args\":[\"--proxy-user\",\"canarypw-236\"]}",
+        // N32: short-option clusters.
+        "curl -sSu app:canarypw-237 https://h.example",
+        "curl -sSuapp:canarypw-238 https://h.example",
+        "curl -su \"app:x canarypw-239\" x",
+        "curl -vU proxy:canarypw-240 x",
+        "curl -1u app:canarypw-241 x",
+        "curl -uv canarypw-242",
+        // `-U` (curl's `--proxy-user`).
+        "curl -U app:canarypw-243 https://h.example",
+        "curl -Uapp:canarypw-244 x",
+        "curl -U \"app:x canarypw-245\" x",
+        "\"args\": [\"-U\", \"app:canarypw-246\"]",
+    ];
+
+    /// Argument lists for `mask_args`.
+    const CANARY_ARGS: &[&[&str]] = &[
+        &["-sSu", "app:canarypw-247"],
+        &["-sSuapp:canarypw-248"],
+        &["curl", "-vu", "app:canarypw-249", "x"],
+        &["-U", "app:canarypw-250"],
+        &["-Uapp:canarypw-251"],
+        &["-sSU", "proxy:canarypw-252"],
+        &["\"--user=app:x canarypw-253\""],
+        &["\"-u\"", "canarypw-254"],
+        &["-1u", "app:canarypw-255"],
+        &["-c", "curl \"--user=app:head canarypw-256\" https://h.example"],
+        &["-c", "curl -u \"app:head\\\" canarypw-257\" https://h.example"],
+        &["-c", "curl -sSu app:canarypw-258 https://h.example"],
+        &["-c", "curl -U app:canarypw-259 x"],
+        &["{\"args\":[\"-u\",\"app:head canarypw-260\"]}"],
+        &["--proxy-user=app:canarypw-261"],
+        &["-sSu", "\"app:x canarypw-262\""],
+    ];
+
+    fn sweep() -> (usize, usize, Vec<String>) {
+        let mut leaks: Vec<String> = Vec::new();
+        let mut leaked_cases = 0usize;
+        for text in CANARY_TEXTS {
+            assert!(text.contains("canarypw"), "{text}");
+            let outputs = [
+                ("mask_preview", mask_preview(text).0),
+                ("mask_arg_value", mask_arg_value(text).0),
+                ("mask_args", mask_args(&[text.to_string()]).0.join(" ")),
+            ];
+            let before = leaks.len();
+            for (masker, out) in outputs {
+                if out.contains("canarypw") {
+                    leaks.push(format!("{masker}: {text:?}  ->  {out:?}"));
+                }
+            }
+            leaked_cases += usize::from(leaks.len() > before);
+        }
+        for args in CANARY_ARGS {
+            let list: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            let out = mask_args(&list).0;
+            if out.join(" ").contains("canarypw") {
+                leaks.push(format!("mask_args: {args:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        (CANARY_TEXTS.len() + CANARY_ARGS.len(), leaked_cases, leaks)
+    }
+
+    #[test]
+    fn the_round_11_findings_are_masked() {
+        // A credential flag is a secret key: the text is kept up to the flag (and the `=` or
+        // quote after it) and everything after it is masked, to the end of the text.
+        let cases = [
+            ("curl \"--user=app:head pw\" https://h.example", format!("curl \"--user={MASKED}")),
+            ("curl '--proxy-user=app:pw' x", format!("curl '--proxy-user={MASKED}")),
+            ("curl -u \"app:head\\\" pw\" https://h.example", format!("curl -u {MASKED}")),
+            ("{\"args\":[\"-u\",\"app:head pw\"]}", format!("{{\"args\":[\"-u\"{MASKED}")),
+            ("{\"args\":[\"--user\",\"app:pw\"]}", format!("{{\"args\":[\"--user\"{MASKED}")),
+            ("curl -sSu app:pw x", format!("curl -sSu {MASKED}")),
+            ("curl -sSuapp:pw x", format!("curl -sSu{MASKED}")),
+            ("curl -uv x", format!("curl -u{MASKED}")),
+            ("curl -U app:pw x", format!("curl -U {MASKED}")),
+            ("curl -Uapp:pw", format!("curl -U{MASKED}")),
+            ("curl -1u app:pw", format!("curl -1u {MASKED}")),
+            ("curl --USER app:pw", format!("curl --USER {MASKED}")),
+            // Over-masking, accepted: pip's `-U` and docker's `-u` are read as curl's.
+            ("pip install -U pkg", format!("pip install -U {MASKED}")),
+            ("docker run -u 1000 image", format!("docker run -u {MASKED}")),
+        ];
+        for (text, expected) in cases {
+            assert_eq!(mask_preview(text), (expected.clone(), 1), "preview {text:?}");
+            assert_eq!(mask_arg_value(text), (expected, 1), "arg {text:?}");
+        }
+        // A flag at the end of a preview line keeps the line and masks the next one.
+        assert_eq!(mask_preview("curl -sSu\napp:pw").0, format!("curl -sSu\n{MASKED}"));
+        for kept in ["--user-agent x", "--username-file /x", "-sSv x", "curl -U ${PROXY_CREDS}", "--no-user"] {
+            assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept:?}");
+        }
+        let run = |list: &[&str]| mask_args(&list.iter().map(|s| s.to_string()).collect::<Vec<_>>()).0;
+        let masked_after_u = format!("-sSu{MASKED}");
+        let masked_user = format!("--user={MASKED}");
+        let masked_quoted = format!("\"--user={MASKED}");
+        let masked_uv = format!("-u{MASKED}");
+        for (list, expected) in [
+            (&["-sSu", "app:pw", "x"][..], vec!["-sSu", MASKED, "x"]),
+            (&["-sSU", "app:pw"], vec!["-sSU", MASKED]),
+            (&["-U", "app:pw"], vec!["-U", MASKED]),
+            (&["-1u", "app:pw"], vec!["-1u", MASKED]),
+            (&["-sSuapp:pw", "x"], vec![masked_after_u.as_str(), "x"]),
+            (&["--user=app:pw", "x"], vec![masked_user.as_str(), "x"]),
+            (&["\"--user=app:a b\""], vec![masked_quoted.as_str()]),
+            (&["\"-u\"", "app:pw"], vec!["\"-u\"", MASKED]),
+            // `u` not last: curl reads the rest of the cluster as the value.
+            (&["-uv", "x"], vec![masked_uv.as_str(), "x"]),
+            (&["-U", "${PROXY_CREDS}"], vec!["-U", "${PROXY_CREDS}"]),
+            (&["pip", "install", "-U", "pkg"], vec!["pip", "install", "-U", MASKED]),
+            (&["git", "push", "-u", "origin", "main"], vec!["git", "push", "-u", MASKED, "main"]),
+            (&["--user-agent", "x"], vec!["--user-agent", "x"]),
+        ] {
+            assert_eq!(run(list), expected, "{list:?}");
+        }
+    }
+
+    #[test]
+    fn credential_clusters_are_linear() {
+        let inputs = [
+            format!("{}-u canarypw", "-sSvk ".repeat(200_000)),
+            format!("{}canarypw", "-sSu ".repeat(100_000)),
+            format!("{}canarypw", "{\"args\":[\"-u\",\"".repeat(50_000)),
+            format!("-{}u canarypw", "s".repeat(500_000)),
+        ];
+        for text in &inputs {
+            let started = std::time::Instant::now();
+            assert!(!mask_preview(text).0.contains("canarypw"));
+            assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
+            let elapsed = started.elapsed();
+            println!("{elapsed:?} for {} bytes", text.len());
+            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?}");
+        }
+    }
+
+    #[test]
+    fn round_11_canary_sweep_shows_no_secret() {
+        let (cases, leaked, leaks) = sweep();
+        println!("round 11 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
         for leak in &leaks {
             println!("LEAK {leak}");
         }
