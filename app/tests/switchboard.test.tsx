@@ -26,7 +26,8 @@ describe("Switchboard Acceptance Tests", () => {
       ]);
       expect(snapshot.serverMatrix.length).toBeGreaterThan(0);
       // sol-loop round 6: prose after a secret key is masked too (golden snapshot 10 to 16).
-      expect(snapshot.maskedValueCount).toBe(16);
+      // sol-loop round 7: and the rest of its paragraph (16 to 28, all past the preview cut).
+      expect(snapshot.maskedValueCount).toBe(28);
     });
   });
 

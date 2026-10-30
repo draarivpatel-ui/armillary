@@ -663,7 +663,7 @@
           "preview": "---\ndescription: Synthetic Cursor project rules\nglobs: \"**/*.ts,**/*.tsx\"\nalwaysApply: false\n---\n\n# Branch and file naming (synthetic fixture)\n\nThis file is intentionally long so the Switchboard preview truncation is exercised by the\nfixture instead of by a hand written string in the test.\n\nRule 01: name branches by intent, not by ticket alone.",
           "truncated": true,
           "lineCount": 31,
-          "maskedValues": 3
+          "maskedValues": 15
         },
         {
           "agent": "cursor",
@@ -1563,5 +1563,5 @@
     "webapp"
   ],
   "serverCount": 41,
-  "maskedValueCount": 16
+  "maskedValueCount": 28
 }
