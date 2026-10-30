@@ -553,37 +553,33 @@ fn push_unique(list: &mut Vec<String>, value: String) {
 /// secret key in it is masked, to the end of the argument, over every line of a shell string
 /// (sol-loop N24/N25). A bare secret flag (`--password`, `--api-key`, `-Token`) or an argument that ends
 /// in a secret key with nothing after it (`Authorization:`) masks the whole next argument
-/// (sol-loop S1/N14/N19). A variable reference anywhere in an argument is still listed by name.
+/// (sol-loop S1/N14/N19); so does curl's `-u` / `--user` (sol-loop N27). A variable reference
+/// anywhere in an argument is still listed by name.
 pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     let mut out: Vec<String> = Vec::with_capacity(args.len());
     let mut names: Vec<String> = Vec::new();
     let mut masked = 0usize;
     let mut secret_flag_follows = false;
-    // `-u user:password` (curl): the part after the colon is the secret.
-    let mut user_flag_follows = false;
     // `-p password` (mysql, sshpass); see `ordinary_p_value` for what stays visible.
     let mut p_flag_follows = false;
 
     for arg in args {
         if std::mem::take(&mut p_flag_follows) && !arg.starts_with('-') {
-            if !ordinary_p_value(arg) && !is_env_reference(arg) {
+            secret_flag_follows = false;
+            if is_env_reference(arg) {
+                out.push(arg.clone());
+            } else if !ordinary_p_value(arg) {
                 masked += 1;
                 out.push(MASKED.to_string());
             } else {
-                out.push(arg.clone());
+                // A port, path or package still goes through the text rule, so a URL's
+                // userinfo or secret query in it is masked (sol-loop N26).
+                let shown = mask_text(arg, Words::Argument);
+                masked += shown.masked;
+                secret_flag_follows = shown.value_follows;
+                out.push(shown.text);
             }
-            secret_flag_follows = false;
             continue;
-        }
-        if std::mem::take(&mut user_flag_follows) {
-            if let Some((user, rest)) = arg.split_once(':') {
-                if !rest.is_empty() && !is_env_reference(rest) && !digits_pair(arg) {
-                    masked += 1;
-                    out.push(format!("{user}:{MASKED}"));
-                    secret_flag_follows = false;
-                    continue;
-                }
-            }
         }
         if let Some(referenced) = extract_var_names(arg) {
             for name in referenced {
@@ -617,15 +613,10 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
                 continue;
             }
         }
-        if arg == "-u" || arg == "--user" {
-            user_flag_follows = true;
-            out.push(arg.clone());
-            continue;
-        }
         // `--password`, `--api-key`, `-Token`: a bare secret flag; its value is the next
         // argument. Only a whole flag name counts: `-Token:value` and `--password=value` carry
         // their value and go through the line rule (sol-loop N19).
-        if bare_flag(arg) && secret_key_name(arg) {
+        if bare_flag(arg) && (secret_key_name(arg) || user_flag(arg)) {
             secret_flag_follows = true;
             out.push(arg.clone());
             continue;
@@ -637,6 +628,11 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     }
 
     (out, names, masked)
+}
+
+/// curl's credential flags, whose value is `user:password` (sol-loop N27).
+fn user_flag(word: &str) -> bool {
+    matches!(word, "-u" | "--user" | "--proxy-user")
 }
 
 /// `-x`, `--name`, `-Name`: a dash and a flag name of letters, digits, `-` and `_` only.
@@ -677,6 +673,8 @@ struct Masked {
 /// - URLs first (`mask_urls`): a URL's whole userinfo and secret-named query parameters are
 ///   masked over the whole text before any key is searched for, so a key word inside a URL
 ///   cannot split it.
+/// - Then curl's credential flags (`mask_user_flags`): the whole value after `-u`, `--user` or
+///   `--proxy-user` is one `[masked]`, to the end of its quotes (sol-loop N27).
 /// - At the first secret key (`password`, `"api_key"`, `X-Api-Key`, `DB_PASSWORD`, `--password`,
 ///   `Authorization`, inside any quotes or punctuation) the text is kept up to the key and the
 ///   separator after it (`:` `=` `=>` `:=` `:-`, with the spaces around), and one scheme word
@@ -687,13 +685,12 @@ struct Masked {
 /// - The one exception: the rest of the key's line is exactly one pure variable reference
 ///   (`reference_tail`: `${NAME}`, `"${NAME}",`) and nothing but blank lines follows it.
 /// - Lines before the key go word by word through the word masker (URLs, `user:password@host`,
-///   connection strings, token shaped words, `-u user:password`).
+///   connection strings, token shaped words).
 ///
 /// The count is the number of `[masked]` marks the text gained.
 fn mask_text(text: &str, kind: Words) -> Masked {
-    let urls = mask_urls(text);
+    let (urls, mut value_follows) = mask_user_flags(&mask_urls(text));
     let mut out: Vec<String> = Vec::new();
-    let mut value_follows = false;
     let blank = |line: &str| line.trim().is_empty();
     let mut start = 0usize;
     while start < urls.len() {
@@ -712,7 +709,7 @@ fn mask_text(text: &str, kind: Words) -> Masked {
             shown.push_str(tail);
             out.push(shown);
             out.extend(after.lines().map(str::to_string));
-            value_follows = blank(tail) && (hit.separator || line[hit.start..].starts_with('-'));
+            value_follows |= blank(tail) && (hit.separator || line[hit.start..].starts_with('-'));
         } else if blank(tail) {
             shown.push_str(tail);
             out.push(shown);
@@ -781,6 +778,70 @@ fn mask_urls(text: &str) -> String {
     }
     out.push_str(&text[copied..]);
     out
+}
+
+/// Mask the value of every curl credential flag in a text (sol-loop N27): `-u app:pw`,
+/// `--user "app:a b"`, `-uapp:pw`, `-u"app:pw"`, `--user=app:pw`, `--proxy-user app:pw`, and in
+/// JSON `"-u", "app:pw"`. The value, user name included, runs from its first character to the
+/// first whitespace outside quotes (`"`, `'`, `` ` ``; a backslash before a space or line break
+/// joins them) and becomes one `[masked]`; a quote with no closing quote masks the rest of the
+/// text. Only a pure variable reference stays. Returns true when the text ends in a flag whose
+/// value has not come yet (in an argument list, the next argument). Linear in the text.
+fn mask_user_flags(text: &str) -> (String, bool) {
+    if !text.contains("-u") {
+        return (text.to_string(), false);
+    }
+    let bytes = text.as_bytes();
+    let space_from = |at: usize| text[at..].find(|c: char| c.is_ascii_whitespace()).map_or(text.len(), |p| at + p);
+    let word_from = |at: usize| text[at..].find(|c: char| !c.is_ascii_whitespace()).map_or(text.len(), |p| at + p);
+    let mut out = String::with_capacity(text.len());
+    let mut copied = 0usize;
+    let mut i = word_from(0);
+    while i < text.len() {
+        let word_end = space_from(i);
+        let word = &text[i..word_end];
+        let lead = word.len() - word.trim_start_matches(['"', '\'', '`', '[', '(']).len();
+        let core = &word[lead..];
+        let attached = if user_flag(core.trim_end_matches(['"', '\'', '`', ',', ']', ')'])) {
+            Some(word.len())
+        } else if let Some(at) = ["--user=", "--proxy-user="].iter().find(|flag| core.starts_with(*flag)) {
+            Some(lead + at.len())
+        } else {
+            core.strip_prefix("-u")
+                .filter(|rest| !rest.is_empty() && !core.starts_with("--"))
+                .filter(|rest| !rest.chars().all(|c| c.is_ascii_lowercase() || c == '-'))
+                .map(|_| lead + 2)
+        };
+        let Some(offset) = attached else {
+            i = word_from(word_end);
+            continue;
+        };
+        let start = if offset == word.len() { word_from(word_end) } else { i + offset };
+        if start == text.len() {
+            out.push_str(&text[copied..]);
+            return (out, true);
+        }
+        let mut end = start;
+        while end < text.len() {
+            match bytes[end] {
+                quote @ (b'"' | b'\'' | b'`') => match text[end + 1..].find(quote as char) {
+                    Some(p) => end += p + 2,
+                    None => end = text.len(),
+                },
+                b'\\' if bytes.get(end + 1).is_some_and(u8::is_ascii_whitespace) => end += 2,
+                b if b.is_ascii_whitespace() => break,
+                _ => end += 1,
+            }
+        }
+        if !is_env_reference(&text[start..end]) {
+            out.push_str(&text[copied..start]);
+            out.push_str(MASKED);
+            copied = end;
+        }
+        i = word_from(end);
+    }
+    out.push_str(&text[copied..]);
+    (out, false)
 }
 
 /// Where the first secret key on a line is (`find_key`).
@@ -954,13 +1015,12 @@ fn reference_tail(tail: &str) -> bool {
     })
 }
 
-/// Mask a line with no secret key word by word, keeping its spacing: curl's `-u user:password`
-/// and `--user=user:password`, and every word the word masker finds (URLs,
-/// `user:password@host`, connection strings, token shaped words).
+/// Mask a line with no secret key word by word, keeping its spacing: every word the word masker
+/// finds (URLs, `user:password@host`, connection strings, token shaped words). curl's `-u` values
+/// are masked before, over the whole text (`mask_user_flags`).
 fn mask_plain(text: &str) -> (String, usize) {
     let mut out = String::with_capacity(text.len());
     let mut masked = 0usize;
-    let mut user_follows = false;
     let mut rest = text;
     while !rest.is_empty() {
         let spaces = rest.len() - rest.trim_start().len();
@@ -972,27 +1032,6 @@ fn mask_plain(text: &str) -> (String, usize) {
         let end = rest.find(char::is_whitespace).unwrap_or(rest.len());
         let word = &rest[..end];
         rest = &rest[end..];
-        if std::mem::take(&mut user_follows) {
-            if let Some((user, password)) = word.split_once(':') {
-                if !password.is_empty() && !is_env_reference(password) && !digits_pair(word) {
-                    masked += 1;
-                    out.push_str(&format!("{user}:{MASKED}"));
-                    continue;
-                }
-            }
-        }
-        if word == "-u" || word == "--user" {
-            user_follows = true;
-            out.push_str(word);
-            continue;
-        }
-        if let Some((user, password)) = word.strip_prefix("--user=").and_then(|value| value.split_once(':')) {
-            if !password.is_empty() && !is_env_reference(password) && !digits_pair(&word[7..]) {
-                masked += 1;
-                out.push_str(&format!("--user={user}:{MASKED}"));
-                continue;
-            }
-        }
         let (shown, count) = mask_word(word);
         masked += count;
         out.push_str(&shown);
@@ -1183,7 +1222,7 @@ pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
     }
     if let Some(fragment) = fragment {
         // "#access_token=..." (an OAuth implicit grant) is masked like a query string.
-        let fragment = if fragment.contains('=') { mask_pairs(&fragment, &mut names, &mut masked) } else { fragment };
+        let fragment = if fragment.contains('=') || percent_decoded(&fragment).is_none_or(|f| f.contains('=')) { mask_pairs(&fragment, &mut names, &mut masked) } else { fragment };
         rebuilt = format!("{rebuilt}#{fragment}");
     }
 
@@ -1209,12 +1248,16 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                         return format!("{key}={}", value.unwrap_or_default());
                     }
                 }
-                let is_secret = secret_key_name(&key)
+                // The name is read after its `%XX` escapes are decoded, so `%74oken` is `token`;
+                // the raw spelling is shown (sol-loop N28).
+                let is_secret = percent_decoded(&key).is_none_or(|name| secret_key_name(&name))
                     || value.as_deref().map(|v| looks_like_secret_value(v)).unwrap_or(false);
                 if is_secret {
                     *masked += 1;
                     match value {
                         Some(_) => format!("{key}={MASKED}"),
+                        // An escaped name can hide a value (`%74oken%3Dvalue`): masked whole.
+                        None if key.contains('%') => MASKED.to_string(),
                         None => format!("{key}"),
                     }
                 } else {
@@ -1222,7 +1265,10 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                         // A value with a secret key word in it (`?value=${TOKEN:-literal}`,
                         // `?u=token=...`) is masked whole, without masking it again as a text
                         // (sol-loop S1, round 7); any other value is masked like a word.
-                        Some(v) if find_key(&v, Words::Argument).is_some() => {
+                        Some(v)
+                            if find_key(&v, Words::Argument).is_some()
+                                || percent_decoded(&v).is_none_or(|v| find_key(&v, Words::Argument).is_some()) =>
+                        {
                             *masked += 1;
                             format!("{key}={MASKED}")
                         }
@@ -1238,6 +1284,43 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
             .collect();
         pairs.join("&")
     }
+}
+
+/// A query name or value with its `%XX` escapes decoded, again until none is left, so a name
+/// escaped twice (`%2574oken`) also reads `token` (sol-loop N28). `None` when escapes are left
+/// after 8 decodes: the caller masks it.
+fn percent_decoded(text: &str) -> Option<String> {
+    let mut current = text.to_string();
+    for pass in 0..=8 {
+        if !current.contains('%') {
+            break;
+        }
+        let bytes = current.as_bytes();
+        let hex = |at: usize| bytes.get(at).and_then(|&b| (b as char).to_digit(16));
+        let mut out: Vec<u8> = Vec::with_capacity(bytes.len());
+        let mut i = 0usize;
+        while i < bytes.len() {
+            match (bytes[i], hex(i + 1), hex(i + 2)) {
+                (b'%', Some(high), Some(low)) => {
+                    out.push((high * 16 + low) as u8);
+                    i += 3;
+                }
+                (b, _, _) => {
+                    out.push(b);
+                    i += 1;
+                }
+            }
+        }
+        let next = String::from_utf8_lossy(&out).into_owned();
+        if next == current {
+            break;
+        }
+        if pass == 8 {
+            return None;
+        }
+        current = next;
+    }
+    Some(current)
 }
 
 /// Mask a rules preview with the rule used for server arguments (`mask_text`): URL credentials
@@ -3905,9 +3988,7 @@ mod masking_round_2 {
             &["https://mcp.example.com/v1/sse"],
             &["npx", "-y", "-p", "@modelcontextprotocol/server-github", "mcp-server-github"],
             &["npx", "-p", "mcp-remote@latest", "mcp-remote"],
-            &["docker", "run", "-p", "8080:80", "-u", "1000:1000", "image"],
             &["docker", "run", "-p3306:3306", "image"],
-            &["--user", "1000:1000"],
         ];
         for input in cases {
             assert_eq!(args(input), input.iter().map(|s| s.to_string()).collect::<Vec<_>>(), "{input:?}");
@@ -3920,6 +4001,10 @@ mod masking_round_2 {
             (&["--max-tokens", "4096"][..], format!("--max-tokens {MASKED}")),
             (&["--max-tokens=4096"][..], format!("--max-tokens={MASKED}")),
             (&["--key-file", "/Users/dev/.config/app/settings.toml"][..], format!("--key-file {MASKED}")),
+            // sol-loop round 10 (N27): `-u` / `--user` are curl's credential flags; the whole
+            // value is masked, docker's numeric user included.
+            (&["docker", "run", "-p", "8080:80", "-u", "1000:1000", "image"][..], format!("docker run -p 8080:80 -u {MASKED} image")),
+            (&["--user", "1000:1000"][..], format!("--user {MASKED}")),
         ] {
             assert_eq!(shown(input), expected, "{input:?}");
         }
@@ -4075,7 +4160,8 @@ mod masking_round_5 {
             assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..40]);
         }
         let (out, n) = mask_arg_value("curl --user=admin:canarypw https://api.example");
-        assert_eq!((out, n), (format!("curl --user=admin:{MASKED} https://api.example"), 1));
+        // sol-loop round 10 (N27): the whole `--user` value is masked, user name included.
+        assert_eq!((out, n), (format!("curl --user={MASKED} https://api.example"), 1));
     }
 
     #[test]
@@ -4784,6 +4870,191 @@ mod masking_round_9 {
     fn round_9_canary_sweep_shows_no_secret() {
         let (cases, leaked, leaks) = sweep();
         println!("round 9 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+#[cfg(test)]
+mod masking_round_10 {
+    use super::*;
+
+    /// Texts run through `mask_preview`, `mask_arg_value` and `mask_args` with the text as one
+    /// argument.
+    const CANARY_TEXTS: &[&str] = &[
+        // N27: curl's `-u` / `--user` value, quoted with spaces, attached, over two lines.
+        "curl -u \"app:head canarypw-187\" https://h.example",
+        "curl --user \"app:head canarypw-188\" https://h.example",
+        "curl -u 'app:head canarypw-189' x",
+        "curl -u app:\"head canarypw-190\" x",
+        "curl -u \"app:head\ncanarypw-191\" x",
+        "curl --user=\"app:head canarypw-192\" x",
+        "curl -u\"app:head canarypw-193\" x",
+        "curl -uapp:\"head canarypw-194\"",
+        "curl -u app:head\\ canarypw-195 x",
+        "curl -u \"app:open\n\ncanarypw-196",
+        "\"args\": [\"-u\", \"app:head canarypw-197\"]",
+        "curl -u canarypw-198 x",
+        "curl --user=canarypw-199",
+        "-uapp:canarypw-200",
+        // N28: a percent-encoded secret query name.
+        "https://h.example/mcp?%74oken=canarypw-201",
+        "see https://h.example/mcp?api%5Fkey=canarypw-202 there",
+        "https://h.example/mcp?%50ASSWORD=canarypw-203",
+        "https://h.example/mcp#access%5ftoken=canarypw-204",
+        "https://h.example/mcp?%2574oken=canarypw-205",
+        "https://h.example/mcp?x=1&%73ecret=canarypw-206",
+    ];
+
+    /// Argument lists for `mask_args`.
+    const CANARY_ARGS: &[&[&str]] = &[
+        // N26: a `-p` value the ordinary-value rule keeps still has its URL masked.
+        &["-p", "https://u:canarypw-207@registry.example/server.tgz"],
+        &["-p", "https://registry.example/s.tgz?token=canarypw-208"],
+        &["-p", "https://registry.example/s.tgz?%74oken=canarypw-209"],
+        &["-p", "@scope/server?token=canarypw-210"],
+        // N27 in argument lists.
+        &["-u", "canarypw-211"],
+        &["--user", "canarypw-212", "x"],
+        &["-uapp:canarypw-213"],
+        &["-c", "curl -u \"app:head canarypw-214\" https://h.example"],
+        &["-c", "curl -u \"app:a\ncanarypw-215\""],
+        &["sh", "-c", "curl --user 'app:x canarypw-216'"],
+        &["curl -u", "canarypw-217"],
+    ];
+
+    /// URLs for `mask_url` (the `url` field).
+    const CANARY_URLS: &[&str] = &[
+        "https://h.example/mcp?%74oken=canarypw-218",
+        "https://h.example/mcp?api%5Fkey=canarypw-219",
+        "https://h.example/mcp#access%5ftoken=canarypw-220",
+        "https://h.example/mcp?%2574oken=canarypw-221",
+        "https://h.example/mcp?%74oken%3Dcanarypw-222",
+        "https://h.example/mcp#%74oken%3Dcanarypw-223",
+    ];
+
+    fn sweep() -> (usize, usize, Vec<String>) {
+        let mut leaks: Vec<String> = Vec::new();
+        let mut leaked_cases = 0usize;
+        for text in CANARY_TEXTS {
+            assert!(text.contains("canarypw"), "{text}");
+            let mut outputs = vec![
+                ("mask_preview", mask_preview(text).0),
+                ("mask_arg_value", mask_arg_value(text).0),
+                ("mask_args", mask_args(&[text.to_string()]).0.join(" ")),
+            ];
+            if text.starts_with("https://") {
+                outputs.push(("mask_url", mask_url(text).0));
+            }
+            let before = leaks.len();
+            for (masker, out) in outputs {
+                if out.contains("canarypw") {
+                    leaks.push(format!("{masker}: {text:?}  ->  {out:?}"));
+                }
+            }
+            leaked_cases += usize::from(leaks.len() > before);
+        }
+        for args in CANARY_ARGS {
+            let list: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            let out = mask_args(&list).0;
+            if out.join(" ").contains("canarypw") {
+                leaks.push(format!("mask_args: {args:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        for url in CANARY_URLS {
+            let out = mask_url(url).0;
+            if out.contains("canarypw") {
+                leaks.push(format!("mask_url: {url:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        (CANARY_TEXTS.len() + CANARY_ARGS.len() + CANARY_URLS.len(), leaked_cases, leaks)
+    }
+
+    #[test]
+    fn the_round_10_findings_are_masked() {
+        // N27: the whole `-u` / `--user` value, to the end of its quotes; the text after stays.
+        let cases = [
+            ("curl -u \"app:head hunter2\" https://h.example", format!("curl -u {MASKED} https://h.example")),
+            ("curl -uapp:pw x", format!("curl -u{MASKED} x")),
+            ("curl -u\"app:a b\" x", format!("curl -u{MASKED} x")),
+            ("curl --user=app:pw x", format!("curl --user={MASKED} x")),
+            ("curl --proxy-user 'app:a b' x", format!("curl --proxy-user {MASKED} x")),
+            ("curl -u app:a\\ b x", format!("curl -u {MASKED} x")),
+            // A quote with no closing quote masks the rest of the text.
+            ("curl -u \"app:a\n\nb c", format!("curl -u {MASKED}")),
+            // Over-masking: git's `-u` is read as curl's.
+            ("git push -u origin main", format!("git push -u {MASKED} main")),
+        ];
+        for (text, expected) in cases {
+            assert_eq!(mask_preview(text), (expected.clone(), 1), "preview {text:?}");
+            assert_eq!(mask_arg_value(text), (expected, 1), "arg {text:?}");
+        }
+        for kept in ["curl -u $CREDS x", "-update", "--user-agent x", "curl -uroot x"] {
+            assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept:?}");
+        }
+        let run = |list: &[&str]| mask_args(&list.iter().map(|s| s.to_string()).collect::<Vec<_>>()).0;
+        assert_eq!(run(&["-u", "app:pw", "x"]), ["-u", MASKED, "x"]);
+        assert_eq!(run(&["--proxy-user", "app:pw"]), ["--proxy-user", MASKED]);
+        assert_eq!(run(&["-u", "${CREDS}"]), ["-u", "${CREDS}"]);
+        assert_eq!(run(&["curl -u", "app:pw"]), ["curl -u", MASKED]);
+        // N26: a `-p` value the ordinary-value rule keeps still has its URL and keys masked.
+        assert_eq!(
+            run(&["-p", "https://u:pw@registry.example/s.tgz", "x"]),
+            [format!("https://{MASKED}@registry.example/s.tgz").as_str(), "x"].iter().fold(vec!["-p".to_string()], |mut v, s| {
+                v.push(s.to_string());
+                v
+            })
+        );
+        assert_eq!(run(&["-p", "@scope/server?token=pw"]), ["-p", format!("@scope/server?token={MASKED}").as_str()]);
+        for kept in [&["-p", "8080:80"][..], &["-p", "@scope/server"], &["-p", "mcp-remote@latest"], &["-p", "./x"]] {
+            assert_eq!(run(kept), kept, "{kept:?}");
+        }
+        // N28: query names are read after percent-decoding; the raw spelling stays.
+        for (url, expected) in [
+            ("https://h.example/mcp?%74oken=pw", format!("https://h.example/mcp?%74oken={MASKED}")),
+            ("https://h.example/mcp?api%5Fkey=pw&page=2", format!("https://h.example/mcp?api%5Fkey={MASKED}&page=2")),
+            ("https://h.example/mcp?%2574oken=pw", format!("https://h.example/mcp?%2574oken={MASKED}")),
+            ("https://h.example/mcp?%74oken%3Dpw", format!("https://h.example/mcp?{MASKED}")),
+            ("https://h.example/mcp#%74oken%3Dpw", format!("https://h.example/mcp#{MASKED}")),
+            ("https://h.example/mcp?q=%74oken%3Dpw", format!("https://h.example/mcp?q={MASKED}")),
+        ] {
+            assert_eq!(mask_url(url), (expected.clone(), Vec::new(), 1), "{url}");
+            assert_eq!(mask_preview(url), (expected, 1), "preview {url}");
+        }
+        assert_eq!(mask_url("https://h.example/mcp?page=%32&q=a%20b").2, 0);
+        // A name still escaped after 8 decodes is masked.
+        let deep = format!("https://h.example/mcp?%{}74ext=v1", "25".repeat(9));
+        assert_eq!(mask_url(&deep).0, format!("https://h.example/mcp?%{}74ext={MASKED}", "25".repeat(9)));
+        let shallow = format!("https://h.example/mcp?%{}74ext=v1", "25".repeat(7));
+        assert_eq!(mask_url(&shallow).2, 0);
+    }
+
+    #[test]
+    fn credential_flags_and_escapes_are_linear() {
+        let inputs = [
+            format!("{}canarypw", "curl -u \"".repeat(50_000)),
+            format!("{}-u canarypw", "-u a ".repeat(100_000)),
+            format!("https://h.example/?%{}74oken=canarypw", "25".repeat(100_000)),
+            format!("https://h.example/?{}=canarypw", "%25%74oken".repeat(30_000)),
+        ];
+        for text in &inputs {
+            let started = std::time::Instant::now();
+            assert!(!mask_preview(text).0.contains("canarypw"));
+            assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
+            let elapsed = started.elapsed();
+            println!("{elapsed:?} for {} bytes", text.len());
+            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?}");
+        }
+    }
+
+    #[test]
+    fn round_10_canary_sweep_shows_no_secret() {
+        let (cases, leaked, leaks) = sweep();
+        println!("round 10 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
         for leak in &leaks {
             println!("LEAK {leak}");
         }
