@@ -547,12 +547,29 @@ fn push_unique(list: &mut Vec<String>, value: String) {
     }
 }
 
-/// `push_unique` for many values at once, in time linear in both lists (sol-loop N40).
-fn extend_unique(list: &mut Vec<String>, values: Vec<String>) {
-    let mut seen: std::collections::HashSet<String> = list.iter().cloned().collect();
-    for value in values {
-        if seen.insert(value.clone()) {
-            list.push(value);
+/// Keep first-seen order with one set for the entire collection, not one per merge
+/// (sol-loop N41). Only the vector is returned; hash iteration never determines output order.
+#[derive(Default)]
+struct UniqueNames {
+    values: Vec<String>,
+    seen: std::collections::HashSet<String>,
+}
+
+impl UniqueNames {
+    fn from_values(values: Vec<String>) -> Self {
+        let seen = values.iter().cloned().collect();
+        Self { values, seen }
+    }
+
+    fn insert(&mut self, value: String) {
+        if self.seen.insert(value.clone()) {
+            self.values.push(value);
+        }
+    }
+
+    fn extend(&mut self, values: Vec<String>) {
+        for value in values {
+            self.insert(value);
         }
     }
 }
@@ -576,7 +593,7 @@ fn extend_unique(list: &mut Vec<String>, values: Vec<String>) {
 /// name.
 pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     let mut out: Vec<String> = Vec::with_capacity(args.len());
-    let mut names: Vec<String> = Vec::new();
+    let mut names = UniqueNames::default();
     let mut masked = 0usize;
     let mut secret_flag_follows = false;
     // `-p password` (mysql, sshpass); see `ordinary_p_value` for what stays visible.
@@ -602,7 +619,7 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
             continue;
         }
         if let Some(referenced) = extract_var_names(arg) {
-            extend_unique(&mut names, referenced);
+            names.extend(referenced);
         }
         if is_env_reference(arg) {
             out.push(arg.clone());
@@ -659,7 +676,7 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
         out.push(shown.text);
     }
 
-    (out, names, masked)
+    (out, names.values, masked)
 }
 
 /// curl's long credential flags, whose value is `user:password` (sol-loop N27).
@@ -1195,7 +1212,7 @@ fn mask_word_once(word: &str) -> (String, usize) {
 /// Keep scheme, host and path so the server is recognizable; drop credentials from the
 /// userinfo, from token shaped path segments (PRIV-3) and from secret query parameters.
 pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
-    let mut names: Vec<String> = Vec::new();
+    let mut names = UniqueNames::default();
     let mut masked = 0usize;
 
     // The whole userinfo, whatever it holds (`/`, `?`, `#`, quotes, apostrophes, `@`), runs to
@@ -1253,11 +1270,11 @@ pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
         rebuilt = format!("{rebuilt}#{fragment}");
     }
 
-    (rebuilt, names, masked)
+    (rebuilt, names.values, masked)
 }
 
 /// Mask the `key=value` pairs of a query string or fragment; referenced variables are listed.
-fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> String {
+fn mask_pairs(query: &str, names: &mut UniqueNames, masked: &mut usize) -> String {
     {
         let pairs: Vec<String> = query
             .split('&')
@@ -1268,9 +1285,7 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                     None => (pair.to_string(), None),
                 };
                 if let Some(referenced) = value.as_deref().and_then(extract_var_names) {
-                    for name in referenced {
-                        push_unique(names, name);
-                    }
+                    names.extend(referenced);
                     if value.as_deref().is_some_and(is_env_reference) {
                         return format!("{key}={}", value.unwrap_or_default());
                     }
@@ -2246,11 +2261,12 @@ fn build_server(
         None => (None, Vec::new()),
     };
 
-    let (args, mut referenced, mut masked) = mask_args(&raw_args);
+    let (args, referenced, mut masked) = mask_args(&raw_args);
+    let mut referenced = UniqueNames::from_values(referenced);
     // Some configs put a whole command line in "command" (PRIV-3): mask it like an argument.
     let command = command.map(|c| {
         if let Some(names) = extract_var_names(&c) {
-            extend_unique(&mut referenced, names);
+            referenced.extend(names);
         }
         let (shown, count) = mask_arg_value(&c);
         masked += count;
@@ -2271,17 +2287,15 @@ fn build_server(
             url = Some(masked_url);
             url_key = Some(key);
             masked += count;
-            for name in names {
-                push_unique(&mut referenced, name);
-            }
+            referenced.extend(names);
             break;
         }
     }
 
     let transport = transport_of(entry, command.as_deref(), url_key, agent);
 
-    let mut env_names: Vec<String> = Vec::new();
-    let mut header_names: Vec<String> = Vec::new();
+    let mut env_names = UniqueNames::default();
+    let mut header_names = UniqueNames::default();
     // Only the variable NAMES inside an env or header value are ever taken; the value
     // itself is dropped without being stored.
     for (key, is_header) in [
@@ -2293,11 +2307,9 @@ fn build_server(
         if let Some(map) = entry.get(key).and_then(|v| v.as_object()) {
             for (name, value) in map {
                 let target = if is_header { &mut header_names } else { &mut env_names };
-                push_unique(target, name.clone());
+                target.insert(name.clone());
                 if let Some(names) = value.as_str().and_then(extract_var_names) {
-                    for var_name in names {
-                        push_unique(&mut referenced, var_name);
-                    }
+                    referenced.extend(names);
                 }
             }
         }
@@ -2310,18 +2322,18 @@ fn build_server(
                 _ => None,
             };
             if let Some(name) = name {
-                push_unique(&mut env_names, name);
+                env_names.insert(name);
             }
         }
     }
     // Codex names the variable that holds a bearer token instead of carrying the token.
     if let Some(name) = entry.get("bearer_token_env_var").and_then(|v| v.as_str()) {
-        push_unique(&mut env_names, name.to_string());
+        env_names.insert(name.to_string());
     }
     if let Some(map) = entry.get("env_http_headers").and_then(|v| v.as_object()) {
         for name in map.values() {
             if let Some(name) = name.as_str() {
-                push_unique(&mut env_names, name.to_string());
+                env_names.insert(name.to_string());
             }
         }
     }
@@ -2344,9 +2356,9 @@ fn build_server(
         command,
         args,
         url,
-        env_names: sorted_unique(env_names),
-        header_names: sorted_unique(header_names),
-        referenced_env_names: sorted_unique(referenced),
+        env_names: sorted_unique(env_names.values),
+        header_names: sorted_unique(header_names.values),
+        referenced_env_names: sorted_unique(referenced.values),
         enabled,
         masked_values: masked,
         source_path: display.to_string(),
@@ -5566,5 +5578,149 @@ mod masking_round_13 {
             println!("LEAK {leak}");
         }
         assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+#[cfg(test)]
+mod reference_collection_round_14 {
+    use super::*;
+
+    fn references(range: std::ops::Range<usize>) -> String {
+        range.map(|n| format!("${{V{n}}}")).collect()
+    }
+
+    fn expected_names() -> Vec<String> {
+        (0..100_000).map(|n| format!("V{n}")).collect()
+    }
+
+    #[test]
+    fn many_references_in_a_url_query_are_collected_in_linear_time() {
+        // N41: a single query value fits the config limit but previously needed ~5e9
+        // Vec::contains comparisons. Duplicates also span pairs and the fragment.
+        let url = format!(
+            "https://h.example/?token={}&value=${{V99999}}#value=${{V42}}&again=${{V0}}",
+            references(0..100_000),
+        );
+        assert!(url.len() < MAX_CONFIG_BYTES as usize);
+        let expected = expected_names();
+        let started = std::time::Instant::now();
+        let (out, names, masked) = mask_url(&url);
+        let elapsed = started.elapsed();
+        assert_eq!(names, expected);
+        assert_eq!(out, format!(
+            "https://h.example/?token={MASKED}&value=${{V99999}}#value=${{V42}}&again=${{V0}}",
+        ));
+        assert_eq!(masked, 1);
+        // As with the existing guards, catch quadratic growth, not machine speed.
+        assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?}");
+    }
+
+    fn check_many_map_references(primary: &str, alias: &str, is_header: bool) {
+        let mut maps = [serde_json::Map::new(), serde_json::Map::new()];
+        for n in 0..100 {
+            maps[n / 50].insert(
+                format!("KEY{n:03}"),
+                serde_json::Value::String(references(n * 1_000..(n + 1) * 1_000)),
+            );
+        }
+        // Both the reference set and the field-name set must span aliases.
+        maps[1].insert("KEY000".into(), "${V0}${V99999}".into());
+        let mut entry = serde_json::Map::new();
+        let [first, second] = maps;
+        entry.insert(primary.into(), serde_json::Value::Object(first));
+        entry.insert(alias.into(), serde_json::Value::Object(second));
+        assert!(serde_json::to_vec(&entry).unwrap().len() < MAX_CONFIG_BYTES as usize);
+        let expected = sorted_unique(expected_names());
+        let expected_keys: Vec<String> = (0..100).map(|n| format!("KEY{n:03}")).collect();
+        let started = std::time::Instant::now();
+        let server = build_server(
+            "claude-code", "s", &entry, Dialect::JsonServers, Scope::Global, None,
+            "~/.claude.json",
+        );
+        let elapsed = started.elapsed();
+        assert_eq!(server.referenced_env_names, expected);
+        if is_header {
+            assert_eq!(server.header_names, expected_keys);
+            assert!(server.env_names.is_empty());
+        } else {
+            assert_eq!(server.env_names, expected_keys);
+            assert!(server.header_names.is_empty());
+        }
+        assert_eq!(server.masked_values, 0);
+        assert!(elapsed < std::time::Duration::from_secs(10), "{primary}: {elapsed:?}");
+    }
+
+    #[test]
+    fn many_references_in_env_maps_are_merged_in_linear_time() {
+        check_many_map_references("env", "environment", false);
+    }
+
+    #[test]
+    fn many_references_in_header_maps_are_merged_in_linear_time() {
+        check_many_map_references("headers", "http_headers", true);
+    }
+
+    #[test]
+    fn many_arguments_with_many_references_are_collected_in_linear_time() {
+        // A set rebuilt for each of these 10,000 arguments is still quadratic.
+        let mut args: Vec<String> = (0..10_000)
+            .map(|n| references(n * 10..(n + 1) * 10))
+            .collect();
+        args.push("${V0}${V99999}".into());
+        assert!(serde_json::to_vec(&args).unwrap().len() < MAX_CONFIG_BYTES as usize);
+        let expected = expected_names();
+        let started = std::time::Instant::now();
+        let (out, names, masked) = mask_args(&args);
+        let elapsed = started.elapsed();
+        assert_eq!(names, expected);
+        assert_eq!(out, args);
+        assert_eq!(masked, 0);
+        assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?}");
+    }
+
+    #[test]
+    fn reference_order_and_masking_are_unchanged_across_merges() {
+        let args: Vec<String> = [
+            "${B}${A}${B}", "--token", "${C}${A}", "-p", "${SKIPPED}", "${D}",
+        ].into_iter().map(String::from).collect();
+        let (out, names, masked) = mask_args(&args);
+        assert_eq!(names, ["B", "A", "C", "D"]);
+        let mut expected = args;
+        expected[2] = MASKED.into();
+        assert_eq!(out, expected);
+        assert_eq!(masked, 1);
+
+        let url = "https://h.example/?token=${B}&value=${A}&again=${B}#value=${C}&again=${A}";
+        assert_eq!(mask_url(url), (
+            url.into(), vec!["B".into(), "A".into(), "C".into()], 0,
+        ));
+
+        let entry = serde_json::json!({
+            "command": "${COMMAND}",
+            "args": ["${ARGS}${SHARED}"],
+            "url": "https://h.example/?token=${SHARED}&password=canarypw",
+            "env": {"KEY": "${ENV}${SHARED}"},
+            "environment": {"KEY": "${ALIAS}", "OTHER": "canarypw"},
+            "headers": {"Authorization": "Bearer ${HEADER}${SHARED}"},
+            "http_headers": {"Authorization": "${ALIAS}", "X-Other": "canarypw"},
+            "env_vars": ["KEY", {"name": "LIST"}],
+            "bearer_token_env_var": "LIST",
+            "env_http_headers": {"X-Token": "KEY"},
+        }).as_object().unwrap().clone();
+        let server = build_server(
+            "claude-code", "s", &entry, Dialect::JsonServers, Scope::Global, None,
+            "~/.claude.json",
+        );
+        assert_eq!(server.command.as_deref(), Some("${COMMAND}"));
+        assert_eq!(server.args, ["${ARGS}${SHARED}"]);
+        assert_eq!(server.url.as_deref(), Some(
+            "https://h.example/?token=${SHARED}&password=[masked]",
+        ));
+        assert_eq!(server.referenced_env_names, [
+            "ALIAS", "ARGS", "COMMAND", "ENV", "HEADER", "SHARED",
+        ]);
+        assert_eq!(server.env_names, ["KEY", "LIST", "OTHER"]);
+        assert_eq!(server.header_names, ["Authorization", "X-Other"]);
+        assert_eq!(server.masked_values, 1);
     }
 }
