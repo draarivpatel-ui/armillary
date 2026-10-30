@@ -342,32 +342,27 @@ fn digits_pair(value: &str) -> bool {
             .all(|part| !part.is_empty() && part.chars().all(|c| c.is_ascii_digit() || c == '.'))
 }
 
-/// True when a value is a reference to an environment variable rather than a secret itself.
+/// True when a value is a reference to an environment variable rather than a secret itself:
+/// exactly `${A}`, `${A:-}`, `${env:A}`, `{env:A}`, `$A` or `%A%`. Anything else that merely
+/// contains a reference (a url with a query string, or `${A:-literal}` with a fallback that can
+/// itself be a secret) is not a pure one. The shape is read directly, without listing every
+/// name in the value, so a long value is checked in one pass (sol-loop N40).
 pub fn is_env_reference(value: &str) -> bool {
-    match extract_var_names(value) {
-        Some(names) => render_reference_shape(value, names.as_slice()),
-        None => false,
-    }
-}
-
-fn render_reference_shape(value: &str, names: &[String]) -> bool {
-    // `${A}`, `{env:A}`, `$A`, `%A%` and `${A:-}` are references; anything else that merely
-    // contains a reference (a url with a query string, or `${A:-literal}` with a fallback that
-    // can itself be a secret) is not a pure one.
-    let single = names.len() == 1;
-    if !single {
+    let name = if let Some(inner) = value.strip_prefix("${").and_then(|rest| rest.strip_suffix('}')) {
+        inner.strip_prefix("env:").or_else(|| inner.strip_suffix(":-")).unwrap_or(inner)
+    } else if let Some(inner) = value.strip_prefix("{env:").and_then(|rest| rest.strip_suffix('}')) {
+        inner
+    } else if let Some(inner) = value.strip_prefix('%').and_then(|rest| rest.strip_suffix('%')) {
+        inner
+    } else if let Some(inner) = value.strip_prefix('$') {
+        inner
+    } else {
         return false;
-    }
-    let name = &names[0];
-    let candidates = [
-        format!("${{{name}}}"),
-        format!("${{{name}:-}}"),
-        format!("${name}"),
-        format!("%{name}%"),
-        format!("{{env:{name}}}"),
-        format!("${{env:{name}}}"),
-    ];
-    candidates.iter().any(|shape| shape == value)
+    };
+    // The names `extract_var_names` reads: letters, digits and `_`, not starting with a digit.
+    !name.is_empty()
+        && !name.starts_with(|c: char| c.is_ascii_digit())
+        && name.chars().all(|c| c.is_alphanumeric() || c == '_')
 }
 
 /// True when a bare string has the shape of a key or token.
@@ -432,6 +427,14 @@ fn shannon_entropy(value: &str) -> f64 {
 fn extract_var_names(value: &str) -> Option<Vec<String>> {
     let bytes: Vec<char> = value.chars().collect();
     let mut names: Vec<String> = Vec::new();
+    // Names already listed, so a value holding many references is read in linear time
+    // (sol-loop N40).
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut push_unique = |names: &mut Vec<String>, name: String| {
+        if seen.insert(name.clone()) {
+            names.push(name);
+        }
+    };
     // No `}` at or after this index: a later `{` need not search again, so a long line of `{`
     // is read once instead of once per brace (sol-loop S1).
     let mut no_close_from = usize::MAX;
@@ -544,6 +547,16 @@ fn push_unique(list: &mut Vec<String>, value: String) {
     }
 }
 
+/// `push_unique` for many values at once, in time linear in both lists (sol-loop N40).
+fn extend_unique(list: &mut Vec<String>, values: Vec<String>) {
+    let mut seen: std::collections::HashSet<String> = list.iter().cloned().collect();
+    for value in values {
+        if seen.insert(value.clone()) {
+            list.push(value);
+        }
+    }
+}
+
 /// Mask secret shaped arg values; flags and variable references stay visible.
 /// Returns (masked args, referenced env names, masked value count).
 ///
@@ -554,10 +567,11 @@ fn push_unique(list: &mut Vec<String>, value: String) {
 /// (sol-loop N24/N25). A bare secret flag (`--password`, `--api-key`, `-Token`) or an argument that ends
 /// in a secret key with nothing after it (`Authorization:`) masks the whole next argument
 /// (sol-loop S1/N14/N19), whatever that argument looks like, `-x` and `--pw` too (sol-loop N34);
-/// so does a curl credential flag, `--user`, `--proxy-user` or a short cluster whose first `u`
-/// or `U` ends it (`-u`, `-U`, `-sSu`; sol-loop N27/N32/N33). An attached credential
-/// (`-uapp:pw`, `-ucanarypwu`) is masked after the first `u` or `U`, and an attached `-p` value
-/// after the `-p` (`-palice`; sol-loop N35); `--user=app:pw` is masked to the end of the
+/// so does a curl credential flag, `--user`, `--proxy-user` or a short cluster whose first `u`,
+/// `U` or `p` ends it (`-u`, `-U`, `-sSu`, `-#u`, `-vp`; sol-loop N27/N32/N33/N38/N39), and so
+/// does a masked value that is itself such a flag (`--api-key --token x`; sol-loop N37). An
+/// attached value (`-uapp:pw`, `-ucanarypwu`, `-palice`, `-vppw`) is masked after the first `u`,
+/// `U` or `p` of the cluster (sol-loop N33/N35/N39); `--user=app:pw` is masked to the end of the
 /// argument by the text rule. A variable reference anywhere in an argument is still listed by
 /// name.
 pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
@@ -576,6 +590,7 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
             } else if !ordinary_p_value(arg) {
                 masked += 1;
                 out.push(MASKED.to_string());
+                secret_flag_follows = mask_text(arg, Words::Argument).value_follows;
             } else {
                 // A port, path or package still goes through the text rule, so a URL's
                 // userinfo or secret query in it is masked (sol-loop N26).
@@ -587,9 +602,7 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
             continue;
         }
         if let Some(referenced) = extract_var_names(arg) {
-            for name in referenced {
-                push_unique(&mut names, name);
-            }
+            extend_unique(&mut names, referenced);
         }
         if is_env_reference(arg) {
             out.push(arg.clone());
@@ -598,10 +611,14 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
         }
         // The argument after a secret flag is the secret, whatever it is spelled like
         // (`--password 123456`, `--password "a'b c'"`, `-u --pw`); only a pure variable
-        // reference, kept above, stays (sol-loop N34).
+        // reference, kept above, stays (sol-loop N34). When that argument is itself a secret or
+        // credential flag (`--api-key --token x`, `-u -u x`, `--api-key Authorization: x`), the
+        // one after it is masked too (sol-loop N37).
         if std::mem::take(&mut secret_flag_follows) {
             masked += 1;
             out.push(MASKED.to_string());
+            secret_flag_follows =
+                takes_next_value(arg) || arg == "-p" || mask_text(arg, Words::Argument).value_follows;
             continue;
         }
         // `-p` takes a password in mysql and sshpass: `-p secret` and `-psecret`. A separate
@@ -611,28 +628,23 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
             out.push(arg.clone());
             continue;
         }
-        // `--password`, `--api-key`, `-Token`, `-u`, `-sSu`: a bare secret flag; its value is the
-        // next argument. Only a whole flag name counts: `-Token:value` and `--password=value`
-        // carry their value and go through the line rule (sol-loop N19). A cluster counts as a
-        // credential flag only when its first `u` or `U` ends it (sol-loop N33).
-        let value_follows = bare_flag(arg) && (secret_key_name(arg) || bare_credential_flag(arg));
-        // An attached `-p` value is masked after the `-p`, ports and word flags too (`-p8080`,
-        // `-port`); only a pure variable reference stays (sol-loop N35).
-        if let Some(attached) = arg.strip_prefix("-p").filter(|rest| !rest.is_empty() && !arg.starts_with("--")) {
-            if is_env_reference(attached) {
+        // `--password`, `--api-key`, `-Token`, `-u`, `-sSu`, `-#u`, `-vp`: a bare secret flag; its
+        // value is the next argument. Only a whole flag name counts: `-Token:value` and
+        // `--password=value` carry their value and go through the line rule (sol-loop N19). A
+        // cluster counts only when its first `u`, `U` or `p` ends it (sol-loop N33/N39).
+        let value_follows = takes_next_value(arg);
+        // A value attached to a short cluster (`-uapp:pw`, `-ucanarypwu`, `-uTOKEN`, `-palice`,
+        // `-p'x'`, `-vpsecret`, `-#uapp:pw`): everything after the first `u`, `U` or `p` is masked,
+        // ports and word flags too (`-p8080`, `-port`); only a pure variable reference after a `p`
+        // stays (`-p${DB_PASS}`; sol-loop N33/N35/N39).
+        let p_at = short_p_value(arg);
+        if let Some(at) = [p_at, credential_flag_value(arg)].into_iter().flatten().filter(|&at| at < arg.len()).min() {
+            if p_at == Some(at) && is_env_reference(&arg[at..]) {
                 out.push(arg.clone());
             } else {
                 masked += 1;
-                out.push(format!("-p{MASKED}"));
+                out.push(format!("{}{MASKED}", &arg[..at]));
             }
-            secret_flag_follows = value_follows;
-            continue;
-        }
-        // A credential attached to a cluster (`-uapp:pw`, `-ucanarypwu`, `-uTOKEN`): everything
-        // after the first `u` or `U` is masked (sol-loop N33).
-        if let Some(at) = credential_flag_value(arg).filter(|&at| at < arg.len()) {
-            masked += 1;
-            out.push(format!("{}{MASKED}", &arg[..at]));
             secret_flag_follows = value_follows;
             continue;
         }
@@ -655,12 +667,30 @@ fn long_credential_flag(name: &str) -> bool {
     name.eq_ignore_ascii_case("--user") || name.eq_ignore_ascii_case("--proxy-user")
 }
 
-/// The letters and digits of a short option cluster (`-sSu` gives `sSu`, `-uapp` gives `uapp`):
-/// one dash, then a letter or digit.
+/// The letters, digits and `#` of a short option cluster (`-sSu` gives `sSu`, `-uapp` gives
+/// `uapp`, curl's `-#u` gives `#u`; sol-loop N38): one dash, then a letter, digit or `#`.
 fn short_cluster(name: &str) -> Option<&str> {
     let rest = name.strip_prefix('-').filter(|rest| !rest.starts_with('-'))?;
-    let len = rest.bytes().take_while(u8::is_ascii_alphanumeric).count();
+    let len = rest.bytes().take_while(|&b| cluster_byte(b)).count();
     (len > 0).then(|| &rest[..len])
+}
+
+fn cluster_byte(b: u8) -> bool {
+    b.is_ascii_alphanumeric() || b == b'#'
+}
+
+/// The byte after the first `p` of a short option cluster, where a password attached to `-p`
+/// starts (`-pcanary`, `-vpcanary`, `-p'canary'`; mysql and sshpass, sol-loop N35/N39). When it
+/// is the end of the argument, the next argument is the value.
+fn short_p_value(name: &str) -> Option<usize> {
+    short_cluster(name)?.find('p').map(|at| at + 2)
+}
+
+/// An argument whose value is the next argument: a bare secret flag (`--password`, `-Token`),
+/// a bare credential flag (`--user`, `-u`, `-sSu`, `-#u`) or a cluster whose first `p` ends it
+/// (`-vp`; a lone `-p` has its own rule in `mask_args`).
+fn takes_next_value(arg: &str) -> bool {
+    (bare_flag(arg) && secret_key_name(arg)) || bare_credential_flag(arg) || short_p_value(arg) == Some(arg.len())
 }
 
 /// Where a curl credential flag's value starts in a name read by `find_key`, if the name is one
@@ -842,7 +872,8 @@ const MAX_REFERENCE: usize = 256;
 /// variable reference (`${GITHUB_TOKEN}`, `$TOKEN`, `{env:API_KEY}`, `%TOKEN%`) is a reference,
 /// not a key; `${TOKEN:-fallback}` is a key whose value is the fallback. A curl credential flag
 /// is a key too (`credential_flag_value`); with a value attached (`-uapp:pw`) the masking starts
-/// right after its `u`. Linear in the line.
+/// right after its `u`, and a value attached to the first `p` of a cluster (`-ppw`, `-vp'pw'`)
+/// starts it right after the `p`. Linear in the line.
 fn find_key(line: &str, kind: Words) -> Option<KeyHit> {
     let bytes = line.as_bytes();
     let mut i = 0usize;
@@ -858,15 +889,30 @@ fn find_key(line: &str, kind: Words) -> Option<KeyHit> {
             i += 1;
             continue;
         }
+        // A short option cluster may hold curl's `#` (`-#uapp:pw`; sol-loop N38).
+        let cluster = b == b'-' && bytes.get(i + 1).is_some_and(|&next| next != b'-');
         let mut end = i;
-        while end < bytes.len() && name_byte(bytes[end]) {
+        while end < bytes.len() && (name_byte(bytes[end]) || (cluster && bytes[end] == b'#')) {
             end += 1;
         }
         let name = &line[i..end];
-        if let Some(value) = credential_flag_value(name) {
-            if i + value < end {
-                return Some(KeyHit { start: i, kept: i + value, separator: false });
+        // A password attached to the first `p` of a short cluster (`-pcanary`, `-p'canary'`,
+        // `-vpcanary`; mysql and sshpass, sol-loop N36/N39) is masked to the end of the text,
+        // quotes and all. Only an attached value counts: `npx -p pkg`, `docker -p 80:80` and
+        // `mkdir -p dir` stay, and so does an attached pure reference (`-p${DB_PASS}`). The `-` of
+        // a `${NAME:-fallback}` is not an option (`${DB_URL:-postgres://...}`).
+        let fallback = i > 0 && bytes[i - 1] == b':';
+        let p_value = short_p_value(name).filter(|_| !fallback).map(|at| i + at).filter(|&at| {
+            at < bytes.len() && !matches!(bytes[at], b' ' | b'\t') && {
+                let word_end = line[at..].find([' ', '\t']).map_or(line.len(), |p| at + p);
+                !is_env_reference(&line[at..word_end])
             }
+        });
+        let u_value = credential_flag_value(name).map(|at| i + at).filter(|&at| at < end);
+        if let Some(at) = [p_value, u_value].into_iter().flatten().min() {
+            return Some(KeyHit { start: i, kept: at, separator: false });
+        }
+        if credential_flag_value(name).is_some() {
             return Some(key_hit(line, i, end, false));
         }
         let key = may_name_secret(name)
@@ -2204,9 +2250,7 @@ fn build_server(
     // Some configs put a whole command line in "command" (PRIV-3): mask it like an argument.
     let command = command.map(|c| {
         if let Some(names) = extract_var_names(&c) {
-            for name in names {
-                push_unique(&mut referenced, name);
-            }
+            extend_unique(&mut referenced, names);
         }
         let (shown, count) = mask_arg_value(&c);
         masked += count;
@@ -5347,6 +5391,175 @@ mod masking_round_12 {
     fn round_12_canary_sweep_shows_no_secret() {
         let (cases, leaked, leaks) = sweep();
         println!("round 12 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+#[cfg(test)]
+mod masking_round_13 {
+    use super::*;
+
+    /// Texts run through `mask_preview`, `mask_arg_value` and `mask_args` with the text as one
+    /// argument (the shell-string path), with no `-u` before the `-p`.
+    const CANARY_TEXTS: &[&str] = &[
+        // N36: an attached `-p` password in a text.
+        "mysql -pcanarypw301 db",
+        "sshpass -p'canarypw302' ssh h",
+        "sshpass -p\"canarypw 303\" ssh h",
+        "mysql -p=canarypw304 db",
+        "mysql -p.canarypw305 db",
+        "sh -c 'mysql -pcanarypw306 db'",
+        // N39: a `p` inside a short cluster.
+        "sshpass -vpcanarypw307 ssh h",
+        "mysql -hdb -Cpcanarypw308 db",
+        "sshpass -vp'canarypw309' ssh h",
+        // N38: curl's `#` in a cluster.
+        "curl -#uapp:canarypw310 x",
+        "curl -#u app:canarypw311 x",
+        "curl -s#Uapp:canarypw312 x",
+    ];
+
+    /// Argument lists for `mask_args`.
+    const CANARY_ARGS: &[&[&str]] = &[
+        // N37: the argument consumed as a value is itself a bare secret or credential flag.
+        &["--enable-auth", "--api-key", "canarypw313"],
+        &["-u", "--api-key", "canarypw314"],
+        &["--password", "--token", "canarypw315"],
+        &["-u", "-u", "canarypw316"],
+        &["-u", "-sSu", "canarypw317"],
+        &["--api-key", "Authorization:", "canarypw318"],
+        &["--secret", "-#u", "canarypw319"],
+        &["-u", "-p", "canarypw320"],
+        &["-u", "-vp", "canarypw321"],
+        &["-p", "Authorization:", "canarypw322"],
+        // N38.
+        &["-#u", "app:canarypw323"],
+        &["-#uapp:canarypw324"],
+        &["-s#u", "canarypw325"],
+        &["-#U", "proxy:canarypw326"],
+        // N39.
+        &["sshpass", "-vpcanarypw327", "ssh", "h"],
+        &["-vp", "canarypw328"],
+        &["-vp'canarypw329'"],
+        &["-#pcanarypw330"],
+        &["-1pcanarypw331"],
+        &["sshpass", "-vp", "canarypw332", "ssh", "h"],
+        &["-up", "canarypw333"],
+        &["-vpucanarypw334"],
+        // N36 and N39 on the shell-string path after `-c`.
+        &["-c", "mysql -pcanarypw335 db"],
+        &["-c", "sshpass -p'canarypw336' ssh h"],
+        &["-c", "sshpass -vpcanarypw337 ssh h"],
+        &["-c", "curl -#uapp:canarypw338 x"],
+    ];
+
+    fn sweep() -> (usize, usize, Vec<String>) {
+        let mut leaks: Vec<String> = Vec::new();
+        let mut leaked_cases = 0usize;
+        for text in CANARY_TEXTS {
+            assert!(text.contains("canarypw"), "{text}");
+            let outputs = [
+                ("mask_preview", mask_preview(text).0),
+                ("mask_arg_value", mask_arg_value(text).0),
+                ("mask_args", mask_args(&[text.to_string()]).0.join(" ")),
+            ];
+            let before = leaks.len();
+            for (masker, out) in outputs {
+                if out.contains("canarypw") {
+                    leaks.push(format!("{masker}: {text:?}  ->  {out:?}"));
+                }
+            }
+            leaked_cases += usize::from(leaks.len() > before);
+        }
+        for args in CANARY_ARGS {
+            assert!(args.iter().any(|a| a.contains("canarypw")), "{args:?}");
+            let list: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            let out = mask_args(&list).0;
+            if out.join(" ").contains("canarypw") {
+                leaks.push(format!("mask_args: {args:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        (CANARY_TEXTS.len() + CANARY_ARGS.len(), leaked_cases, leaks)
+    }
+
+    #[test]
+    fn the_round_13_findings_are_masked() {
+        let run = |list: &[&str]| mask_args(&list.iter().map(|s| s.to_string()).collect::<Vec<_>>()).0;
+        let masked_after = |kept: &str| format!("{kept}{MASKED}");
+        for (list, expected) in [
+            // N37: a consumed secret or credential flag keeps its own pending value.
+            (&["--enable-auth", "--api-key", "pw", "x"][..], vec!["--enable-auth".to_string(), MASKED.into(), MASKED.into(), "x".into()]),
+            (&["-u", "--api-key", "x", "y"], vec!["-u".into(), MASKED.into(), MASKED.into(), "y".into()]),
+            (&["-u", "--verbose", "x"], vec!["-u".into(), MASKED.into(), "x".into()]),
+            (&["-u", "--api-key", "${KEY}", "x"], vec!["-u".into(), MASKED.into(), "${KEY}".into(), "x".into()]),
+            // N38: `#` is a cluster character.
+            (&["-#u", "app:pw"], vec!["-#u".into(), MASKED.into()]),
+            (&["-#uapp:pw", "x"], vec![masked_after("-#u"), "x".into()]),
+            (&["-#", "x"], vec!["-#".into(), "x".into()]),
+            // N39: everything after the first `p` of a cluster; a `p` ending it takes the next one.
+            (&["-vppw", "ssh"], vec![masked_after("-vp"), "ssh".into()]),
+            (&["-vp", "pw", "ssh"], vec!["-vp".into(), MASKED.into(), "ssh".into()]),
+            (&["-vp${PASS}", "ssh"], vec!["-vp${PASS}".into(), "ssh".into()]),
+            (&["-up", "pw"], vec![masked_after("-u"), MASKED.into()]),
+            (&["-vpu", "x"], vec![masked_after("-vp"), MASKED.into()]),
+            (&["-v", "x"], vec!["-v".into(), "x".into()]),
+            // A lone `-p` keeps its N26 rule.
+            (&["-p", "8080:80"], vec!["-p".into(), "8080:80".into()]),
+        ] {
+            assert_eq!(run(list), expected, "{list:?}");
+        }
+        // N36/N39 in a text, through every entry point: an attached value is masked to the end.
+        for (text, expected) in [
+            ("mysql -ppw db", format!("mysql -p{MASKED}")),
+            ("sshpass -p'pw' ssh h", format!("sshpass -p{MASKED}")),
+            ("sshpass -vppw ssh h", format!("sshpass -vp{MASKED}")),
+            ("curl -#uapp:pw x", format!("curl -#u{MASKED}")),
+            ("curl -#u app:pw x", format!("curl -#u {MASKED}")),
+        ] {
+            assert_eq!(mask_preview(text).0, expected, "{text}");
+            assert_eq!(mask_arg_value(text).0, expected, "{text}");
+            assert_eq!(mask_args(&[text.to_string()]).0, vec![expected.clone()], "{text}");
+        }
+        // Attached-only: a separate `-p` value, an attached pure reference and the `-` of a
+        // `${NAME:-fallback}` stay.
+        for text in [
+            "npx -p @scope/server",
+            "npx -p pkg",
+            "docker -p 80:80 image",
+            "mkdir -p dir",
+            "mysql -p${DB_PASS} db",
+            "sshpass -vp$SSHPASS ssh h",
+        ] {
+            assert_eq!(mask_preview(text), (text.to_string(), 0), "{text}");
+            assert_eq!(mask_arg_value(text), (text.to_string(), 0), "{text}");
+            assert_eq!(mask_args(&[text.to_string()]).0, vec![text.to_string()], "{text}");
+        }
+    }
+
+    #[test]
+    fn many_references_in_one_argument_are_read_in_linear_time() {
+        // N40: `${V0}` .. `${V99999}` in one argument (888,890 bytes).
+        let arg: String = (0..100_000).map(|n| format!("${{V{n}}}")).collect();
+        assert_eq!(arg.len(), 888_890);
+        let started = std::time::Instant::now();
+        let (out, names, _) = mask_args(&[arg.clone()]);
+        assert!(!is_env_reference(&arg));
+        let elapsed = started.elapsed();
+        assert_eq!(names.len(), 100_000);
+        assert_eq!((names[0].as_str(), names[99_999].as_str()), ("V0", "V99999"));
+        assert_eq!(out, vec![arg]);
+        assert!(elapsed < std::time::Duration::from_secs(1), "{elapsed:?}");
+        println!("100,000 references: {elapsed:?}");
+    }
+
+    #[test]
+    fn round_13_canary_sweep_shows_no_secret() {
+        let (cases, leaked, leaks) = sweep();
+        println!("round 13 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
         for leak in &leaks {
             println!("LEAK {leak}");
         }
