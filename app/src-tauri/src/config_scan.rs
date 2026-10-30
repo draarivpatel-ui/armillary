@@ -4174,6 +4174,8 @@ mod masking_round_5 {
     #[test]
     fn long_lines_are_masked_in_linear_time() {
         // A rules file is masked whole before its preview is cut, so one long line must not hang.
+        // The time bounds catch quadratic blowups (one input once took 346 s), not speed: debug builds on a
+        // loaded machine took about 2 s here, so the bounds are 10 s.
         let pairs = "k=v&".repeat(50_000);
         let json = format!("{{{}\"token\":\"canarypw\"}}", r#""name":"a","#.repeat(20_000));
         let words = "password: a ".repeat(20_000);
@@ -4183,7 +4185,7 @@ mod masking_round_5 {
             assert!(!mask_preview(text).0.contains("canarypw"));
             assert!(!mask_arg_value(text).0.contains("canarypw"));
             let elapsed = started.elapsed();
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..40]);
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?} for {}", &text[..40]);
         }
         let (out, n) = mask_arg_value("curl --user=admin:canarypw https://api.example");
         // sol-loop round 10 (N27): the whole `--user` value is masked, user name included; round
@@ -4446,7 +4448,7 @@ mod masking_round_6 {
             assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes starting {:?}", text.len(), &text[..12]);
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..12]);
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?} for {}", &text[..12]);
         }
     }
 }
@@ -4593,7 +4595,7 @@ mod masking_round_7 {
             assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes starting {:?}", text.len(), &text[..12]);
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..12]);
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?} for {}", &text[..12]);
         }
     }
 
@@ -4768,7 +4770,7 @@ mod masking_round_8 {
             assert!(!mask_url(text).0.contains("canarypw") || !text.contains("://"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes starting {:?}", text.len(), &text[..12]);
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..12]);
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?} for {}", &text[..12]);
         }
     }
 
@@ -4890,7 +4892,7 @@ mod masking_round_9 {
             assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes", text.len());
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?}");
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?}");
         }
     }
 
@@ -5079,7 +5081,7 @@ mod masking_round_10 {
             assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes", text.len());
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?}");
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?}");
         }
     }
 
@@ -5249,7 +5251,7 @@ mod masking_round_11 {
             assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
             let elapsed = started.elapsed();
             println!("{elapsed:?} for {} bytes", text.len());
-            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?}");
+            assert!(elapsed < std::time::Duration::from_secs(10), "{elapsed:?}");
         }
     }
 
