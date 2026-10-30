@@ -176,10 +176,10 @@
           "path": "~/.claude/CLAUDE.md",
           "format": "markdown",
           "exists": true,
-          "preview": "# Synthetic global rules for Claude Code\n\nEverything in this file is invented test data for the Switchboard fixtures.\n\n- Pin exact dependency versions.\n- Tests first, then implementation.\n- Never open a credential file.\n\nExport API_TOKEN=[masked] before running the suite.",
+          "preview": "# Synthetic global rules for Claude Code\n\nEverything in this file is invented test data for the Switchboard fixtures.\n\n- Pin exact dependency versions.\n- Tests first, then implementation.\n- Never open a credential [masked]\n\nExport API_TOKEN=[masked]",
           "truncated": false,
           "lineCount": 9,
-          "maskedValues": 1
+          "maskedValues": 2
         },
         {
           "agent": "claude-code",
@@ -506,7 +506,7 @@
           "path": "~/.gemini/GEMINI.md",
           "format": "markdown",
           "exists": true,
-          "preview": "# Synthetic global GEMINI.md\n\nInvented data for the Switchboard fixtures.\n\n- Prefer the declarative adapter engine over hand written parsers.\n\nSet GEMINI_API_KEY=[masked] to try a new model.",
+          "preview": "# Synthetic global GEMINI.md\n\nInvented data for the Switchboard fixtures.\n\n- Prefer the declarative adapter engine over hand written parsers.\n\nSet GEMINI_API_KEY=[masked]",
           "truncated": false,
           "lineCount": 7,
           "maskedValues": 1
@@ -518,10 +518,10 @@
           "path": "webapp/GEMINI.md",
           "format": "markdown",
           "exists": true,
-          "preview": "# Synthetic project GEMINI.md\n\n- Reuse the design tokens instead of hard coded colors.",
+          "preview": "# Synthetic project GEMINI.md\n\n- Reuse the design tokens [masked]",
           "truncated": false,
           "lineCount": 3,
-          "maskedValues": 0
+          "maskedValues": 1
         }
       ],
       "skipped": [
@@ -648,10 +648,10 @@
           "path": "~/.cursor/rules/010-global-standards.mdc",
           "format": "mdc",
           "exists": true,
-          "preview": "---\ndescription: Synthetic Cursor user rules\nglobs:\nalwaysApply: true\n---\n\n# Global Cursor rules (synthetic)\n\n- Match the existing naming style in a file before adding your own.\n- Never log a token, even in debug builds.",
+          "preview": "---\ndescription: Synthetic Cursor user rules\nglobs:\nalwaysApply: true\n---\n\n# Global Cursor rules (synthetic)\n\n- Match the existing naming style in a file before adding your own.\n- Never log a token[masked]",
           "truncated": false,
           "lineCount": 10,
-          "maskedValues": 0
+          "maskedValues": 1
         },
         {
           "agent": "cursor",
@@ -663,7 +663,7 @@
           "preview": "---\ndescription: Synthetic Cursor project rules\nglobs: \"**/*.ts,**/*.tsx\"\nalwaysApply: false\n---\n\n# Branch and file naming (synthetic fixture)\n\nThis file is intentionally long so the Switchboard preview truncation is exercised by the\nfixture instead of by a hand written string in the test.\n\nRule 01: name branches by intent, not by ticket alone.",
           "truncated": true,
           "lineCount": 31,
-          "maskedValues": 0
+          "maskedValues": 3
         },
         {
           "agent": "cursor",
@@ -1563,5 +1563,5 @@
     "webapp"
   ],
   "serverCount": 41,
-  "maskedValueCount": 10
+  "maskedValueCount": 16
 }

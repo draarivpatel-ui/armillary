@@ -25,7 +25,8 @@ describe("Switchboard Acceptance Tests", () => {
         "cline",
       ]);
       expect(snapshot.serverMatrix.length).toBeGreaterThan(0);
-      expect(snapshot.maskedValueCount).toBe(10);
+      // sol-loop round 6: prose after a secret key is masked too (golden snapshot 10 to 16).
+      expect(snapshot.maskedValueCount).toBe(16);
     });
   });
 
