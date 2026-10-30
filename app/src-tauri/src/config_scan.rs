@@ -308,7 +308,7 @@ pub fn secret_key_name(name: &str) -> bool {
         .to_ascii_lowercase()
         .replace('-', "_");
     SECRET_KEY_WORDS.iter().any(|word| normalized.contains(word))
-        || normalized.split('_').any(|part| SECRET_KEY_WHOLE_WORDS.contains(&part))
+        || normalized.split(['_', '.']).any(|part| SECRET_KEY_WHOLE_WORDS.contains(&part))
 }
 
 /// A value that is plainly not a secret even after a secret-sounding flag: a short number
@@ -628,6 +628,12 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
                     out.push(format!("{flag}={value}"));
                 }
                 secret_flag_follows = false;
+            } else if arg.contains(char::is_whitespace) {
+                // "--token ${T:-x}" as one argument is a shell string, not a flag.
+                let (value, count) = mask_arg_value(arg);
+                masked += count;
+                out.push(value);
+                secret_flag_follows = false;
             } else {
                 secret_flag_follows = secret_key_name(arg);
                 out.push(arg.clone());
@@ -657,164 +663,455 @@ fn is_auth_scheme(word: &str) -> bool {
 /// A header whose value may start with one scheme word before the credential.
 fn is_authorization_key(key: &str) -> bool {
     matches!(
-        key.trim_matches(['"', '\'', '`', '*', '{', '[', '(', ',']).to_ascii_lowercase().as_str(),
+        key.trim_matches(['"', '\'', '`', '*', '{', '[', '(', ',', '\\']).to_ascii_lowercase().as_str(),
         "authorization" | "proxy-authorization"
     )
 }
 
-/// The quote a word opens and does not close (`"Bearer`, `'two`): the words up to the closing
-/// quote belong to the same value.
-fn open_quote(word: &str) -> Option<char> {
-    let quote = word.chars().next().filter(|c| matches!(c, '"' | '\'' | '`'))?;
-    (!closes_quote(&word[1..], quote)).then_some(quote)
+/// A key as written, without the quotes, braces, brackets, commas, backslashes and markdown
+/// around it: `{"key"`, `\"password\"`, `**Token**` and `${DB_PASSWORD` all read as the name.
+fn bare_key(key: &str) -> &str {
+    key.trim_matches(|c: char| !(c.is_alphanumeric() || matches!(c, '_' | '-' | '.')))
 }
 
-fn closes_quote(word: &str, quote: char) -> bool {
-    word.trim_end_matches([',', ';', '}', ']', ')']).ends_with(quote)
+/// A word made only of a separator (`:`, `=`, `=>`, `:=`, `**:**`): the key before it names the
+/// value after.
+fn separator_only(word: &str) -> bool {
+    let tail = word.trim_end_matches(['*', '`']);
+    !tail.is_empty() && tail.trim_end_matches([':', '=', '>']).is_empty()
 }
 
-/// A `key:value` or `key=value` word whose key names a secret, split into key and value.
-fn compact_secret(word: &str) -> Option<(&str, &str)> {
-    let (key, rest) = word.split_once([':', '='])?;
-    let name = key.trim_matches(['"', '\'', '`', '*', '{', '[', '(', ',']);
-    (!name.is_empty() && !rest.is_empty() && secret_key_name(name)).then_some((key, rest))
+/// Characters that may come before a value's opening quote and keep it a quote: escapes
+/// (`\"`), shell `$'..'`, and string prefixes (`r"..."`, `b'..'`, `@"..."`).
+fn quote_prefix(c: char) -> bool {
+    matches!(c, '\\' | '$' | '@' | 'r' | 'R' | 'b' | 'B' | 'f' | 'F' | 'u' | 'U')
 }
 
-/// The secret value after a key, word by word (sol-loop N6/N9). The value is the next word,
-/// or every word up to the closing quote when it opens one. Only after `Authorization` or
-/// `Proxy-Authorization` may its first word be one scheme (`Bearer`, `Basic`, `Token`) that stays
-/// visible; the credential after it is masked whatever it is spelled like.
+/// True when a value word opens with a quote or a bracket (after a prefix such as `$` or `r`).
+fn starts_quoted(word: &str) -> bool {
+    word.trim_start_matches(quote_prefix).starts_with(['"', '\'', '`', '{', '['])
+}
+
+/// A word that is only a variable reference, possibly quoted or followed by a comma:
+/// `${TOKEN}`, `"${TOKEN}",`.
+fn reference_word(word: &str) -> bool {
+    is_env_reference(word.trim_end_matches([',', ';']).trim_matches(['"', '\'', '`']))
+}
+
+/// A quote a secret value opened. `escapes` counts the backslashes right before the opening
+/// quote: `"x"` opens at 0, `\"x\"` (JSON inside a shell string) at 1.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct Quote {
+    ch: char,
+    escapes: usize,
+}
+
+impl Quote {
+    /// True when `ch` with `escapes` backslashes right before it closes this quote. An escaped
+    /// quote (`\"` inside `"..."`) does not close it (sol-loop N10).
+    fn closed_by(self, ch: char, escapes: usize) -> bool {
+        ch == self.ch && if self.escapes == 0 { escapes % 2 == 0 } else { escapes == self.escapes }
+    }
+}
+
+/// What a secret value still has open at the end of a word: a quote, or brackets.
+#[derive(Clone, Copy, Debug, Default)]
+struct Open {
+    quote: Option<Quote>,
+    depth: usize,
+}
+
+impl Open {
+    fn is_open(&self) -> bool {
+        self.quote.is_some() || self.depth > 0
+    }
+}
+
+/// Walk a secret value in `word` from byte `start`, already inside `open`. Returns the byte
+/// where the value ends in this word and what is still open at the end of the word. A quote
+/// opens the value only as its first character (after a `quote_prefix`); a doubled quote
+/// (`'it''s'`, `"""`) stays inside it; inside brackets every quote and nested bracket is
+/// followed. Outside both, the value ends at `,` `}` `]` when the word is `structured` (JSON,
+/// an inline table) and otherwise runs to the end of the word.
+fn walk_value(word: &str, start: usize, mut open: Open, structured: bool) -> (usize, Open) {
+    let mut chars = word[start..].char_indices().map(|(offset, c)| (start + offset, c)).peekable();
+    let mut escapes = 0usize;
+    // Only prefix characters so far: a quote here still opens the value.
+    let mut prefix_only = true;
+    while let Some((at, c)) = chars.next() {
+        if c == '\\' {
+            escapes += 1;
+            continue;
+        }
+        let before = std::mem::take(&mut escapes);
+        if let Some(quote) = open.quote {
+            prefix_only = false;
+            if quote.closed_by(c, before) {
+                if quote.escapes == 0 && chars.peek().is_some_and(|&(_, next)| next == c) {
+                    chars.next();
+                } else {
+                    open.quote = None;
+                }
+            }
+            continue;
+        }
+        let first = prefix_only;
+        prefix_only = prefix_only && quote_prefix(c);
+        match c {
+            '"' | '\'' | '`' if first || open.depth > 0 => open.quote = Some(Quote { ch: c, escapes: before }),
+            '{' | '[' if first || open.depth > 0 => open.depth += 1,
+            '}' | ']' if open.depth > 0 => open.depth -= 1,
+            ',' | '}' | ']' if structured && open.depth == 0 => return (at, open),
+            _ => {}
+        }
+    }
+    (word.len(), open)
+}
+
+/// Where an unquoted value after a spaced separator ends. YAML and INI values run to the end of
+/// the line (`password: correct horse battery`), so every word is masked until then, or until
+/// the word that closes the quote the key opened (`"X-Api-Key: a b" https://...`), or until a
+/// word ending in `,` `}` `]` inside an inline table (`{token: a b, user: c}`).
+#[derive(Clone, Copy, Debug, Default)]
+struct Until {
+    outer: Option<char>,
+    flow: bool,
+}
+
+impl Until {
+    /// The quote a key word opened and did not close before its separator (`"X-Api-Key:`).
+    fn for_key(key_word: &str, flow: bool) -> Until {
+        let outer = key_word
+            .chars()
+            .next()
+            .filter(|q| matches!(q, '"' | '\'' | '`') && key_word.matches(*q).count() % 2 == 1);
+        Until { outer, flow }
+    }
+
+    fn ends_at(self, word: &str) -> bool {
+        let closing = word.trim_end_matches([',', ';', ')', '}', ']']);
+        self.outer.is_some_and(|q| closing.ends_with(q)) || (self.flow && word.ends_with([',', '}', ']']))
+    }
+}
+
+/// The secret value after a key, word by word (sol-loop N6/N9/N10). The value is the next
+/// word, every word up to its closing quote or bracket when it opens one, and, after a spaced
+/// separator, every word to the end of the value (`Until`). Only after `Authorization` or
+/// `Proxy-Authorization` may its first word be one scheme (`Bearer`, `Basic`, `Token`) that
+/// stays visible; the credential after it is masked whatever it is spelled like.
 #[derive(Default)]
 struct SecretValue {
     /// The next word starts the value (or is the credential after a kept scheme).
     pending: bool,
     /// The next word may be the one scheme word.
     scheme_allowed: bool,
-    /// The value opened this quote: every word up to its closing quote is masked.
-    quote: Option<char>,
+    /// The value opened a quote or brackets: every word until they close is masked.
+    open: Open,
+    /// The value may run over several unquoted words; while not pending, it still does.
+    until: Option<Until>,
 }
 
 impl SecretValue {
-    /// A key that names a secret ends this word; the value starts at the next word.
-    fn start(&mut self, authorization: bool) {
-        *self = SecretValue { pending: true, scheme_allowed: authorization, quote: None };
+    /// A key that names a secret ends this word; the value starts at the next word. `until` is
+    /// set after a separator (`password: a b`) and not after a flag (`--password a`).
+    fn start(&mut self, authorization: bool, until: Option<Until>) {
+        *self = SecretValue { pending: true, scheme_allowed: authorization, open: Open::default(), until };
     }
 
-    /// The scheme word was kept (`Bearer`, or `Authorization:"Bearer` with the key attached);
-    /// the credential follows it.
+    /// The scheme word was kept (`Bearer`, `"Bearer`, `Authorization:Bearer`); the credential
+    /// follows it, inside the quote the scheme opened when it opened one.
     fn after_scheme(&mut self, scheme: &str) {
-        self.quote = open_quote(scheme);
-        self.pending = self.quote.is_none();
-        self.scheme_allowed = false;
+        let (_, open) = walk_value(scheme, 0, Open::default(), false);
+        *self = SecretValue { pending: !open.is_open(), scheme_allowed: false, open, until: None };
     }
 
-    /// A compact `key="first word` was masked whole; the rest of its quoted value follows.
-    fn after_compact(&mut self, value: &str) {
-        *self = SecretValue { pending: false, scheme_allowed: false, quote: open_quote(value) };
+    /// A value word was masked whole; what it leaves open, or what the text after its end
+    /// starts (`"a",token:"b`), carries to the next word.
+    fn after_value(&mut self, word: &str, open: Open, end: usize) {
+        *self = SecretValue { pending: false, scheme_allowed: false, open, until: None };
+        if !open.is_open() && end < word.len() {
+            let _ = mask_compact(&word[end..], self, true);
+        }
     }
 
     /// The word as shown when it belongs to the value, or None when the caller masks it as an
     /// ordinary word (it is not part of a value, or it is a variable reference).
     fn take(&mut self, word: &str, masked: &mut usize) -> Option<String> {
-        if let Some(quote) = self.quote {
-            if closes_quote(word, quote) {
-                self.quote = None;
+        if self.open.is_open() {
+            let (end, open) = walk_value(word, 0, self.open, true);
+            self.after_value(word, open, end);
+            *masked += 1;
+            return Some(MASKED.to_string());
+        }
+        if !self.pending {
+            let until = self.until.take()?;
+            if !until.ends_at(word) {
+                self.until = Some(until);
             }
             *masked += 1;
             return Some(MASKED.to_string());
         }
         let scheme_allowed = std::mem::take(&mut self.scheme_allowed);
-        if !std::mem::take(&mut self.pending) || is_env_reference(word) {
+        self.pending = false;
+        let until = self.until.take();
+        let (end, open) = walk_value(word, 0, Open::default(), true);
+        let quoted = starts_quoted(word);
+        let continues = |secret: &mut SecretValue| {
+            if let Some(until) = until.filter(|until| !quoted && !until.ends_at(word)) {
+                if !secret.open.is_open() && !secret.pending {
+                    secret.until = Some(until);
+                }
+            }
+        };
+        if !open.is_open() && reference_word(word) {
+            continues(self);
             return None;
         }
         if scheme_allowed && is_auth_scheme(word) {
             self.after_scheme(word);
             return Some(word.to_string());
         }
-        self.quote = open_quote(word);
+        self.after_value(word, open, end);
+        continues(self);
         *masked += 1;
         Some(MASKED.to_string())
     }
 }
 
-/// Mask one argument value: word by word when it holds spaces (a shell string or a header),
-/// otherwise as a single word.
-fn mask_arg_value(value: &str) -> (String, usize) {
-    if is_env_reference(value) {
-        return (value.to_string(), 0);
+/// Mask the value after EVERY secret key in a word with no spaces, not only the first
+/// (sol-loop S1/N6/N9): `{"headers":{"Authorization":"Bearer`, `{"key":"x"}`,
+/// `[{"name":"a","token":"x"}]`, `PASSWORD="a`, `Server=db;Password=x`. Each `:` and `=` is a
+/// separator; the key is the text back to the previous separator, brace, bracket, comma, `;`,
+/// `&` or `?`, read without its quotes (`bare_key`). A `${NAME:-x}` reference is not a pair.
+/// The value runs to its end (`walk_value`); what it leaves open carries to the next words
+/// through `secret`. Text between values goes through `mask_word`. None when no secret key.
+fn mask_compact(word: &str, secret: &mut SecretValue, flow: bool) -> Option<(String, usize)> {
+    let bytes = word.as_bytes();
+    let mut out = String::new();
+    let mut masked = 0usize;
+    let mut copied = 0usize;
+    let mut key_start = 0usize;
+    let mut found = false;
+    // A brace or bracket came before: JSON or an inline table, where `,` `}` `]` end a value.
+    let mut structured = false;
+    let mut i = 0usize;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'$' if bytes.get(i + 1) == Some(&b'{') => {
+                i = word[i..].find('}').map_or(bytes.len(), |end| i + end + 1);
+                continue;
+            }
+            b'{' | b'[' => {
+                structured = true;
+                key_start = i + 1;
+            }
+            b'(' | b',' | b';' | b'&' | b'?' => key_start = i + 1,
+            b':' | b'=' => {
+                let key = bare_key(&word[key_start..i]);
+                let mut value_start = i + 1;
+                while matches!(bytes.get(value_start), Some(b'=' | b'>')) {
+                    value_start += 1;
+                }
+                let is_secret = !key.is_empty() && secret_key_name(key);
+                // A scheme that ends the word names the next word as the credential, whatever
+                // the key: `"value":"Bearer` (a header list), `Authorization:Bearer`.
+                let scheme_last = bytes.len() - value_start <= 8 && is_auth_scheme(&word[value_start..]);
+                if !is_secret && !scheme_last {
+                    key_start = i + 1;
+                    i += 1;
+                    continue;
+                }
+                let (end, open) = walk_value(word, value_start, Open::default(), structured);
+                let value = &word[value_start..end];
+                found = true;
+                let (before, count) = mask_word(&word[copied..key_start]);
+                out.push_str(&before);
+                masked += count;
+                out.push_str(&word[key_start..value_start]);
+                if value_start == bytes.len() || value.trim_matches(['*', '`']).is_empty() {
+                    // `password:` or `**Token:**`: the value is the next word.
+                    out.push_str(value);
+                    let until = Until::for_key(&word[key_start..i], flow || structured);
+                    secret.start(is_authorization_key(key), Some(until));
+                } else if scheme_last && (is_authorization_key(key) || !is_secret) {
+                    out.push_str(value);
+                    secret.after_scheme(value);
+                } else if value.starts_with(MASKED) || (!open.is_open() && reference_word(value)) {
+                    out.push_str(value);
+                } else {
+                    out.push_str(MASKED);
+                    masked += 1;
+                    *secret = SecretValue { pending: false, scheme_allowed: false, open, until: None };
+                }
+                copied = end;
+                key_start = end;
+                i = end;
+            }
+            _ => {}
+        }
+        i += 1;
     }
-    if !value.chars().any(char::is_whitespace) {
-        return mask_word(value);
+    if !found {
+        return None;
     }
+    let (rest, count) = mask_word(&word[copied.min(bytes.len())..]);
+    out.push_str(&rest);
+    Some((out, masked + count))
+}
+
+/// One word with nothing around it: a URL goes to the URL masker, any other word has its secret
+/// keys found first (`mask_compact`) and is then masked as a word.
+fn mask_token(word: &str, secret: &mut SecretValue, flow: bool) -> (String, usize) {
+    let url = word.find("://").is_some_and(|end| {
+        end > 0 && word[..end].chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '+' | '-' | '.'))
+    });
+    if url {
+        return mask_word(word);
+    }
+    mask_compact(word, secret, flow).unwrap_or_else(|| mask_word(word))
+}
+
+/// How a run of words is read: a rules preview (prose and config text) or a server argument
+/// (a shell string or a header), where `Basic` and `Token` on their own also start a
+/// credential.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Words {
+    Preview,
+    Argument,
+}
+
+/// Mask a line of words with one shared rule set (sol-loop S1): the value after a secret key
+/// written `key: x`, `key = x`, `key=x`, `"key": "x"`, `{"key":"x"}`, `--key x`, the credential
+/// after a scheme, `-u user:password`, every value after `Cookie:`, and every word the word
+/// masker finds (URLs, `user:password@host`, token shaped words).
+fn mask_words(text: &str, kind: Words) -> (String, usize) {
     let mut masked = 0usize;
     let mut secret = SecretValue::default();
     let mut mask_rest = false;
+    let mut user_follows = false;
+    // A secret key word with no separator (`password`, `"Authorization"`): when the next word is
+    // only `:` or `=`, the value starts after it. Holds whether it is an Authorization key and
+    // where its value ends.
+    let mut key_before: Option<(bool, Until)> = None;
+    // The word before ends an inline table's opening (`{`, `[`) or a pair (`,`).
+    let mut flow = false;
     let mut words: Vec<String> = Vec::new();
-    for word in value.split_whitespace() {
+    for word in text.split_whitespace() {
+        let after_flow = std::mem::replace(&mut flow, word.ends_with(['{', '[', ',']));
         // "Cookie: a=1; b=2": every word after the header name is the secret.
         if mask_rest {
             masked += 1;
             words.push(MASKED.to_string());
             continue;
         }
-        // The value after a secret key ("--password basic", "Authorization: Bearer token").
+        if let Some((authorization, until)) = key_before.take() {
+            if separator_only(word) {
+                secret.start(authorization, Some(until));
+                words.push(word.to_string());
+                continue;
+            }
+        }
         if let Some(shown) = secret.take(word, &mut masked) {
             words.push(shown);
             continue;
         }
-        if let Some(key) = word.strip_suffix(':') {
-            if matches!(key.to_ascii_lowercase().as_str(), "cookie" | "set-cookie") {
+        let key = bare_key(word);
+        if !word.trim_start_matches(':').contains([':', '=']) && !key.is_empty() && secret_key_name(key) {
+            let until = Until::for_key(word, after_flow || word.starts_with(['{', '[']));
+            key_before = Some((is_authorization_key(key), until));
+        }
+        if std::mem::take(&mut user_follows) {
+            if let Some((user, rest)) = word.split_once(':') {
+                if !rest.is_empty() && !is_env_reference(rest) && !digits_pair(word) {
+                    masked += 1;
+                    words.push(format!("{user}:{MASKED}"));
+                    continue;
+                }
+            }
+        }
+        if let Some(name) = word.strip_suffix(':') {
+            if matches!(bare_key(name).to_ascii_lowercase().as_str(), "cookie" | "set-cookie") {
                 words.push(word.to_string());
                 mask_rest = true;
                 continue;
             }
         }
-        // A scheme on its own ("Bearer x") names the next word as the credential.
-        if is_auth_scheme(word) {
+        // A scheme on its own ("Bearer x", `proxy_set_header Authorization "Bearer x"`) names
+        // the next word as the credential. In prose only `Bearer` does.
+        let scheme = match kind {
+            Words::Argument => is_auth_scheme(word),
+            Words::Preview => word.trim_matches(['"', '\'', '`']).eq_ignore_ascii_case("bearer"),
+        };
+        if scheme {
             words.push(word.to_string());
             secret.after_scheme(word);
             continue;
         }
-        // "Authorization:" or "X-Api-Key:" names the next word as the secret.
-        if let Some(key) = word.strip_suffix(':') {
-            if secret_key_name(key) {
-                words.push(word.to_string());
-                secret.start(is_authorization_key(key));
-                continue;
-            }
-        }
-        // "--api-key sk-..." inside a shell string.
-        if word.starts_with('-') && !word.contains('=') && secret_key_name(word) {
+        // curl's `-u user:password` and `--user=user:password`.
+        if word == "-u" || word == "--user" {
+            user_follows = true;
             words.push(word.to_string());
-            secret.start(false);
             continue;
         }
-        if let Some((key, rest)) = compact_secret(word) {
-            // "Authorization:Bearer" with the token in the next word. Any other key keeps no
-            // scheme: "X-Api-Key:basic" is masked as a whole word below.
-            if is_authorization_key(key) && is_auth_scheme(rest) {
-                words.push(word.to_string());
-                secret.after_scheme(rest);
+        if let Some((user, rest)) = word.strip_prefix("--user=").and_then(|value| value.split_once(':')) {
+            if !rest.is_empty() && !is_env_reference(rest) && !digits_pair(&word[7..]) {
+                masked += 1;
+                words.push(format!("--user={user}:{MASKED}"));
                 continue;
             }
-            let (word, count) = mask_word(word);
-            masked += count;
-            words.push(word);
-            if count > 0 {
-                secret.after_compact(rest);
-            }
+        }
+        // "--api-key sk-..." in a shell string, `"--api-key",` in an args list.
+        if key.starts_with('-') && !word.contains('=') && secret_key_name(key) {
+            words.push(word.to_string());
+            secret.start(false, None);
             continue;
         }
-        let (word, count) = mask_word(word);
+        let (shown, count) = mask_token(word, &mut secret, after_flow);
         masked += count;
-        words.push(word);
+        words.push(shown);
     }
     (words.join(" "), masked)
+}
+
+/// Mask one argument value: word by word when it holds spaces (a shell string or a header),
+/// otherwise as a single word, with the same rules (`mask_words`).
+fn mask_arg_value(value: &str) -> (String, usize) {
+    if is_env_reference(value) {
+        return (value.to_string(), 0);
+    }
+    mask_words(value, Words::Argument)
 }
 
 /// Mask one word: a URL keeps its scheme, host and plain path; `KEY=value` and `Key:value` keep
 /// the key when it or the value looks secret; a bare token shaped word is replaced.
 fn mask_word(word: &str) -> (String, usize) {
+    struct Depth;
+    impl Drop for Depth {
+        fn drop(&mut self) {
+            WORD_DEPTH.with(|depth| depth.set(depth.get() - 1));
+        }
+    }
+    let depth = WORD_DEPTH.with(|depth| {
+        depth.set(depth.get() + 1);
+        depth.get()
+    });
+    let _depth = Depth;
+    if depth > MAX_WORD_DEPTH {
+        return (MASKED.to_string(), 1);
+    }
+    mask_word_once(word)
+}
+
+thread_local! {
+    static WORD_DEPTH: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
+/// Nested masking (an assignment's value, a `${A:-...}` fallback, a URL inside a query value)
+/// is bounded: past this depth the rest of the word is masked whole, so one long line such as
+/// `k=v&k=v&...` cannot exhaust the stack (sol-loop S1, found by the round 5 bound test).
+const MAX_WORD_DEPTH: usize = 32;
+
+fn mask_word_once(word: &str) -> (String, usize) {
     if is_env_reference(word) {
         return (word.to_string(), 0);
     }
@@ -985,7 +1282,7 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
                     match value {
                         // `?value=${TOKEN:-literal}`: the fallback is masked like any word.
                         Some(v) => {
-                            let (v, count) = mask_word(&v);
+                            let (v, count) = mask_token(&v, &mut SecretValue::default(), false);
                             *masked += count;
                             format!("{key}={v}")
                         }
@@ -998,55 +1295,18 @@ fn mask_pairs(query: &str, names: &mut Vec<String>, masked: &mut usize) -> Strin
     }
 }
 
-/// Mask a rules preview word by word with the rules used for server arguments (`mask_word`:
-/// assignments, URLs and `user:password@host` credentials, bare token shaped words), and mask
-/// the value after a secret key written with a separator: `password: x`, `password = x`,
-/// `"token": "x"`, `**Password:** x`, `"Authorization": "Bearer x"` (see `SecretValue`).
+/// Mask a rules preview line by line with the rules used for server arguments (`mask_words`):
+/// assignments, URLs and `user:password@host` credentials, bare token shaped words, and the
+/// value after every secret key however it is written: `password: x`, `password = x`,
+/// `"token": "x"`, `**Password:** x`, `{"headers":{"Authorization":"Bearer x"}}`.
 pub fn mask_preview(text: &str) -> (String, usize) {
     let mut masked = 0usize;
     let lines: Vec<String> = text
         .lines()
         .map(|line| {
-            let mut secret = SecretValue::default();
-            let mut after_secret_key = false;
-            let mut auth_key = false;
-            line.split_whitespace()
-                .map(|token| {
-                    if let Some(shown) = secret.take(token, &mut masked) {
-                        after_secret_key = false;
-                        return shown;
-                    }
-                    let tail = token.trim_end_matches(['*', '`']);
-                    let bare = tail.trim_end_matches([':', '=']);
-                    let key = bare.trim_matches(['"', '\'', '`', '*']);
-                    // Only a bare key word names the next word as its value; "TOKEN=dGVzdA==" (a
-                    // padded value) and URLs are assignments the word masker handles itself.
-                    let standalone = !key.contains(['=', ':', '/', '@']);
-                    let secret_key = standalone && !key.is_empty() && secret_key_name(key);
-                    let separator = bare.len() < tail.len();
-                    if (separator && secret_key) || (bare.is_empty() && after_secret_key) {
-                        secret.start(if separator && secret_key { is_authorization_key(key) } else { auth_key });
-                        after_secret_key = false;
-                        return token.to_string();
-                    }
-                    after_secret_key = secret_key && !separator;
-                    auth_key = after_secret_key && is_authorization_key(key);
-                    // `{"Authorization":"Bearer x"}`: the key and the scheme in one word.
-                    if let Some((key, rest)) = compact_secret(token) {
-                        if is_authorization_key(key) && is_auth_scheme(rest) {
-                            secret.after_scheme(rest);
-                            return token.to_string();
-                        }
-                    }
-                    let (shown, count) = mask_word(token);
-                    masked += count;
-                    if let Some((_, rest)) = compact_secret(token).filter(|_| count > 0) {
-                        secret.after_compact(rest);
-                    }
-                    shown
-                })
-                .collect::<Vec<_>>()
-                .join(" ")
+            let (shown, count) = mask_words(line, Words::Preview);
+            masked += count;
+            shown
         })
         .collect();
     (lines.join("\n"), masked)
@@ -3701,5 +3961,180 @@ mod masking_round_2 {
             assert_eq!(args(input), input.iter().map(|s| s.to_string()).collect::<Vec<_>>(), "{input:?}");
         }
         assert_eq!(shown(&["ssh://git@github.com/org/repo.git"]), "ssh://git:[masked]@github.com/org/repo.git");
+    }
+}
+
+/// sol-loop round 5 (S1/N6/N9/N10): masking fails closed. Every `key:value` and `key=value`
+/// separator in a compact word is checked (not only the first), keys are read without their
+/// quotes, braces and brackets, and an escaped quote does not close a quoted value.
+#[cfg(test)]
+mod masking_round_5 {
+    use super::*;
+
+    /// One line per config syntax, each carrying a canary. Both maskers run on every line, and
+    /// `mask_args` with the line as one argument; no output may show any part of a canary.
+    const CANARY_LINES: &[&str] = &[
+        // JSON, pretty and minified, nested objects and arrays.
+        r#"{"password": "canarypw-1"}"#,
+        r#"{"password":"canarypw-2"}"#,
+        r#"{"key":"canarypw-3"}"#,
+        r#"{"headers":{"Authorization":"Bearer canarypw-4"}}"#,
+        r#"{"mcpServers":{"x":{"env":{"API_KEY":"canarypw-5"}}}}"#,
+        r#"{"servers":[{"name":"a","token":"canarypw-6"}]}"#,
+        r#"  "apiKey": "canarypw-7","#,
+        r#"{"secret":["canarypw-8a","canarypw-8b"]}"#,
+        r#"{"password":"head\" canarypw-9"}"#,
+        r#"{"env":{"PASSWORD":"canarypw-10"},"command":"npx"}"#,
+        r#"  "Authorization": "Bearer canarypw-11","#,
+        r#"[{"key":"Authorization","value":"Bearer canarypw-12"}]"#,
+        r#""args": ["--api-key", "canarypw-13"]"#,
+        r#"{"note": "a b","password":"canarypw-14"}"#,
+        // YAML.
+        r#"api_key: canarypw-15"#,
+        r#"  Authorization: "Bearer canarypw-16""#,
+        r#"env: {GITHUB_TOKEN: canarypw-17, NODE_ENV: production}"#,
+        r#"password: "head\" canarypw-18""#,
+        r#"password: 'canary pw canarypw-19'"#,
+        r#"client_secret: "canarypw-20""#,
+        r#"api-key: canarypw-21"#,
+        // TOML.
+        r#"api_key = "canarypw-22""#,
+        r#"env = { API_KEY = "canarypw-23", DEBUG = "1" }"#,
+        r#"headers = {Authorization="Bearer canarypw-24"}"#,
+        // .env and INI.
+        r#"DATABASE_PASSWORD=canarypw-25"#,
+        r#"export OPENAI_API_KEY='canarypw-26'"#,
+        r#"SECRET="canary pw canarypw-27""#,
+        r#"password = canarypw-28"#,
+        r#"token=canarypw-29"#,
+        r#"aws_secret_access_key = canarypw-30"#,
+        // Shell, single and double quotes, escaped quotes.
+        r#"run --password "head\" canarypw-31""#,
+        r#"run --password=canarypw-32 --verbose"#,
+        r#"run --password canarypw-33"#,
+        r#"PGPASSWORD=canarypw-34 psql -h db.example"#,
+        r#"docker run -e API_KEY=canarypw-35 image"#,
+        r#"curl -d '{"username":"bob","password":"canarypw-36"}' https://api.example"#,
+        r#"echo "{\"password\":\"canarypw-37\"}""#,
+        r#"const token = "canarypw-38";"#,
+        r#"ENV OPENAI_API_KEY=canarypw-39"#,
+        // curl -H headers and Authorization schemes.
+        r#"curl -H "Authorization: Bearer canarypw-40" https://api.example/v1"#,
+        r#"curl -H 'Authorization: Basic canarypw-41' https://api.example"#,
+        r#"curl -H "Authorization: Token canarypw-42""#,
+        r#"curl -H "X-Api-Key: canarypw-43" https://api.example"#,
+        r#"curl -H X-Api-Key:canarypw-44 https://api.example"#,
+        r#"curl -u admin:canarypw-45 https://api.example"#,
+        r#"--header=Authorization: Bearer canarypw-46"#,
+        r#"Authorization: Bearer canarypw-47"#,
+        r#"Proxy-Authorization: Basic canarypw-48"#,
+        r#""Authorization": "Token canarypw-49""#,
+        r#"proxy_set_header Authorization "Bearer canarypw-50";"#,
+        r#"Cookie: theme=dark; sid=canarypw-51"#,
+        // Connection strings and query strings.
+        r#"postgres://app:canarypw-52@db.example.com:5432/prod"#,
+        r#"DATABASE_URL=mysql://root:canarypw-53@localhost/db"#,
+        r#"Server=db.example;Database=app;User Id=sa;Password=canarypw-54;"#,
+        r#"https://api.example/v1?api_key=canarypw-55&format=json"#,
+        r#"https://h.example/sse?token=canarypw-56"#,
+        r#"?Authorization=Bearer%20canarypw-57"#,
+        // References with a literal fallback.
+        r#"PASSWORD=${DB_PASSWORD:-canarypw-58}"#,
+        r#"--token ${API_TOKEN:-canarypw-59}"#,
+        r#"url: ${SERVICE_URL:-https://user:canarypw-60@h.example}"#,
+        // Unquoted values that run to the end of the line, and more quoting styles.
+        r#"password: correct horse canarypw-61"#,
+        r#"password = my pass canarypw-62"#,
+        r#"password: 'it''s canarypw-63'"#,
+        r#"'password' => 'canarypw-64',"#,
+        r#":password => "canary canarypw-65""#,
+        r#"run --password $'head\' canarypw-66'"#,
+        r#"PASSWORD = r"canary canarypw-67""#,
+        r#"password = """canary canarypw-68""""#,
+        r#"curl -H "X-Api-Key: canary canarypw-69" https://api.example"#,
+        r#"env: {API_KEY: canary canarypw-70, DEBUG: 1}"#,
+        r#"token := "canarypw-71""#,
+        r#"password: !!str canarypw-72"#,
+        r#"Authorization: Digest username="u", response="canarypw-73""#,
+    ];
+
+    #[test]
+    fn the_round_5_findings_are_masked_in_both_maskers() {
+        let cases = [
+            // N6: a key read without its quotes and braces.
+            (r#"{"key":"basic"}"#, format!(r#"{{"key":{MASKED}}}"#), 1),
+            // N9: every separator is checked, not only the first (`headers`).
+            (r#"{"headers":{"Authorization":"Bearer canarypw"}}"#, format!(r#"{{"headers":{{"Authorization":"Bearer {MASKED}"#), 1),
+            // N10: an escaped quote does not close the value.
+            (r#"password: "head\" canarypw""#, format!("password: {MASKED} {MASKED}"), 2),
+            (r#"run --password "head\" canarypw""#, format!("run --password {MASKED} {MASKED}"), 2),
+            (r#"{"password":"head\" canarypw"}"#, format!(r#"{{"password":{MASKED} {MASKED}"#), 2),
+            // S1: a later secret key in the same compact word, and a value over several words.
+            (r#"{"servers":[{"name":"a","token":"canarypw"}]}"#, format!(r#"{{"servers":[{{"name":"a","token":{MASKED}}}]}}"#), 1),
+            (r#"{"note": "a b","password":"canarypw"}"#, format!(r#"{{"note": "a b","password":{MASKED}"#), 1),
+            ("password: correct horse canarypw", format!("password: {MASKED} {MASKED} {MASKED}"), 3),
+        ];
+        for (text, expected, n) in cases {
+            assert_eq!(mask_preview(text), (expected.clone(), n), "preview {text}");
+            assert_eq!(mask_arg_value(text), (expected, n), "arg {text}");
+        }
+        // Over-masking stops where the value ends: after an inline table pair, after the quote the
+        // header opened, and after a complete quoted value.
+        assert_eq!(mask_preview("env: {API_KEY: a b, DEBUG: 1}").0, format!("env: {{API_KEY: {MASKED} {MASKED} DEBUG: 1}}"));
+        assert_eq!(
+            mask_arg_value(r#"curl -H "X-Api-Key: a b" https://api.example"#).0,
+            format!(r#"curl -H "X-Api-Key: {MASKED} {MASKED} https://api.example"#)
+        );
+        assert_eq!(mask_preview(r#"password: "a b" # set by ops"#).0, format!("password: {MASKED} {MASKED} # set by ops"));
+        // A pure reference stays visible; ordinary JSON stays as written.
+        for kept in [r#"{"env":{"API_KEY":"${API_KEY}"}}"#, r#"{"command":"npx","args":["-y","pkg"]}"#, "password: ${DB_PASSWORD}"] {
+            assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept}");
+            assert_eq!(mask_arg_value(kept), (kept.to_string(), 0), "{kept}");
+        }
+    }
+
+    #[test]
+    fn long_lines_are_masked_in_linear_time() {
+        // A rules file is masked whole before its preview is cut, so one long line must not hang.
+        let pairs = "k=v&".repeat(50_000);
+        let json = format!("{{{}\"token\":\"canarypw\"}}", r#""name":"a","#.repeat(20_000));
+        let words = "password: a ".repeat(20_000);
+        let urls = format!("{}canarypw", "https://h.example/x?u=".repeat(10_000));
+        for text in [pairs.as_str(), json.as_str(), words.as_str(), urls.as_str()] {
+            let started = std::time::Instant::now();
+            assert!(!mask_preview(text).0.contains("canarypw"));
+            assert!(!mask_arg_value(text).0.contains("canarypw"));
+            let elapsed = started.elapsed();
+            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..40]);
+        }
+        let (out, n) = mask_arg_value("curl --user=admin:canarypw https://api.example");
+        assert_eq!((out, n), (format!("curl --user=admin:{MASKED} https://api.example"), 1));
+    }
+
+    #[test]
+    fn canary_sweep_shows_no_secret_in_any_syntax() {
+        let mut leaks: Vec<String> = Vec::new();
+        for line in CANARY_LINES {
+            assert!(line.contains("canarypw-"), "{line}");
+            let outputs = [
+                ("mask_preview", mask_preview(line).0),
+                ("mask_arg_value", mask_arg_value(line).0),
+                ("mask_args", mask_args(&[line.to_string()]).0.join(" ")),
+            ];
+            for (masker, out) in outputs {
+                if out.contains("canarypw") {
+                    leaks.push(format!("{masker}: {line}  ->  {out}"));
+                }
+            }
+        }
+        let leaked_lines = CANARY_LINES
+            .iter()
+            .filter(|line| leaks.iter().any(|leak| leak.contains(&format!(": {line}  ->"))))
+            .count();
+        println!("canary sweep: {} lines, {leaked_lines} lines leaked, {} leaking outputs", CANARY_LINES.len(), leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked_lines} lines", leaks.len());
     }
 }
