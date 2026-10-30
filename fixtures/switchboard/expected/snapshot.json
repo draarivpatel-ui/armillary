@@ -176,10 +176,10 @@
           "path": "~/.claude/CLAUDE.md",
           "format": "markdown",
           "exists": true,
-          "preview": "# Synthetic global rules for Claude Code\n\nEverything in this file is invented test data for the Switchboard fixtures.\n\n- Pin exact dependency versions.\n- Tests first, then implementation.\n- Never open a credential [masked]\n\nExport API_TOKEN=[masked]",
+          "preview": "# Synthetic global rules for Claude Code\n\nEverything in this file is invented test data for the Switchboard fixtures.\n\n- Pin exact dependency versions.\n- Tests first, then implementation.\n- Never open a credential [masked]",
           "truncated": false,
           "lineCount": 9,
-          "maskedValues": 2
+          "maskedValues": 1
         },
         {
           "agent": "claude-code",
@@ -663,7 +663,7 @@
           "preview": "---\ndescription: Synthetic Cursor project rules\nglobs: \"**/*.ts,**/*.tsx\"\nalwaysApply: false\n---\n\n# Branch and file naming (synthetic fixture)\n\nThis file is intentionally long so the Switchboard preview truncation is exercised by the\nfixture instead of by a hand written string in the test.\n\nRule 01: name branches by intent, not by ticket alone.",
           "truncated": true,
           "lineCount": 31,
-          "maskedValues": 15
+          "maskedValues": 1
         },
         {
           "agent": "cursor",
@@ -1563,5 +1563,5 @@
     "webapp"
   ],
   "serverCount": 41,
-  "maskedValueCount": 28
+  "maskedValueCount": 13
 }
