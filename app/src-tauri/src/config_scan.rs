@@ -671,23 +671,23 @@ struct Masked {
     value_follows: bool,
 }
 
-/// Mask a text with one fail-closed rule (sol-loop S1/N16-N20), shared by rules previews and
+/// Mask a text with one fail-closed rule (sol-loop S1/N16-N23), shared by rules previews and
 /// server arguments:
 ///
-/// - URLs first (`mask_urls`): a password in a URL's userinfo and secret-named query parameters
-///   are masked over the whole text before any key is searched for, so a key word inside a URL
+/// - URLs first (`mask_urls`): a URL's whole userinfo and secret-named query parameters are
+///   masked over the whole text before any key is searched for, so a key word inside a URL
 ///   cannot split it.
 /// - A line with a secret key in it (`password`, `"api_key"`, `X-Api-Key`, `DB_PASSWORD`,
 ///   `--password`, `Authorization`, inside any quotes or punctuation) keeps its text up to the
 ///   key and the separator after it (`:` `=` `=>` `:=` `:-`, with the spaces around), and one
 ///   scheme word after Authorization or Proxy-Authorization (`Bearer`, `Basic`, `Token`).
 ///   Everything after that on the line becomes one `[masked]`. The rest stays visible only when
-///   it is exactly one pure variable reference (`${NAME}`, `"${NAME}",`) and the next line is
-///   blank or the end.
+///   it is exactly one pure variable reference (`reference_tail`: `${NAME}`, `"${NAME}",`) and
+///   the next line is blank or the end.
 /// - Every following line up to the next blank line is masked too, whatever it holds (closing
-///   brackets and quotes included). The masking goes on past a blank line only when the next
-///   line is indented deeper than the key line (a YAML block with a blank line in it) or a
-///   `"""`/`'''` opened after the key is still open.
+///   brackets and quotes included). The masking goes on past a blank line while the masked part
+///   leaves something open (`Open`: a quote, a triple quote, a bracket, or an unclear state) or
+///   the next line is indented deeper than the key line (a YAML block with a blank line in it).
 /// - A line with no secret key goes word by word through the word masker (URLs,
 ///   `user:password@host`, connection strings, token shaped words, `-u user:password`).
 ///
@@ -720,11 +720,12 @@ fn mask_text(text: &str, kind: Words) -> Masked {
             && blank(tail)
             && (hit.separator || line[hit.start..].starts_with('-'));
         let indent = indent_width(line);
-        let mut triple = triple_quotes(None, tail);
+        let mut open = Open::default();
+        open.read(tail);
         i += 1;
         loop {
             while i < lines.len() && !blank(lines[i]) {
-                triple = triple_quotes(triple, lines[i]);
+                open.read(lines[i]);
                 let body = lines[i].trim_start();
                 out.push(format!("{}{MASKED}", &lines[i][..lines[i].len() - body.len()]));
                 i += 1;
@@ -733,7 +734,7 @@ fn mask_text(text: &str, kind: Words) -> Masked {
             while next < lines.len() && blank(lines[next]) {
                 next += 1;
             }
-            if next == lines.len() || next == i || !(triple.is_some() || indent_width(lines[next]) > indent) {
+            if next == lines.len() || next == i || !(open.any() || indent_width(lines[next]) > indent) {
                 break;
             }
             out.extend(lines[i..next].iter().map(|line| line.to_string()));
@@ -745,24 +746,72 @@ fn mask_text(text: &str, kind: Words) -> Masked {
     Masked { text: text_out, masked, value_follows }
 }
 
-/// The triple quote (`"""` or `'''`) still open after `text`, given the one open before it.
-fn triple_quotes(mut open: Option<u8>, text: &str) -> Option<u8> {
-    let bytes = text.as_bytes();
-    let mut i = 0usize;
-    while i + 3 <= bytes.len() {
-        let c = bytes[i];
-        if matches!(c, b'"' | b'\'') && bytes[i + 1] == c && bytes[i + 2] == c {
-            match open {
-                None => open = Some(c),
-                Some(quote) if quote == c => open = None,
-                Some(_) => {}
+/// What a key's masked value leaves open, read left to right over its lines (sol-loop N18/N21):
+/// a single or double quote, a `"""` or `'''`, or `[` `{` `(` outside quotes. Fail closed: an
+/// escape never closes anything, and a backslash before a quote or at the end of a line, or both
+/// quote kinds in one value, make the state unclear, which keeps the masking to the end.
+#[derive(Default)]
+struct Open {
+    triple: Option<u8>,
+    quote: Option<u8>,
+    brackets: usize,
+    /// A `"` and a `'` seen outside triple quotes.
+    seen: [bool; 2],
+    unclear: bool,
+}
+
+impl Open {
+    fn read(&mut self, text: &str) {
+        let bytes = text.as_bytes();
+        let mut i = 0usize;
+        while i < bytes.len() && !self.unclear {
+            let c = bytes[i];
+            let outside = self.triple.is_none() && self.quote.is_none();
+            if c == b'\\' {
+                match bytes.get(i + 1) {
+                    None | Some(b'"' | b'\'') => self.unclear = true,
+                    Some(b'[' | b'{' | b'(') if outside => self.brackets += 1,
+                    Some(_) => {}
+                }
+                i += 2;
+                continue;
             }
-            i += 3;
-            continue;
+            if let Some(quote) = self.triple {
+                if bytes[i..].starts_with(&[quote; 3]) {
+                    self.triple = None;
+                    i += 3;
+                } else {
+                    i += 1;
+                }
+                continue;
+            }
+            if matches!(c, b'"' | b'\'') {
+                if self.quote.is_none() && bytes[i..].starts_with(&[c; 3]) {
+                    self.triple = Some(c);
+                    i += 3;
+                    continue;
+                }
+                self.seen[usize::from(c == b'\'')] = true;
+                self.unclear = self.seen == [true, true];
+                match self.quote {
+                    None => self.quote = Some(c),
+                    Some(quote) if quote == c => self.quote = None,
+                    Some(_) => {}
+                }
+            } else if outside {
+                match c {
+                    b'[' | b'{' | b'(' => self.brackets += 1,
+                    b']' | b'}' | b')' => self.brackets = self.brackets.saturating_sub(1),
+                    _ => {}
+                }
+            }
+            i += 1;
         }
-        i += 1;
     }
-    open
+
+    fn any(&self) -> bool {
+        self.unclear || self.triple.is_some() || self.quote.is_some() || self.brackets > 0
+    }
 }
 
 /// Leading indentation, a tab counted as four spaces.
@@ -773,17 +822,11 @@ fn indent_width(line: &str) -> usize {
         .sum()
 }
 
-/// Characters a URL's user name can hold (RFC 3986 unreserved, sub-delims and `%`).
-fn url_user_byte(b: u8) -> bool {
-    b.is_ascii_alphanumeric() || matches!(b, b'-' | b'.' | b'_' | b'~' | b'%' | b'!' | b'$' | b'&' | b'*' | b'+' | b',' | b';' | b'=')
-}
-
-/// Mask every URL in a text before any key search (sol-loop N16): `scheme://user:password@host`
-/// keeps the scheme and the user (a token shaped user is masked too) and masks the password, and
-/// the URL then goes through `mask_url` (secret-named query parameters, token shaped path
-/// segments). The password runs to the LAST `@` before the next whitespace, so a password with
-/// `/`, `@` or a quote in it is masked whole; when that `@` is in a later part of the URL more is
-/// masked, never less. Each URL is read once, so a long line of URLs stays linear.
+/// Mask every URL in a text before any key search (sol-loop N16/N22): each URL goes through
+/// `mask_url`, which masks its whole userinfo (everything between `://` and the LAST `@` before
+/// the next whitespace, any characters), secret-named query parameters and token shaped path
+/// segments. When that `@` is in a later part of the URL more is masked, never less. Each URL is
+/// read once, so a long line of URLs stays linear.
 fn mask_urls(text: &str) -> String {
     if !text.contains("://") {
         return text.to_string();
@@ -818,28 +861,13 @@ fn mask_urls(text: &str) -> String {
                 (space, last_at)
             }
         };
-        let user_end = after + bytes[after..space].iter().take_while(|&&b| url_user_byte(b)).count();
-        let userinfo_end = match bytes.get(user_end) {
-            Some(b':') => last_at.filter(|&at| at > user_end),
-            Some(b'@') => Some(user_end),
-            _ => None,
-        };
-        let from = userinfo_end.map_or(after, |at| at + 1);
+        // The URL ends at a quote or an angle bracket after its userinfo; inside the userinfo
+        // anything goes.
+        let from = last_at.filter(|&at| at >= after).map_or(after, |at| at + 1);
         let end = from + text[from..space].find(['"', '\'', '`', '<', '>']).unwrap_or(space - from);
-        let mut url = text[start..after].to_string();
-        if let Some(at) = userinfo_end {
-            let user = &text[after..user_end];
-            url.push_str(if looks_like_secret_value(user) { MASKED } else { user });
-            url.push(':');
-            url.push_str(MASKED);
-            url.push('@');
-            url.push_str(&text[at + 1..end]);
-        } else {
-            url.push_str(&text[after..end]);
-        }
         out.push_str(&text[copied..start]);
         out.push_str(&with_depth(|| {
-            let (url, _, count) = mask_url(&url);
+            let (url, _, count) = mask_url(&text[start..end]);
             (url, count)
         }).0);
         copied = end;
@@ -1000,25 +1028,24 @@ fn is_authorization_key(name: &str) -> bool {
     )
 }
 
-/// The rest of a key line when it is exactly one pure variable reference, possibly quoted and
-/// followed by closing punctuation: `${TOKEN}`, `"${API_KEY}"}}`, `'$TOKEN',`.
+/// The rest of a key line when it is exactly one pure variable reference (sol-loop N23): an
+/// optional quote, `${NAME}` or `$NAME`, the same quote, and an optional trailing comma. Anything
+/// else (`"${T};;"`, `"${T}"]]`, `{env:T}`) is masked.
 fn reference_tail(tail: &str) -> bool {
-    let mut rest = tail.trim();
-    if rest.len() > MAX_REFERENCE {
-        return false;
-    }
-    loop {
-        let inner = rest.trim_start_matches(['"', '\'', '`', '\\']).trim_end_matches(['"', '\'', '`', '\\']);
-        if is_env_reference(inner) {
-            return true;
-        }
-        match rest.chars().last() {
-            Some(c) if matches!(c, ',' | ';' | ')' | ']' | '}' | '"' | '\'' | '`' | '\\') => {
-                rest = rest[..rest.len() - 1].trim_end();
-            }
-            _ => return false,
-        }
-    }
+    let rest = tail.trim();
+    let rest = rest.strip_suffix(',').unwrap_or(rest);
+    let inner = match rest.chars().next() {
+        Some(quote @ ('"' | '\'')) => match rest[1..].strip_suffix(quote) {
+            Some(inner) => inner,
+            None => return false,
+        },
+        _ => rest,
+    };
+    let name = inner.strip_prefix("${").and_then(|name| name.strip_suffix('}')).or_else(|| inner.strip_prefix('$'));
+    name.is_some_and(|name| {
+        name.starts_with(|c: char| c.is_ascii_alphabetic() || c == '_')
+            && name.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+    })
 }
 
 /// Mask a line with no secret key word by word, keeping its spacing: curl's `-u user:password`
@@ -1199,6 +1226,23 @@ pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
     let mut names: Vec<String> = Vec::new();
     let mut masked = 0usize;
 
+    // The whole userinfo, whatever it holds (`/`, `?`, `#`, quotes, apostrophes, `@`), runs to
+    // the LAST `@` before the next whitespace and becomes one `[masked]` (sol-loop N16/N22).
+    let (prefix, url) = match url.find("://") {
+        Some(scheme_end) => {
+            let after = scheme_end + 3;
+            let space = url[after..].find(char::is_whitespace).map_or(url.len(), |p| p + after);
+            match url[after..space].rfind('@') {
+                Some(at) => {
+                    masked += 1;
+                    (format!("{}{MASKED}@", &url[..after]), &url[after + at + 1..])
+                }
+                None => (url[..after].to_string(), &url[after..]),
+            }
+        }
+        None => (String::new(), url),
+    };
+
     let (before_fragment, fragment) = match url.split_once('#') {
         Some((head, tail)) => (head, Some(tail.to_string())),
         None => (url, None),
@@ -1208,21 +1252,11 @@ pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
         None => (before_fragment, None),
     };
 
-    // user:pass@host -> user:[masked]@host; a token used as the user name is masked too.
+    // The host stays; token shaped path segments are masked.
     let mut rebuilt = head.to_string();
-    if let Some(scheme_end) = head.find("://") {
-        let rest = &head[scheme_end + 3..];
-        let authority_end = rest
-            .find(['/', '?', '#'])
-            .unwrap_or(rest.len());
-        let mut authority = rest[..authority_end].to_string();
-        if let Some(at) = authority.rfind('@') {
-            let user = authority[..at].split(':').next().unwrap_or("").to_string();
-            let user = if looks_like_secret_value(&user) { MASKED.to_string() } else { user };
-            masked += 1;
-            authority = format!("{user}:{MASKED}@{}", &authority[at + 1..]);
-        }
-        let path: Vec<String> = rest[authority_end..]
+    if !prefix.is_empty() {
+        let authority_end = head.find('/').unwrap_or(head.len());
+        let path: Vec<String> = head[authority_end..]
             .split('/')
             .map(|segment| {
                 if looks_like_secret_value(segment) && !is_env_reference(segment) {
@@ -1233,7 +1267,7 @@ pub fn mask_url(url: &str) -> (String, Vec<String>, usize) {
                 }
             })
             .collect();
-        rebuilt = format!("{}://{}{}", &head[..scheme_end], authority, path.join("/"));
+        rebuilt = format!("{prefix}{}{}", &head[..authority_end], path.join("/"));
     }
 
     if let Some(query) = query {
@@ -3655,9 +3689,9 @@ mod mask_shapes {
     fn a_token_used_as_the_url_user_name_is_masked() {
         let (out, _, _) = mask_url("https://ghp_CANARYUSERTOKEN0123456789abcdef@github.example/repo");
         assert!(!out.contains("CANARYUSERTOKEN"), "{out}");
-        // A plain user name with a password keeps the name.
+        // sol-loop round 8 (N22): the whole userinfo is masked, user name included; the host stays.
         let (kept, _, _) = mask_url("https://deploy:CANARYPW@host.example/x");
-        assert!(kept.contains("deploy") && !kept.contains("CANARYPW"), "{kept}");
+        assert_eq!(kept, format!("https://{MASKED}@host.example/x"));
     }
 
     #[test]
@@ -3678,7 +3712,7 @@ mod mask_shapes {
         let (out, n) = mask_preview(&text.replace('\n', "\n\n"));
         assert!(!out.contains("canarypw"), "{out}");
         assert_eq!(n, 7, "{out}");
-        assert!(out.contains(&format!("DATABASE_URL=postgres://app:{MASKED}@db.example/x")), "{out}");
+        assert!(out.contains(&format!("DATABASE_URL=postgres://{MASKED}@db.example/x")), "{out}");
         // Ordinary prose and pure references are left as they are.
         let prose = "Run the tests before you push. Use ${GITHUB_TOKEN} from the env.";
         assert_eq!(mask_preview(prose), (prose.to_string(), 0));
@@ -3966,7 +4000,8 @@ mod masking_round_2 {
         for input in cases {
             assert_eq!(args(input), input.iter().map(|s| s.to_string()).collect::<Vec<_>>(), "{input:?}");
         }
-        assert_eq!(shown(&["ssh://git@github.com/org/repo.git"]), "ssh://git:[masked]@github.com/org/repo.git");
+        // sol-loop round 8 (N22): a URL's whole userinfo is masked, a plain user name included.
+        assert_eq!(shown(&["ssh://git@github.com/org/repo.git"]), "ssh://[masked]@github.com/org/repo.git");
         // sol-loop round 6: the value after a bare secret flag is masked whatever it looks like
         // (`--password 123456` is a password), so these three are no longer shown.
         for (input, expected) in [
@@ -4103,8 +4138,11 @@ mod masking_round_5 {
             format!(r#"curl -H "X-Api-Key: {MASKED}"#)
         );
         assert_eq!(mask_preview(r#"password: "a b" # set by ops"#).0, format!("password: {MASKED}"));
-        // A pure reference stays visible; ordinary JSON stays as written.
-        for kept in [r#"{"env":{"API_KEY":"${API_KEY}"}}"#, r#"{"command":"npx","args":["-y","pkg"]}"#, "password: ${DB_PASSWORD}"] {
+        // A pure reference stays visible; ordinary JSON stays as written. sol-loop round 8 (N23):
+        // a reference followed by closing brackets is no longer a pure reference.
+        let compact = r#"{"env":{"API_KEY":"${API_KEY}"}}"#;
+        assert_eq!(mask_preview(compact), (format!(r#"{{"env":{{"API_KEY":{MASKED}"#), 1));
+        for kept in [r#"{"command":"npx","args":["-y","pkg"]}"#, "password: ${DB_PASSWORD}"] {
             assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept}");
             assert_eq!(mask_arg_value(kept), (kept.to_string(), 0), "{kept}");
         }
@@ -4272,8 +4310,8 @@ mod masking_round_6 {
             // A key word inside a value is masked with the value, not shown as a key.
             ("user:my_pass@db.example.com", format!("user:{MASKED}")),
             // sol-loop round 7 (N16): URLs are masked first, so the host stays and the key word
-            // inside the password no longer starts the key rule.
-            ("postgres://app:mytokenvalue@db.example/x", format!("postgres://app:{MASKED}@db.example/x")),
+            // inside the password no longer starts the key rule; round 8 (N22): the user too.
+            ("postgres://app:mytokenvalue@db.example/x", format!("postgres://{MASKED}@db.example/x")),
             (r#""type": "token", "name": "x""#, format!(r#""type": "{MASKED}"#)),
         ];
         for (text, expected) in cases {
@@ -4314,8 +4352,10 @@ mod masking_round_6 {
             // TOML triple quotes and a YAML quoted value over lines.
             ("password = \"\"\"\nline one\nline two\n\"\"\"\nname = \"x\"", format!("password = {MASKED}\n{MASKED}\n{MASKED}\n{MASKED}\n{MASKED}"), 5),
             ("token: \"abc\ndef\"\nname: x", format!("token: {MASKED}\n{MASKED}\n{MASKED}"), 3),
-            // A blank line ends the paragraph; the next paragraph is read again.
-            ("secret: {\n  a: 1\n\nname: x", format!("secret: {MASKED}\n  {MASKED}\n\nname: x"), 2),
+            // A blank line ends the paragraph; the next paragraph is read again. sol-loop round 8
+            // (N18): not while a bracket is still open.
+            ("secret: {\n  a: 1\n\nname: x", format!("secret: {MASKED}\n  {MASKED}\n\n{MASKED}"), 3),
+            ("secret: {\n  a: 1\n}\n\nname: x", format!("secret: {MASKED}\n  {MASKED}\n{MASKED}\n\nname: x"), 3),
             // ...unless the next line is deeper than the key line or a triple quote is still open.
             ("password: |\n  a\n\n  b\nname: x\n\nc: 1", format!("password: {MASKED}\n  {MASKED}\n\n  {MASKED}\n{MASKED}\n\nc: 1"), 4),
             ("password = \"\"\"\na\n\nb\n\"\"\"\n\nc = 1", format!("password = {MASKED}\n{MASKED}\n\n{MASKED}\n{MASKED}\n\nc = 1"), 4),
@@ -4474,10 +4514,11 @@ mod masking_round_7 {
     #[test]
     fn the_round_7_findings_are_masked() {
         let cases = [
-            // N16: the URL is masked before the key search; host and path stay.
-            ("postgres://app:canarypw+token@db.example/x", format!("postgres://app:{MASKED}@db.example/x"), 1),
-            ("see postgres://app:pa/ss_token@db.example/x for it", format!("see postgres://app:{MASKED}@db.example/x for it"), 1),
-            ("https://u@h.example/x", format!("https://u:{MASKED}@h.example/x"), 1),
+            // N16: the URL is masked before the key search; host and path stay. Round 8 (N22):
+            // the whole userinfo, user name included, is one `[masked]`.
+            ("postgres://app:canarypw+token@db.example/x", format!("postgres://{MASKED}@db.example/x"), 1),
+            ("see postgres://app:pa/ss_token@db.example/x for it", format!("see postgres://{MASKED}@db.example/x for it"), 1),
+            ("https://u@h.example/x", format!("https://{MASKED}@h.example/x"), 1),
             ("https://h.example/x?client_secret=abc&a=1", format!("https://h.example/x?client_secret={MASKED}"), 1),
             // N17, N18: the next line of the paragraph is masked whatever it holds.
             ("curl -H \"Authorization: Bearer \\\ncanarypw\"", format!("curl -H \"Authorization: Bearer {MASKED}\n{MASKED}"), 2),
@@ -4502,8 +4543,8 @@ mod masking_round_7 {
         // the next argument.
         assert_eq!(run(&["-c", "export TOKEN=x\nmore"]), ["-c".to_string(), format!("export TOKEN={MASKED}\n{MASKED}")]);
         assert_eq!(run(&["run --password", "canarypw"]), ["run --password", MASKED]);
-        // The URL field itself is unchanged.
-        assert_eq!(mask_url("postgres://app:pw@db.example/x").0, format!("postgres://app:{MASKED}@db.example/x"));
+        // The URL field masks the whole userinfo too (round 8).
+        assert_eq!(mask_url("postgres://app:pw@db.example/x").0, format!("postgres://{MASKED}@db.example/x"));
     }
 
     #[test]
@@ -4535,6 +4576,182 @@ mod masking_round_7 {
     fn round_7_canary_sweep_shows_no_secret() {
         let (cases, leaked, leaks) = sweep();
         println!("round 7 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+/// sol-loop round 8 (S1/N16/N18/N20-N23): a URL's whole userinfo is masked up to the last `@`
+/// before whitespace (in every masker and the `url` field), a key's paragraph stays masked past
+/// a blank line while a quote, triple quote or bracket is open (or the state is unclear), and a
+/// pure reference must be exactly one quoted or bare `${NAME}`/`$NAME`. Each case carries
+/// `canarypw-<n>`; no masker output may show `canarypw`.
+#[cfg(test)]
+mod masking_round_8 {
+    use super::*;
+
+    /// Texts run through `mask_preview`, `mask_arg_value` and `mask_args` with the text as one
+    /// argument.
+    const CANARY_TEXTS: &[&str] = &[
+        // N21: an escaped triple quote inside a TOML triple-quoted value, then a blank line.
+        "password = \"\"\"\nab\\\"\"\"\n\ncanarypw-138\n\"\"\"",
+        "password = '''\na \\''' b\n\ncanarypw-139\n'''",
+        // N22: an apostrophe (RFC-valid) in the URL user name.
+        "https://o'connor:canarypw-140+token@h.example/x",
+        "see https://o'connor:canarypw-141@h.example/x here",
+        // Quotes and brackets open across a blank line (N18 gap).
+        "--password 'a\n\ncanarypw-142'",
+        "run --password 'a\n\ncanarypw-143'",
+        "password: \"a\n\ncanarypw-144\"",
+        "token = [\n  \"a\",\n\n  \"canarypw-145\"\n]",
+        "export TOKEN=\"a\n\ncanarypw-146\"",
+        "secret: {\n  a: 1\n\ncanarypw-147: x\n}",
+        "token(\n\ncanarypw-148)",
+        // Unclear quote state: an escape before a quote, mixed quotes.
+        "password: \"it's \\\"\n\ncanarypw-149\"",
+        "password: \"a \\\"\n\ncanarypw-150\"",
+        "Authorization: Bearer \\\n\ncanarypw-151",
+        // URL userinfo with any character, in text.
+        "https://u:pa/canarypw-152@h.example/x",
+        "https://u:p?x#canarypw-153@h.example/x",
+        r#"{"url": "https://u:a"canarypw-154@h.example/x"}"#,
+        "https://canarypw-155@h.example/x",
+        "postgres://a:b@c:canarypw-156@db.example/x",
+    ];
+
+    /// The `url` field of a server entry (`build_server` and `mask_url`).
+    const CANARY_URLS: &[&str] = &[
+        "https://u:pa/canarypw-157@h.example/x",
+        "https://o'connor:canarypw-158+token@h.example/x",
+        "https://u:p?x#canarypw-159@h.example/x",
+        "https://u:\"canarypw-160\"@h.example/x",
+        "https://canarypw-161@h.example/x",
+        "postgres://a:b@c:canarypw-162@db.example/x",
+    ];
+
+    /// Argument lists for `mask_args`.
+    const CANARY_ARGS: &[&[&str]] = &[
+        &["--password 'a\n\ncanarypw-163'"],
+        &["-c", "export TOKEN='a\n\ncanarypw-164'"],
+        &["-c", "TOKEN=\"a\n\ncanarypw-165\" run"],
+        &["--db", "https://o'connor:canarypw-166+token@h.example/x"],
+        &["--db", "https://u:pa/canarypw-167@h.example/x"],
+        &["-c", "password = \"\"\"\nab\\\"\"\"\n\ncanarypw-168\n\"\"\""],
+    ];
+
+    /// Punctuation-only secrets (N23): the secret itself is checked.
+    const PUNCTUATION: &[(&str, &str)] = &[
+        ("\"password\": \"${T};;\"", ";;"),
+        ("token = \"${T}\"]]", "]]"),
+        ("password: '${T}'));", "));"),
+        ("token: ${T};;", ";;"),
+    ];
+
+    fn url_field(url: &str) -> String {
+        let mut entry = serde_json::Map::new();
+        entry.insert("url".to_string(), serde_json::Value::String(url.to_string()));
+        let server = build_server("claude-code", "s", &entry, Dialect::JsonServers, Scope::Global, None, "~/.claude.json");
+        server.url.unwrap_or_default()
+    }
+
+    fn sweep() -> (usize, usize, Vec<String>) {
+        let mut leaks: Vec<String> = Vec::new();
+        let mut leaked_cases = 0usize;
+        let mut texts: Vec<(&str, &str, bool)> = CANARY_TEXTS.iter().map(|t| (*t, "canarypw", false)).collect();
+        texts.extend(CANARY_URLS.iter().map(|t| (*t, "canarypw", true)));
+        texts.extend(PUNCTUATION.iter().map(|(t, s)| (*t, *s, false)));
+        for (text, secret, url) in &texts {
+            assert!(text.contains(secret), "{text}");
+            let mut outputs = vec![
+                ("mask_preview", mask_preview(text).0),
+                ("mask_arg_value", mask_arg_value(text).0),
+                ("mask_args", mask_args(&[text.to_string()]).0.join(" ")),
+            ];
+            if *url {
+                outputs.push(("mask_url", mask_url(text).0));
+                outputs.push(("url field", url_field(text)));
+            }
+            let before = leaks.len();
+            for (masker, out) in outputs {
+                if out.contains(secret) {
+                    leaks.push(format!("{masker}: {text:?}  ->  {out:?}"));
+                }
+            }
+            leaked_cases += usize::from(leaks.len() > before);
+        }
+        for args in CANARY_ARGS {
+            let list: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            let out = mask_args(&list).0;
+            if out.join(" ").contains("canarypw") {
+                leaks.push(format!("mask_args: {args:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        (texts.len() + CANARY_ARGS.len(), leaked_cases, leaks)
+    }
+
+    #[test]
+    fn the_round_8_findings_are_masked() {
+        let cases = [
+            // N21: an escaped triple quote makes the state unclear, so masking goes to the end.
+            ("password = \"\"\"\nab\\\"\"\"\n\ncanarypw\n\"\"\"", format!("password = {MASKED}\n{MASKED}\n\n{MASKED}\n{MASKED}"), 4),
+            // N22: the whole userinfo is masked, whatever it holds.
+            ("https://o'connor:canarypw+token@h.example/x", format!("https://{MASKED}@h.example/x"), 1),
+            ("https://u:pa/canarypw@h.example/x", format!("https://{MASKED}@h.example/x"), 1),
+            // An email in a query is read as the end of a userinfo: more is masked, never less.
+            ("https://h.example/x?e=a@b.example", format!("https://{MASKED}@b.example"), 1),
+            // N23: only an exact reference stays visible.
+            ("\"password\": \"${T};;\"", format!("\"password\": {MASKED}"), 1),
+            ("token = \"${T}\"]]", format!("token = {MASKED}"), 1),
+            // N18: a quote or bracket open at a blank line keeps the masking going.
+            ("--password 'a\n\ncanarypw'", format!("--password {MASKED}\n\n{MASKED}"), 2),
+            ("password: \"a\n\ncanarypw\"\n\nnext: 1", format!("password: {MASKED}\n\n{MASKED}\n\nnext: 1"), 2),
+            ("token = [\n\"a\",\n\n\"canarypw\"\n]\n\nnext = 1", format!("token = {MASKED}\n{MASKED}\n\n{MASKED}\n{MASKED}\n\nnext = 1"), 4),
+            // A closed value stops at the blank line; mixed quotes are unclear and do not.
+            ("password: \"a\"\n\nnext: 1", format!("password: {MASKED}\n\nnext: 1"), 1),
+            ("password: \"it's\"\n\nnext: 1", format!("password: {MASKED}\n\n{MASKED}"), 2),
+        ];
+        for (text, expected, n) in cases {
+            assert_eq!(mask_preview(text), (expected.clone(), n), "preview {text:?}");
+            assert_eq!(mask_arg_value(text), (expected, n), "arg {text:?}");
+        }
+        for kept in ["\"password\": \"${T}\",", "token: $T", "token: '${T}'", "Authorization: Bearer ${TOKEN}"] {
+            assert_eq!(mask_preview(kept), (kept.to_string(), 0), "{kept}");
+        }
+        // The url field (`build_server` calls `mask_url`) masks the whole userinfo too.
+        assert_eq!(url_field("https://u:pa/canarypw@h.example/x"), format!("https://{MASKED}@h.example/x"));
+        assert_eq!(url_field("https://h.example/sse?x=1"), "https://h.example/sse?x=1");
+    }
+
+    #[test]
+    fn open_values_and_userinfo_are_masked_in_linear_time() {
+        let inputs = [
+            format!("password: \"a\n{}", "canarypw\n\n".repeat(10_000)),
+            // An odd count of quotes, so the last one is still open at the end.
+            "token: 'x\n\n".repeat(10_001) + "canarypw",
+            format!("token: {}\n\ncanarypw", "[".repeat(200_000)),
+            format!("token: x{}\n\ncanarypw", "\\\"".repeat(100_000)),
+            format!("{}h/x", "a://o'c:canarypw@".repeat(25_000)),
+            format!("{}canarypw@h", "https://a/b?c#d".repeat(25_000)),
+        ];
+        for text in &inputs {
+            let started = std::time::Instant::now();
+            assert!(!mask_preview(text).0.contains("canarypw"), "{}", &text[..24]);
+            assert!(!mask_arg_value(text).0.contains("canarypw"));
+            assert!(!mask_args(&[text.clone()]).0.join(" ").contains("canarypw"));
+            assert!(!mask_url(text).0.contains("canarypw") || !text.contains("://"));
+            let elapsed = started.elapsed();
+            println!("{elapsed:?} for {} bytes starting {:?}", text.len(), &text[..12]);
+            assert!(elapsed < std::time::Duration::from_secs(2), "{elapsed:?} for {}", &text[..12]);
+        }
+    }
+
+    #[test]
+    fn round_8_canary_sweep_shows_no_secret() {
+        let (cases, leaked, leaks) = sweep();
+        println!("round 8 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
         for leak in &leaks {
             println!("LEAK {leak}");
         }
