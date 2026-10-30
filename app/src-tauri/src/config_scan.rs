@@ -553,10 +553,13 @@ fn push_unique(list: &mut Vec<String>, value: String) {
 /// secret key in it is masked, to the end of the argument, over every line of a shell string
 /// (sol-loop N24/N25). A bare secret flag (`--password`, `--api-key`, `-Token`) or an argument that ends
 /// in a secret key with nothing after it (`Authorization:`) masks the whole next argument
-/// (sol-loop S1/N14/N19); so does a curl credential flag, `--user`, `--proxy-user` or a short
-/// cluster ending in `u` or `U` (`-u`, `-U`, `-sSu`; sol-loop N27/N32). An attached credential
-/// (`-uapp:pw`, `-sSuapp:pw`, `--user=app:pw`) is masked to the end of the argument by the text
-/// rule. A variable reference anywhere in an argument is still listed by name.
+/// (sol-loop S1/N14/N19), whatever that argument looks like, `-x` and `--pw` too (sol-loop N34);
+/// so does a curl credential flag, `--user`, `--proxy-user` or a short cluster whose first `u`
+/// or `U` ends it (`-u`, `-U`, `-sSu`; sol-loop N27/N32/N33). An attached credential
+/// (`-uapp:pw`, `-ucanarypwu`) is masked after the first `u` or `U`, and an attached `-p` value
+/// after the `-p` (`-palice`; sol-loop N35); `--user=app:pw` is masked to the end of the
+/// argument by the text rule. A variable reference anywhere in an argument is still listed by
+/// name.
 pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
     let mut out: Vec<String> = Vec::with_capacity(args.len());
     let mut names: Vec<String> = Vec::new();
@@ -594,31 +597,46 @@ pub fn mask_args(args: &[String]) -> (Vec<String>, Vec<String>, usize) {
             continue;
         }
         // The argument after a secret flag is the secret, whatever it is spelled like
-        // (`--password 123456`, `--password "a'b c'"`); only another long flag is not.
-        if std::mem::take(&mut secret_flag_follows) && !long_flag(arg) {
+        // (`--password 123456`, `--password "a'b c'"`, `-u --pw`); only a pure variable
+        // reference, kept above, stays (sol-loop N34).
+        if std::mem::take(&mut secret_flag_follows) {
             masked += 1;
             out.push(MASKED.to_string());
             continue;
         }
-        // `-p` takes a password in mysql and sshpass: `-p secret` and `-psecret`. Ports and
-        // paths stay visible, and so do word flags such as `-port`.
+        // `-p` takes a password in mysql and sshpass: `-p secret` and `-psecret`. A separate
+        // port, path or package stays visible (`ordinary_p_value`).
         if arg == "-p" {
             p_flag_follows = true;
             out.push(arg.clone());
             continue;
         }
+        // `--password`, `--api-key`, `-Token`, `-u`, `-sSu`: a bare secret flag; its value is the
+        // next argument. Only a whole flag name counts: `-Token:value` and `--password=value`
+        // carry their value and go through the line rule (sol-loop N19). A cluster counts as a
+        // credential flag only when its first `u` or `U` ends it (sol-loop N33).
+        let value_follows = bare_flag(arg) && (secret_key_name(arg) || bare_credential_flag(arg));
+        // An attached `-p` value is masked after the `-p`, ports and word flags too (`-p8080`,
+        // `-port`); only a pure variable reference stays (sol-loop N35).
         if let Some(attached) = arg.strip_prefix("-p").filter(|rest| !rest.is_empty() && !arg.starts_with("--")) {
-            let word_flag = attached.chars().all(|c| c.is_ascii_lowercase() || c == '-');
-            if !word_flag && !attached.contains('=') && !ordinary_p_value(attached) && !is_env_reference(attached) {
+            if is_env_reference(attached) {
+                out.push(arg.clone());
+            } else {
                 masked += 1;
                 out.push(format!("-p{MASKED}"));
-                continue;
             }
+            secret_flag_follows = value_follows;
+            continue;
         }
-        // `--password`, `--api-key`, `-Token`: a bare secret flag; its value is the next
-        // argument. Only a whole flag name counts: `-Token:value` and `--password=value` carry
-        // their value and go through the line rule (sol-loop N19).
-        if bare_flag(arg) && (secret_key_name(arg) || bare_credential_flag(arg)) {
+        // A credential attached to a cluster (`-uapp:pw`, `-ucanarypwu`, `-uTOKEN`): everything
+        // after the first `u` or `U` is masked (sol-loop N33).
+        if let Some(at) = credential_flag_value(arg).filter(|&at| at < arg.len()) {
+            masked += 1;
+            out.push(format!("{}{MASKED}", &arg[..at]));
+            secret_flag_follows = value_follows;
+            continue;
+        }
+        if value_follows {
             secret_flag_follows = true;
             out.push(arg.clone());
             continue;
@@ -657,10 +675,10 @@ fn credential_flag_value(name: &str) -> Option<usize> {
 }
 
 /// An argument that is a credential flag with no value attached, so the next argument is the
-/// value: `--user`, `--proxy-user`, or a short cluster ending in `u` or `U` (`-u`, `-sSU`).
+/// value: `--user`, `--proxy-user`, or a short cluster whose first `u` or `U` is its last
+/// character (`-u`, `-sSU`; not `-ucanarypwu`, sol-loop N33).
 fn bare_credential_flag(arg: &str) -> bool {
-    long_credential_flag(arg)
-        || short_cluster(arg).is_some_and(|cluster| cluster.len() + 1 == arg.len() && cluster.ends_with(['u', 'U']))
+    credential_flag_value(arg) == Some(arg.len())
 }
 
 /// `-x`, `--name`, `-Name`: a dash and a flag name of letters, digits, `-` and `_` only.
@@ -668,14 +686,6 @@ fn bare_flag(arg: &str) -> bool {
     arg.starts_with('-')
         && arg.bytes().any(|b| b.is_ascii_alphanumeric())
         && arg.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
-}
-
-/// `--verbose`, `--no-cache`: a long flag with no value attached.
-fn long_flag(arg: &str) -> bool {
-    arg.strip_prefix("--").is_some_and(|name| {
-        name.starts_with(|c: char| c.is_ascii_alphabetic())
-            && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
-    })
 }
 
 /// How a text is read: a rules preview (prose and config text) or a server argument (a shell
@@ -3948,7 +3958,6 @@ mod masking_round_2 {
     fn ordinary_values_stay_visible() {
         let cases: &[&[&str]] = &[
             &["-p", "3000"],
-            &["-p8080"],
             &["-p", "./project"],
             &["--path", "/Users/dev/code/app"],
             &["--monkey", "banana"],
@@ -3959,7 +3968,6 @@ mod masking_round_2 {
             &["https://mcp.example.com/v1/sse"],
             &["npx", "-y", "-p", "@modelcontextprotocol/server-github", "mcp-server-github"],
             &["npx", "-p", "mcp-remote@latest", "mcp-remote"],
-            &["docker", "run", "-p3306:3306", "image"],
         ];
         for input in cases {
             assert_eq!(args(input), input.iter().map(|s| s.to_string()).collect::<Vec<_>>(), "{input:?}");
@@ -3976,6 +3984,9 @@ mod masking_round_2 {
             // value is masked, docker's numeric user included.
             (&["docker", "run", "-p", "8080:80", "-u", "1000:1000", "image"][..], format!("docker run -p 8080:80 -u {MASKED} image")),
             (&["--user", "1000:1000"][..], format!("--user {MASKED}")),
+            // sol-loop round 12 (N35): a value attached to `-p` is masked, a port included.
+            (&["-p8080"][..], format!("-p{MASKED}")),
+            (&["docker", "run", "-p3306:3306", "image"][..], format!("docker run -p{MASKED} image")),
         ] {
             assert_eq!(shown(input), expected, "{input:?}");
         }
@@ -4354,8 +4365,9 @@ mod masking_round_6 {
         assert_eq!(run(&["--header", "Authorization:", "Bearer x", "--next"]), ["--header", "Authorization:", MASKED, "--next"]);
         // The header's own value is masked after the scheme; the next argument is not part of it.
         assert_eq!(run(&["-H", "Authorization: Bearer x", "https://h.example"]), ["-H", &format!("Authorization: Bearer {MASKED}"), "https://h.example"]);
-        // Another long flag after a secret flag is a flag; a reference stays visible.
-        assert_eq!(run(&["--password", "--verbose"]), ["--password", "--verbose"]);
+        // The next argument is masked even when it looks like a flag (sol-loop round 12, N34);
+        // a reference stays visible.
+        assert_eq!(run(&["--password", "--verbose"]), ["--password", MASKED]);
         assert_eq!(run(&["--api-key", "${KEY}", "--port", "8080"]), ["--api-key", "${KEY}", "--port", "8080"]);
         assert_eq!(run(&["--token", "${T:-canarypw}"]), ["--token", MASKED]);
     }
@@ -5201,6 +5213,140 @@ mod masking_round_11 {
     fn round_11_canary_sweep_shows_no_secret() {
         let (cases, leaked, leaks) = sweep();
         println!("round 11 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
+        for leak in &leaks {
+            println!("LEAK {leak}");
+        }
+        assert!(leaks.is_empty(), "{} leaking outputs on {leaked} cases", leaks.len());
+    }
+}
+
+#[cfg(test)]
+mod masking_round_12 {
+    use super::*;
+
+    /// Texts run through `mask_preview`, `mask_arg_value` and `mask_args` with the text as one
+    /// argument (the shell-string path).
+    const CANARY_TEXTS: &[&str] = &[
+        // N33: a credential attached to a cluster that also ends in `u`, or names a secret.
+        "curl -ucanarypw263u x",
+        "curl -ucanarypw264TOKEN x",
+        "sh -c 'curl -sSucanarypw265u https://h.example'",
+        "curl -Ucanarypw266u x",
+        // N34: a value spelled like a flag.
+        "curl -u --canarypw-267 x",
+        "curl --user -canarypw-268 x",
+        "mysql --password --canarypw-269",
+        // N35: an attached `-p` password.
+        "mysql -uroot -pcanarypw270 db",
+    ];
+
+    /// Argument lists for `mask_args`.
+    const CANARY_ARGS: &[&[&str]] = &[
+        // N33.
+        &["-ucanarypw273u", "x"],
+        &["-ucanarypw274TOKEN"],
+        &["-sSucanarypw275u", "x"],
+        &["-Ucanarypw276u"],
+        &["-vUcanarypw277TOKEN", "y"],
+        &["curl", "-1ucanarypw278u"],
+        // N34: after any bare secret flag the next argument goes, whatever it looks like.
+        &["-u", "--canarypw-279"],
+        &["--user", "--canarypw-280"],
+        &["--proxy-user", "--canarypw-281"],
+        &["-U", "-canarypw282"],
+        &["-sSu", "--canarypw283"],
+        &["--password", "--canarypw-284"],
+        &["--api-key", "--canarypw285"],
+        &["-Token", "--canarypw-286"],
+        &["Authorization:", "--canarypw-287"],
+        &["--secret", "--canarypw-288"],
+        // N35.
+        &["-pcanarypw289"],
+        &["-p'canarypw-290'"],
+        &["mysql", "-uroot", "-pcanarypw291", "db"],
+        &["sshpass", "-p\"canarypw 292\"", "ssh", "h"],
+        &["-pcanarypw-293"],
+        &["-pcanarypw.294"],
+        &["-p=canarypw295"],
+        &["-pucanarypw296"],
+        &["-pu", "canarypw-297"],
+        // The shell-string path after `-c`.
+        &["-c", "curl -ucanarypw298u x"],
+        &["-c", "curl -u --canarypw-299 x"],
+        &["-c", "mysql -uroot -pcanarypw300 db"],
+    ];
+
+    fn sweep() -> (usize, usize, Vec<String>) {
+        let mut leaks: Vec<String> = Vec::new();
+        let mut leaked_cases = 0usize;
+        for text in CANARY_TEXTS {
+            assert!(text.contains("canarypw"), "{text}");
+            let outputs = [
+                ("mask_preview", mask_preview(text).0),
+                ("mask_arg_value", mask_arg_value(text).0),
+                ("mask_args", mask_args(&[text.to_string()]).0.join(" ")),
+            ];
+            let before = leaks.len();
+            for (masker, out) in outputs {
+                if out.contains("canarypw") {
+                    leaks.push(format!("{masker}: {text:?}  ->  {out:?}"));
+                }
+            }
+            leaked_cases += usize::from(leaks.len() > before);
+        }
+        for args in CANARY_ARGS {
+            assert!(args.iter().any(|a| a.contains("canarypw")), "{args:?}");
+            let list: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            let out = mask_args(&list).0;
+            if out.join(" ").contains("canarypw") {
+                leaks.push(format!("mask_args: {args:?}  ->  {out:?}"));
+                leaked_cases += 1;
+            }
+        }
+        (CANARY_TEXTS.len() + CANARY_ARGS.len(), leaked_cases, leaks)
+    }
+
+    #[test]
+    fn the_round_12_findings_are_masked() {
+        let run = |list: &[&str]| mask_args(&list.iter().map(|s| s.to_string()).collect::<Vec<_>>()).0;
+        let after_u = format!("-u{MASKED}");
+        let after_cap_u = format!("-U{MASKED}");
+        let after_ssu = format!("-sSu{MASKED}");
+        let after_p = format!("-p{MASKED}");
+        for (list, expected) in [
+            // N33: only a first `u` or `U` that ends the cluster takes the next argument.
+            (&["-ucanarypwu", "x"][..], vec![after_u.as_str(), "x"]),
+            (&["-uCANARYTOKEN", "x"], vec![after_u.as_str(), MASKED]),
+            (&["-Uproxyu", "x"], vec![after_cap_u.as_str(), "x"]),
+            (&["-sSuapp:pwu"], vec![after_ssu.as_str()]),
+            (&["-sSu", "app:pw"], vec!["-sSu", MASKED]),
+            (&["-u${CREDS}"], vec![after_u.as_str()]),
+            // N34: the next argument goes whatever it looks like; a pure reference stays.
+            (&["-u", "--pw"], vec!["-u", MASKED]),
+            (&["-u", "-x", "https://h.example"], vec!["-u", MASKED, "https://h.example"]),
+            (&["--password", "-x"], vec!["--password", MASKED]),
+            (&["--api-key", "--verbose", "--port", "8080"], vec!["--api-key", MASKED, "--port", "8080"]),
+            (&["-Token", "--next"], vec!["-Token", MASKED]),
+            (&["-u", "${CREDS}", "x"], vec!["-u", "${CREDS}", "x"]),
+            // N35: an attached `-p` value is masked after the `-p`, ordinary ones too.
+            (&["-palice"], vec![after_p.as_str()]),
+            (&["-p'x y'"], vec![after_p.as_str()]),
+            (&["-port", "8080"], vec![after_p.as_str(), "8080"]),
+            (&["-pfoo"], vec![after_p.as_str()]),
+            (&["-pu", "app:pw"], vec![after_p.as_str(), MASKED]),
+            (&["-p${DB_PASS}"], vec!["-p${DB_PASS}"]),
+            // N26 stays: a separate ordinary `-p` value goes through the text rule.
+            (&["-p", "8080:80"], vec!["-p", "8080:80"]),
+            (&["-p", "https://u:pw@h.example"], vec!["-p", "https://[masked]@h.example"]),
+        ] {
+            assert_eq!(run(list), expected, "{list:?}");
+        }
+    }
+
+    #[test]
+    fn round_12_canary_sweep_shows_no_secret() {
+        let (cases, leaked, leaks) = sweep();
+        println!("round 12 sweep: {cases} cases, {leaked} cases leaked, {} leaking outputs", leaks.len());
         for leak in &leaks {
             println!("LEAK {leak}");
         }
