@@ -395,7 +395,7 @@ export const App: React.FC<AppProps> = ({ onReplayFirstRun, sampleData, accessGr
             ) : (
               <span />
             )}
-            <span className="rail__version">v0.1.0</span>
+            <span className="rail__version">v0.1.1</span>
           </div>
         </div>
       </aside>

@@ -9,7 +9,7 @@ Every AI agent you use, in one observatory.
 
 Armillary is a Mac app that finds the AI coding agents on your computer, gathers the session history each one already keeps into one private archive on that Mac, and shows it back to you: what is running now, what happened on any day, any past session read as a document, and one search across all of them.
 
-Armillary is a working name. This is an early release (version 0.1.0): macOS only, and builds are unsigned (see [Install](#install)). Everything in the screenshots is invented sample data.
+Armillary is a working name. This is an early release (version 0.1.1): macOS only, and builds are unsigned (see [Install](#install)). Everything in the screenshots is invented sample data.
 
 ![The Orrery: projects as suns, live sessions as planets, two sessions that need you](docs/screenshots/orrery-dark.png)
 
@@ -67,7 +67,9 @@ Caveats, sources and the exact list of files: [PRIVACY.md](PRIVACY.md). Two to k
 
 ## Install
 
-There is no signed or downloadable release yet. Build it yourself (next section). The result is an **unsigned** `Armillary.app` of about 16 MB, not signed with an Apple Developer ID and not notarized, so macOS will refuse to open it on the first try. These are the standard macOS steps for an unsigned app you built or trust:
+Download `Armillary-0.1.1.dmg` or `Armillary-0.1.1.app.zip` from the [v0.1.1 release](https://github.com/draarivpatel-ui/armillary/releases/tag/v0.1.1) (Apple silicon Macs only), and check it against `SHA256SUMS` on the same page. Step-by-step instructions are in [docs/launch/INSTALL-UNSIGNED.md](docs/launch/INSTALL-UNSIGNED.md). You can also build it yourself (next section).
+
+Either way the app is **unsigned**: not signed with an Apple Developer ID and not notarized, so macOS will refuse to open it on the first try. These are the standard macOS steps for an unsigned app you downloaded or built and trust:
 
 1. Move `Armillary.app` into Applications and double-click it. macOS says it cannot verify the app. Click Done (or Cancel), not "Move to Bin".
 2. Open **System Settings, Privacy and Security**, scroll to the Security section, and click **Open Anyway** next to the Armillary message. Enter your password or use Touch ID.
@@ -115,7 +117,7 @@ All on the synthetic sample dataset (an invented developer, invented projects). 
 
 ## Status
 
-Early. Version 0.1.0, macOS only, unsigned builds, no export yet, Switchboard is read-only. See [RELEASE-NOTES.md](RELEASE-NOTES.md) for the full list of known limits.
+Early. Version 0.1.1, macOS only, unsigned builds, no export yet, Switchboard is read-only. See [RELEASE-NOTES.md](RELEASE-NOTES.md) for the full list of known limits.
 
 ## License
 
