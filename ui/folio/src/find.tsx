@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Fragment } from "react";
-import type { BlockPlan, FolioBlock, MarginalNote } from "./blockify";
+import type { BlockPlan, MarginalNote } from "./blockify";
 import { parseMarkdown, type Block, type Inline } from "./markdown";
 import { highlight } from "./highlight";
 
@@ -197,12 +197,4 @@ export function decorate(key: string, text: string, find: FindState): ReactNode 
   });
   nodes.push(<Fragment key="tail">{text.slice(cursor)}</Fragment>);
   return nodes;
-}
-
-export function blocksWithMatches(find: FindState): Set<number> {
-  return new Set(find.matches.map((match) => match.blockIndex));
-}
-
-export function findTitleOf(block: FolioBlock): string {
-  return block.title ?? "";
 }

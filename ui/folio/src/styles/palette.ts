@@ -167,7 +167,3 @@ export const TEXT_PAIRS: TextPair[] = [
   { theme: "light", fg: "page-gilt", bg: "parchment", label: "gilt accents on the page" },
   { theme: "light", fg: "page-verdigris", bg: "parchment", label: "added lines on the page" },
 ];
-
-export function failingTextPairs(): TextPair[] {
-  return TEXT_PAIRS.filter((pair) => contrastRatio(pair.fg, pair.bg, pair.theme) < 4.5);
-}

@@ -205,8 +205,3 @@ const TOKEN_CLASS: Record<Exclude<TokenKind, "text">, string> = {
 export function tokenClass(kind: TokenKind): string | undefined {
   return kind === "text" ? undefined : TOKEN_CLASS[kind];
 }
-
-/** Join the token text, used to assert losslessness. */
-export function tokensToText(tokens: Token[]): string {
-  return tokens.map((token) => token.text).join("");
-}
