@@ -12,11 +12,7 @@ export const smoothstep = (e0: number, e1: number, x: number): number => {
 
 export const easeInCubic = (t: number): number => t * t * t;
 export const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
-export const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
-export const easeOutExpo = (t: number): number => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 export const easeInOutCubic = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-export const easeInOutSine = (t: number): number => -(Math.cos(Math.PI * t) - 1) / 2;
-export const easeInOutQuint = (t: number): number => (t < 0.5 ? 16 * t ** 5 : 1 - Math.pow(-2 * t + 2, 5) / 2);
 
 /** Ease out with a single overshoot of roughly `amount` (0.1 = 10 percent) before settling. */
 export const easeOutBack = (t: number, amount = 1.4): number => {
@@ -70,8 +66,6 @@ export function cubicBezier(x1: number, y1: number, x2: number, y2: number): (t:
   };
 }
 
-/** The app's UI curve (SPEC 3.5). */
-export const easeUi = cubicBezier(0.25, 0.1, 0.25, 1);
 /** A burin stroke: a quick bite, a long even cut, a gentle lift. */
 export const easeBurin = cubicBezier(0.55, 0.05, 0.25, 1);
 /** Heavy instrument parts: slow start, confident settle. */
