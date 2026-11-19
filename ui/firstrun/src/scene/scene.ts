@@ -40,7 +40,6 @@ import type {
   StarDraw,
   SunDraw,
   TextDraw,
-  TextStyle,
 } from "./types";
 
 /** Label keyframe spacing (ms). Labels re-solve at most this often and glide between solutions. */
@@ -1309,9 +1308,5 @@ function fallbackTarget(w: number, h: number, s: Schedule): HandoffTarget {
     return { id: "fallback-" + i, name: c.name, root: c.root, x: w * f, y: h * (0.5 + 0.1 * Math.sin(f * Math.PI * 2)), r: 24 };
   });
   return { stage: { x: 0, y: 0, w, h }, theme: "dark", suns, planets: [], frame: { outerInset: 10, innerInset: 24, minorTickDeg: 2, midTickDeg: 10, majorTickDeg: 30 } };
-}
-
-export function textStyleIsEngraved(s: TextStyle): boolean {
-  return s === "title" || s === "label" || s === "constellation" || s === "sun";
 }
 
