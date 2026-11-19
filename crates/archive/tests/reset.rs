@@ -12,9 +12,11 @@ fn reset_to_empty_deletes_the_files_and_keeps_the_handle_usable() {
     a.register_agent(&agent("test")).unwrap();
     a.import_batch(&batch(4, 1, "p")).unwrap();
     assert_eq!(a.stats().unwrap().messages, 4);
+    // Hold the old file open so the filesystem cannot hand its inode number to the new file.
+    let old_file = std::fs::File::open(&p).unwrap();
     let old_inode = {
         use std::os::unix::fs::MetadataExt;
-        std::fs::metadata(&p).unwrap().ino()
+        old_file.metadata().unwrap().ino()
     };
 
     a.reset_to_empty(&p).unwrap();
@@ -22,6 +24,8 @@ fn reset_to_empty_deletes_the_files_and_keeps_the_handle_usable() {
     // The old file is gone: a new, empty database sits at the same path.
     use std::os::unix::fs::MetadataExt;
     assert_ne!(std::fs::metadata(&p).unwrap().ino(), old_inode, "the file was replaced, not emptied in place");
+    assert_eq!(old_file.metadata().unwrap().nlink(), 0, "the old file was not deleted");
+    drop(old_file);
     let stats = a.stats().unwrap();
     assert_eq!((stats.sessions, stats.messages, stats.search_rows), (0, 0, 0));
     assert!(a.search("canary", &SearchFilter::default()).unwrap().is_empty());
