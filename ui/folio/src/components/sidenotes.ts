@@ -15,24 +15,6 @@ export const SidenoteLayoutContext = createContext<() => void>(() => {});
 /** The farthest a note group may sit below the top of the message it annotates; past it the reading column yields. */
 export const MAX_NOTE_DRIFT = 80;
 
-export interface NoteGroup {
-  /** Where the group would sit if nothing were in its way. */
-  top: number;
-  height: number;
-}
-
-/** Walk the groups in reading order: each lands at its own top, or below the group before it plus the gap. */
-export function stackGroups(groups: NoteGroup[], gap: number = NOTE_GAP): number[] {
-  const placed: number[] = [];
-  let previousBottom = Number.NEGATIVE_INFINITY;
-  for (const group of groups) {
-    const top = Math.max(group.top, previousBottom + gap);
-    placed.push(top);
-    previousBottom = top + group.height;
-  }
-  return placed;
-}
-
 export interface SidenoteRow {
   /** The row's top with no push applied, relative to the page. */
   top: number;
